@@ -1,0 +1,205 @@
+/* =========================================================
+   Proposal Detail Page (proposal-detail.css) - 정리본
+========================================================= */
+
+/* [공통 변수 계승] */
+.proposal-detail-page{
+  --black: #111;
+  --text: #111827;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --bg: #ffffff;
+  --primary: #000000;
+  --wrap: 1250px; /* 상세 페이지: 목록보다 좁게 */
+  --radius: 12px;
+  --pad: 48px;
+
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+  color: var(--text);
+  line-height: 1.6;
+  background: var(--bg);
+}
+
+.proposal-detail-page *,
+.proposal-detail-page *::before,
+.proposal-detail-page *::after{
+  box-sizing: border-box;
+}
+
+.proposal-detail-page .detail-container{
+  max-width: 1130px;       /* 기존 1250~1480이면 너무 넓음 */
+  margin: 0 auto;
+}
+
+.proposal-detail-page .detail-content > div{
+  font-size: 19px;
+  color: #374151;
+}
+
+/* =========================================================
+   Header
+========================================================= */
+
+.proposal-detail-page .detail-header{
+  margin-bottom: 40px;
+}
+
+.proposal-detail-page .detail-title{
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--black);
+  margin: 0 0 24px 0;
+  line-height: 2;
+}
+
+.proposal-detail-page .detail-info{
+  display: flex;
+  gap: 24px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.proposal-detail-page .detail-info span{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Divider */
+.proposal-detail-page hr{
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 40px 0;
+}
+
+/* =========================================================
+   Content
+========================================================= */
+
+.proposal-detail-page .detail-content{
+  font-size: 17px;
+  color: #374151;
+  line-height: 1.8;
+
+  /* ✅ break-all보다 자연스럽게 */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   Gallery
+========================================================= */
+
+.proposal-detail-page .detail-gallery{
+  margin-top: 18px;
+  margin-bottom: 32px;   /* 이미지와 글자 간격 크기 여기서 조절 */
+}
+
+.proposal-detail-page .gallery-grid{
+  display: flex;
+  flex-direction: column;   /* ★ 세로 정렬 */
+  align-items: right;      /* ★ 가운데 정렬 */
+  gap: 32px;                /* 이미지 사이 간격 */
+}
+
+.proposal-detail-page .gallery-item{
+  width: 100%;
+  max-width: 700px;        /* ★ 이미지 최대 크기 (조절 가능) */
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.proposal-detail-page .gallery-item img{
+  width: 100%;
+  height: auto;        /* ★ 원본 비율 유지 */
+  display: block;
+  object-fit: contain; /* 잘림 없음 */
+}
+
+/* =========================================================
+   Footer + Buttons
+========================================================= */
+
+.proposal-detail-page .detail-footer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 80px;
+  padding-top: 30px;
+  margin-bottom: 40px;   /* ★ 추가 */
+}
+
+/* ✅ button 전체가 아니라 footer 버튼으로 범위 축소 */
+.proposal-detail-page .detail-footer button{
+  height: 44px;
+  padding: 0 24px;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+}
+
+.proposal-detail-page .detail-footer button:hover{
+  background: #f9fafb;
+  border-color: var(--black);
+}
+
+.proposal-detail-page .btn-group{
+  display: flex;
+  gap: 10px;
+}
+
+/* =========================================================
+   Loading / Empty
+========================================================= */
+
+.proposal-detail-page .loading,
+.proposal-detail-page .empty-state{
+  text-align: center;
+  padding: 100px 0;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+/* Responsive (proposal-detail.css) */
+@media (max-width: 860px){
+  .proposal-detail-page .detail-container{
+    padding: 0 20px;
+  }
+  .proposal-detail-page .detail-title{
+    font-size: 26px;
+    line-height: 1.4;
+  }
+  .proposal-detail-page .detail-info{
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 520px){
+  .proposal-detail-page .detail-container{
+    padding: 0 16px;
+  }
+  .proposal-detail-page .detail-title{
+    font-size: 22px;
+  }
+  .proposal-detail-page .detail-footer{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .proposal-detail-page .btn-group{
+    justify-content: flex-end;
+  }
+}
+
+.proposal-detail-page .detail-content-text{
+  white-space: pre-wrap;   /* \n 줄바꿈 살림 */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}

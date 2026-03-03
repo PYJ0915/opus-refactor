@@ -1,0 +1,440 @@
+/* ===== Modal (OPUS tone) - Checkout 전용 ===== */
+.checkout_modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, .55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 200;
+}
+
+.checkout_modal {
+  width: min(760px, 100%);
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #111827;
+  overflow: hidden;
+}
+
+.checkout_modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.checkout_modal__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.checkout_modal__close {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--line2);
+  background: #fff;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkout_modal__close:hover {
+  background: var(--soft2);
+  color: #111827;
+  border-color: #9ca3af;
+}
+
+.checkout_modal__body {
+  padding: 16px 18px 18px;
+}
+
+.checkout_modal__tools {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 18px;
+  /* 헤더랑 톤 맞추기 */
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+
+  margin-bottom: 0;
+}
+
+.checkout_modal__tools-right {
+  justify-self: end;
+  display: flex;
+  gap: 10px;
+}
+
+.checkout_modal__search {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  font-size: 13px;
+
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-sm);
+  background: #fff;
+
+  /* 이전에 flex:1 / max-width 같은 거 있었다면 무시되도록 */
+  max-width: none;
+}
+
+.checkout_modal__tools .addr--btn {
+  height: 42px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.checkout_addr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.checkout__addr-item {
+  position: relative;
+  display: block;
+}
+
+.checkout__addr-item[data-selectable="true"] {
+  cursor: pointer;
+}
+
+.checkout__addr-item input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkout__addr-item__box {
+  position: relative;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  padding: 14px 14px 56px;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease;
+}
+
+.checkout_addr-actions {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+
+  display: flex;
+  gap: 8px;
+
+  z-index: 2; /* hover 꼬임 방지 */
+}
+
+.checkout_addr-actions .checkout_btn, .checkout_addr-actions .addr-btn{
+  width: 64px;
+}
+
+#default-btn {
+  width: 120px;
+}
+
+.checkout__addr-item[data-selectable="true"]:hover .checkout__addr-item__box {
+  background: var(--soft2);
+  border-color: #9ca3af;
+}
+
+.checkout__addr-item[data-selectable="false"] {
+  cursor: default;
+}
+
+.checkout__addr-item[data-selectable="false"]:hover .checkout__addr-item__box{
+  background: #fff;
+  border-color: var(--line2);
+  transform: none;
+}
+
+.checkout__addr-item input:checked + .checkout__addr-item__box {
+  border-color: #111827;
+  box-shadow: 0 0 0 1px #111827 inset;
+  background: var(--soft2);
+}
+
+.checkout_addr-item__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.checkout_addr-item__badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.checkout_addr-item__name {
+  font-size: 12px;
+  font-weight: 900;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 10px;
+}
+
+.checkout_addr-badge {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+
+  font-size: 11px;
+  font-weight: 900;
+  padding: 6px 10px;
+
+  border-radius: 999px;
+  background: #111827;
+  color: #fff;
+}
+
+.checkout_addr-item__who {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.checkout_addr-item__addr {
+  margin: 0;
+  font-size: 12px;
+  color: #374151;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.checkout_modal__footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 16px 18px;
+  border-top: 1px solid var(--line);
+  background: #fafafa;
+}
+
+.addr-btn {
+  border-radius: 10px;
+  padding: 14px 14px;
+  font-weight: 900;
+  font-size: 13px;
+  height: 40px;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.addr-btn--solid {
+  background: var(--dark);
+  border: 1px solid var(--dark);
+  color: #fff;
+}
+
+.addr-btn--solid:hover {
+  background: var(--dark2);
+  border-color: var(--dark2);
+}
+
+.addr-btn--outline {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: var(--dark);
+}
+
+.addr-btn--outline:hover {
+  background: var(--soft2);
+}
+
+.addr-btn--sm {
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 900;
+  height: 40px;
+  width: 90px;
+  border-radius: 10px;
+}
+
+.addr-btn--block {
+  width: 100%;
+}
+
+.addr--btn {
+  height: 50px;
+  width: 90px;
+}
+
+.checkout_modal__form {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fafafa;
+}
+
+/* 라벨 */
+.checkout_modal__form .checkout__label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 900;
+}
+
+/* 2컬럼 그리드 */
+.checkout_modal__form .checkout__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* 필드 간격 */
+.checkout_modal__form .checkout__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.checkout_modal__form .checkout_field--wide {
+  grid-column: 1 / -1;
+}
+
+/* input/select 공통 */
+.checkout_modal__form .checkout__input,
+.checkout_modal__form .checkout__select {
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
+  outline: none;
+  background: #fff;
+  color: #111;
+  font-size: 14px;
+}
+
+/* placeholder 톤 */
+.checkout_modal__form .checkout__input::placeholder {
+  color: #9ca3af;
+}
+
+/* 포커스 */
+.checkout_modal__form .checkout__input:focus,
+.checkout_modal__form .checkout__select:focus {
+  border-color: #9ca3af;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, .08);
+}
+
+/* 주소 row: 우편번호 + 버튼 */
+.checkout_modal__form .checkout_addr-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.checkout_modal__form .checkout_addr-row .checkout_input {
+  flex: 1;
+}
+
+/* 주소검색 버튼(모달 안에서만 사이즈/정렬 보정) */
+.checkout_modal__form .checkout_addr-row .checkout_btn {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* select 화살표가 너무 밋밋하면 */
+.checkout_modal__form .checkout__select {
+  appearance: none;
+  padding-right: 40px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #6b7280 50%),
+    linear-gradient(135deg, #6b7280 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 18px,
+    calc(100% - 12px) 18px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.checkout__textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: 12px 14px;
+
+  font-size: 14px;
+  line-height: 1.5;
+  color: #111;
+
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  background-color: #fff;
+
+  resize: none;
+}
+
+.checkout_modal__body {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.checkout_btn--danger {
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  background: #fff;
+}
+
+.checkout_btn--danger:hover {
+  background: #fee2e2;
+}
+
+.addr-msg {
+  padding-left: 10px;
+  font-size: 15px;
+  color: #6b7280;
+}
+
+@media (max-width: 520px) {
+  .checkout_modal__tools {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .checkout_modal__footer {
+    flex-direction: column;
+  }
+}
+
+/* 모바일에서는 세로 스택 */
+@media (max-width: 520px) {
+  .checkout_modal__tools {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .checkout_modal__tools .checkout_btn {
+    width: 100%;
+  }
+}

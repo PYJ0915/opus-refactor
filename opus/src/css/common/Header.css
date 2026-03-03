@@ -1,0 +1,447 @@
+:root {
+  --black: #111;
+  --text: #111;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --bg: #fff;
+
+  --wrap: 1280px;
+  --pad: 32px;
+
+  --radius: 12px;
+  --radius-pill: 999px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.wrap {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding-left: var(--pad);
+  padding-right: var(--pad);
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: background .2s ease, box-shadow .2s ease, border-color .2s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.header__inner {
+  padding: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.header__left {
+  display: flex;
+  align-items: center;
+  gap: 42px;
+}
+
+.brand {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.gnb {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.gnb__link {
+  font-size: 14px;
+  font-weight: 500;
+  transition: color .2s ease, opacity .2s ease;
+}
+
+.gnb__link.is-active {
+  font-weight: 700;
+}
+
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.icon-btn {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  transition: color .2s ease;
+}
+
+.admin-link {
+  font-size: 14px;
+  font-weight: 500;
+  transition: color .2s ease;
+}
+
+/* light 모드 */
+.header--light.is-scrolled {
+  background: #fff;
+  border-bottom-color: var(--line);
+  box-shadow: var(--shadow);
+}
+
+.header--light.is-scrolled .brand,
+.header--light.is-scrolled .gnb__link,
+.header--light.is-scrolled .icon-btn,
+.header--light.is-scrolled .admin-link {
+  color: #111;
+  opacity: 1;
+}
+
+.header--light.is-scrolled .gnb__link:hover,
+.header--light.is-scrolled .icon-btn:hover,
+.header--light.is-scrolled .admin-link:hover {
+  color: #000;
+  opacity: 0.7;
+}
+
+/* =========================
+   Header: On Hero (Home top)
+========================= */
+
+/* 홈 최상단(히어로 위) */
+.header.is-on-hero {
+  background: transparent;
+  /* 배경 투명 */
+}
+
+/* 글씨/아이콘/링크 흰색 강제 + 흐릿함 제거 */
+.header.is-on-hero .brand,
+.header.is-on-hero .gnb__link,
+.header.is-on-hero .icon-btn,
+.header.is-on-hero i {
+  color: rgba(255, 255, 255, 0.95);
+  opacity: 1;
+  filter: none;
+}
+
+/* 링크 hover도 흰색 계열 */
+.header.is-on-hero .gnb__link:hover,
+.header.is-on-hero .brand:hover {
+  color: #fff;
+}
+
+/* 필요하면 가독성 강화(밝은 배경에서 대비 확보) */
+.header.is-on-hero {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Dark 모드 */
+.header--dark {
+  background: #000;
+  border-bottom-color: transparent;
+}
+
+.header--dark .brand,
+.header--dark .gnb__link,
+.header--dark .icon-btn {
+  color: #fff;
+}
+
+.header--dark .gnb__link:hover,
+.header--dark .icon-btn:hover,
+.header--dark .admin-link:hover {
+  color: rgba(255, 255, 255, 0.75) !important;
+  opacity: 1 !important;
+}
+
+.header--dark.is-scrolled {
+  background: #000;
+  border-bottom-color: transparent;
+  box-shadow: var(--shadow);
+}
+
+.header--dark.is-scrolled .brand,
+.header--dark.is-scrolled .gnb__link,
+.header--dark.is-scrolled .icon-btn,
+.header--dark.is-scrolled .admin-link {
+  color: #fff;
+}
+
+/* ── 알림 버튼 래퍼 ── */
+.noti-wrap {
+  position: relative;
+}
+
+/* 읽지 않은 알림 빨간 점 */
+.noti-btn {
+  position: relative;
+}
+
+.noti-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+/* ── 알림 패널 ── */
+.noti-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 360px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  box-shadow: 0 8px 32px rgba(17, 24, 39, 0.12);
+  z-index: 1100;
+  animation: notiSlideDown 0.2s ease;
+  text-shadow: none;
+  overflow: hidden;
+}
+
+@keyframes notiSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 패널 헤더 */
+.noti-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* 모두 읽음 + 비우기 버튼 묶음 */
+.noti-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.noti-panel__title {
+  font-size: 15px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.noti-panel__read-all {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.noti-panel__read-all:hover {
+  color: #111827;
+}
+
+/* 비우기 버튼 */
+.noti-panel__clear {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ef4444;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.noti-panel__clear:hover {
+  color: #dc2626;
+}
+
+/* 패널 바디 */
+.noti-panel__body {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* 빈 상태 */
+.noti-empty {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* 알림 아이템 */
+.noti-item {
+  display: grid;
+  grid-template-columns: 36px 1fr 32px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  align-items: start;
+}
+
+.noti-item:last-child {
+  border-bottom: none;
+}
+
+.noti-item:hover {
+  background: #f9fafb;
+}
+
+.noti-item.is-unread {
+  background: #f9fafb;
+}
+
+.noti-item__icon {
+  width: 36px;
+  height: 36px;
+  background: #f3f4f6;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #374151;
+  flex-shrink: 0;
+}
+
+.noti-item__title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.noti-item__desc {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: #6b7280;
+
+  white-space: normal;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  padding-right: 24px;
+}
+
+.noti-item__time {
+  margin: 0;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* 읽지 않음 점 */
+.noti-item__dot {
+  width: 7px;
+  height: 7px;
+  background: #ef4444;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.noti-item__right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.noti-item__delete {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.noti-item__delete:hover {
+  background: #f3f4f6;
+  color: #ef4444 !important;
+}
+
+/* 호버 시 강조 */
+.noti-item:hover .noti-item__delete {
+  color: #6b7280;
+}
+
+.noti-item__delete i {
+  color: inherit !important;
+  text-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+.noti-item__icon i {
+  color: #374151 !important;
+}

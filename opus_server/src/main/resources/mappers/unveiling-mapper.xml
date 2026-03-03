@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper
+	namespace="nknk.opus.project.unveiling.model.mapper.UnveilingMapper">
+
+	<select id="selectUnveilingList" resultType="Unveiling">
+    <![CDATA[
+    SELECT u.UNVEILING_NO, u.UNVEILING_TITLE, u.PRODUCTION_ARTIST,
+    u.PRODUCTION_YEAR,
+    u.PRODUCTION_MATERIAL, u.PRODUCTION_SIZE, u.START_PRICE, u.CURRENT_PRICE,
+    u.FINAL_PRICE, u.BIDDING_COUNT, u.FINISH_DATE, u.PRODUCTION_DETAIL, u.ARTIST_DETAIL,
+    u.UNVEILING_STATUS, u.MEMBER_NO, u.FINALIZED_FL, u.PAYMENT_STATUS,
+    img.UV_IMG_PATH AS THUMB_URL
+    FROM UNVEILING u
+    LEFT JOIN (
+        SELECT UNVEILING_NO, UV_IMG_PATH
+        FROM (
+            SELECT
+            ui.UNVEILING_NO,
+            ui.UV_IMG_PATH,
+            ROW_NUMBER() OVER (PARTITION BY ui.UNVEILING_NO ORDER BY ui.UV_IMG_ORDER ASC) rn
+            FROM UNVEILING_IMG ui
+        )
+        WHERE rn = 1
+    ) img
+    ON img.UNVEILING_NO = u.UNVEILING_NO
+    ORDER BY
+        CASE u.UNVEILING_NO WHEN 25 THEN 0 WHEN 29 THEN 1 ELSE 2 END,
+        CASE TO_CHAR(u.UNVEILING_STATUS) WHEN 'LIVE' THEN 1 WHEN 'UPCOMING' THEN 2 ELSE 3 END,
+        u.UNVEILING_NO DESC
+    ]]>
+	</select>
+
+
+	<select id="selectUnveilingForUpdate" parameterType="int"
+		resultType="Unveiling">
+		SELECT UNVEILING_NO, UNVEILING_TITLE, PRODUCTION_ARTIST,
+		PRODUCTION_YEAR,
+		PRODUCTION_MATERIAL, PRODUCTION_SIZE, START_PRICE,
+		CURRENT_PRICE, FINAL_PRICE,
+		BIDDING_COUNT, FINISH_DATE,
+		PRODUCTION_DETAIL, ARTIST_DETAIL,
+		UNVEILING_STATUS,
+		MEMBER_NO,
+		FINALIZED_FL, PAYMENT_STATUS, PAYMENT_DUE_DATE, PAID_DATE
+		FROM
+		UNVEILING
+		WHERE UNVEILING_NO = #{unveilingNo}
+		FOR UPDATE
+	</select>
+	<!-- FOR UPDATE : 동시 응찰을 방지하기 위해 먼저 트랜잭션을 잡은 쪽만 진행, 나머지는 트랜잭션 선점자로부터 commit/rollback 
+		일어날 때까지 대기 -->
+
+	<update id="updateAfterBid" parameterType="Unveiling">
+		UPDATE UNVEILING SET
+		CURRENT_PRICE = #{currentPrice},
+		BIDDING_COUNT = #{biddingCount},
+		UNVEILING_STATUS = #{unveilingStatus}
+		WHERE UNVEILING_NO =
+		#{unveilingNo}
+	</update>
+
+	<!-- 화면 조회용 (락 없음) -->
+	<select id="selectUnveilingDetail" parameterType="int"
+		resultType="Unveiling">
+		SELECT u.UNVEILING_NO, u.UNVEILING_TITLE,
+		u.PRODUCTION_ARTIST,
+		u.PRODUCTION_YEAR,
+		u.PRODUCTION_MATERIAL,
+		u.PRODUCTION_SIZE, u.START_PRICE, u.CURRENT_PRICE,
+		u.FINAL_PRICE,
+		u.BIDDING_COUNT, u.FINISH_DATE, u.PRODUCTION_DETAIL, u.ARTIST_DETAIL,
+		u.UNVEILING_STATUS, u.MEMBER_NO, u.FINALIZED_FL, u.PAYMENT_STATUS,
+		img.UV_IMG_PATH AS THUMB_URL
+		FROM UNVEILING u
+		LEFT JOIN (
+		SELECT
+		UNVEILING_NO, UV_IMG_PATH
+		FROM (
+		SELECT
+		ui.UNVEILING_NO,
+		ui.UV_IMG_PATH,
+		ROW_NUMBER() OVER (PARTITION BY ui.UNVEILING_NO ORDER BY
+		ui.UV_IMG_ORDER ASC) rn
+		FROM UNVEILING_IMG ui
+		)
+		WHERE rn = 1
+		) img
+		ON
+		img.UNVEILING_NO = u.UNVEILING_NO
+		WHERE u.UNVEILING_NO = #{unveilingNo}
+	</select>
+
+	<!-- 마감 여부 조회 => 마감:1, 그 외:0 -->
+	<select id="selectIsFinished" parameterType="int"
+		resultType="int">
+    	<![CDATA[
+    		SELECT CASE
+             	WHEN FINISH_DATE IS NOT NULL
+              		AND SYSDATE >= FINISH_DATE
+             	THEN 1
+             	ELSE 0
+           		END
+    		FROM UNVEILING
+    		WHERE UNVEILING_NO = #{unveilingNo}
+    	]]>
+	</select>
+
+	<update id="updateFinishDate" parameterType="Unveiling">
+		UPDATE UNVEILING
+		SET FINISH_DATE = #{finishDate}
+		WHERE UNVEILING_NO = #{unveilingNo}
+	</update>
+
+	<!-- 경매 상태를 종료로 전환 -->
+	<update id="updateStatusEnded" parameterType="int">
+		UPDATE UNVEILING
+		SET UNVEILING_STATUS = 'ENDED'
+		WHERE UNVEILING_NO = #{unveilingNo}
+	</update>
+
+	<!-- 낙찰자 회원번호를 이용해 경매 로직 종료 -->
+	<update id="finalizeAuctionUsingMemberNo"
+		parameterType="Unveiling">
+		UPDATE UNVEILING SET
+		MEMBER_NO = #{memberNo},
+		FINAL_PRICE
+		= #{finalPrice},
+		FINALIZED_FL = 1,
+		PAYMENT_STATUS = 'PENDING',
+		PAYMENT_DUE_DATE = SYSDATE + 1
+		WHERE UNVEILING_NO = #{unveilingNo}
+	</update>
+
+	<!-- 낙찰 확정이 필요한 경매 목록 조회 -->
+	<!-- 조건: 마감됐고(SYSDATE >= FINISH_DATE) + 아직 낙찰 확정 안 됨(FINALIZED_FL = 0) -->
+	<select id="selectUnveilingsToFinalize" resultType="Unveiling">
+  		<![CDATA[
+    		SELECT UNVEILING_NO, UNVEILING_TITLE, UNVEILING_STATUS,
+           		START_PRICE, CURRENT_PRICE, FINAL_PRICE,
+           		BIDDING_COUNT, FINISH_DATE, MEMBER_NO,
+           		FINALIZED_FL, PAYMENT_STATUS
+    		FROM UNVEILING
+    		WHERE FINISH_DATE IS NOT NULL
+      		AND SYSDATE >= FINISH_DATE
+      		AND FINALIZED_FL = 0
+  		]]>
+	</select>
+
+	<!-- 유찰 처리: 입찰자 없이 마감된 경매를 FINALIZED_FL=1로 마킹해 재시도 방지 -->
+	<update id="markNoWinner" parameterType="int">
+		UPDATE UNVEILING SET
+		FINALIZED_FL = 1,
+		UNVEILING_STATUS = 'ENDED',
+		PAYMENT_STATUS =
+		'NO_WINNER'
+		WHERE UNVEILING_NO = #{unveilingNo}
+	</update>
+
+	<!-- 가결제 완료 처리 -->
+	<update id="markPaid" parameterType="int">
+		UPDATE UNVEILING SET
+		PAYMENT_STATUS = 'PAID',
+		PAID_DATE = SYSDATE
+		WHERE UNVEILING_NO =
+		#{unveilingNo}
+		AND PAYMENT_STATUS = 'PENDING'
+	</update>
+
+	<!-- 결제 기한 만료 여부 => 만료:1, 미만료:0 -->
+	<select id="selectIsPaymentExpired" parameterType="int"
+		resultType="int">
+	  <![CDATA[
+	  	SELECT CASE
+	           WHEN PAYMENT_STATUS = 'PENDING'
+	            AND PAYMENT_DUE_DATE IS NOT NULL
+	            AND SYSDATE > PAYMENT_DUE_DATE
+	           THEN 1
+	           ELSE 0
+	         END
+	  	FROM UNVEILING
+	  	WHERE UNVEILING_NO = #{unveilingNo}
+	  ]]>
+	</select>
+
+	<!-- 결제 상태 전환 -->
+	<update id="markPaymentExpired" parameterType="int">
+		UPDATE UNVEILING
+		SET
+		PAYMENT_STATUS = 'EXPIRED'
+		WHERE UNVEILING_NO = #{unveilingNo}
+		AND
+		PAYMENT_STATUS = 'PENDING'
+	</update>
+
+	<!-- 마감 1시간 이내 + LIVE 상태 + 알림 미발송 경매 목록 조회 -->
+	<!-- 응찰자 목록도 함께 조회하기 위해 서비스에서 BIDDING 테이블 별도 조회 -->
+	<select id="selectUnveilingsToAlert" resultType="Unveiling">
+		<![CDATA[
+			SELECT UNVEILING_NO, UNVEILING_TITLE, PRODUCTION_ARTIST,
+			       FINISH_DATE, UNVEILING_STATUS, ALERT_SENT_FL
+			FROM UNVEILING
+			WHERE UNVEILING_STATUS = 'LIVE'
+			  AND FINISH_DATE IS NOT NULL
+			  AND SYSDATE < FINISH_DATE
+			  AND FINISH_DATE <= SYSDATE + 1/24
+			  AND ALERT_SENT_FL = 0
+		]]>
+	</select>
+
+	<!-- 알림 발송 완료 처리 -->
+	<update id="markAlertSent" parameterType="int">
+		UPDATE UNVEILING
+		SET
+		ALERT_SENT_FL = 1
+		WHERE UNVEILING_NO = #{unveilingNo}
+	</update>
+
+
+</mapper>
+
+
+
+

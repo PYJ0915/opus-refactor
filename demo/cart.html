@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart</title>
+
+  <!-- Icons / Font -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/cart.css" />
+</head>
+
+<body class="page">
+  <!-- HEADER -->
+  <header id="header" class="header">
+    <div class="header__inner">
+      <div class="header__left">
+        <a href="#" class="logo">ARTSPACE</a>
+
+        <nav class="nav" aria-label="주요 메뉴">
+          <a href="#" class="nav__link">What's ON</a>
+          <a href="#" class="nav__link">게시판</a>
+          <a href="#" class="nav__link nav__link--active">굿즈</a>
+          <a href="#" class="nav__link">경매</a>
+        </nav>
+      </div>
+
+      <div class="header__right" aria-label="유틸 메뉴">
+        <button class="icon-btn" type="button" aria-label="찜">
+          <i class="fa-solid fa-heart"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="장바구니">
+          <i class="fa-solid fa-shopping-cart"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="마이페이지">
+          <i class="fa-solid fa-user"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main cart">
+    <!-- title -->
+    <section class="cart-hero">
+      <h1 class="cart-hero__title">장바구니</h1>
+      <p class="cart-hero__sub">선택한 상품을 한 번에 확인하고 결제할 수 있어요.</p>
+    </section>
+
+    <!-- content -->
+    <section class="cart-wrap">
+      <!-- left: list -->
+      <div class="cart-left">
+        <div class="cart-toolbar">
+          <label class="check">
+            <input type="checkbox" checked />
+            <span>전체 선택</span>
+          </label>
+
+          <div class="cart-toolbar__actions">
+            <button class="ghost-btn" type="button">선택 삭제</button>
+            <button class="ghost-btn" type="button">전체 삭제</button>
+          </div>
+        </div>
+
+        <div class="cart-box">
+          <div class="cart-head">
+            <div class="cart-head__cell cart-head__check">선택</div>
+            <div class="cart-head__cell cart-head__item">상품</div>
+            <div class="cart-head__cell cart-head__price">가격</div>
+            <div class="cart-head__cell cart-head__qty">수량</div>
+            <div class="cart-head__cell cart-head__sum">합계</div>
+          </div>
+
+          <!-- row 1 -->
+          <article class="cart-row">
+            <div class="cart-cell cart-cell--check">
+              <input type="checkbox" checked />
+            </div>
+
+            <div class="cart-cell cart-cell--item">
+              <div class="cart-item">
+                <div class="cart-item__thumb">
+                  <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/a7f5aa7753-078f8203afee3d340d1f.png"
+                    alt="레미제라블 티셔츠" />
+                </div>
+
+                <div class="cart-item__info">
+                  <p class="cart-item__title">레미제라블 티셔츠</p>
+                  <p class="cart-item__meta">의류 · 뮤지컬</p>
+                  <p class="cart-item__option">옵션: L / 블랙</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="cart-cell cart-cell--price">
+              <p class="money">45,000원</p>
+            </div>
+
+            <div class="cart-cell cart-cell--qty">
+              <div class="qty">
+                <button class="qty__btn" type="button" aria-label="minus">
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+                <input class="qty__input" type="number" value="1" min="1"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                <button class="qty__btn" type="button" aria-label="plus">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="cart-cell cart-cell--sum">
+              <p class="money money--strong">45,000원</p>
+            </div>
+          </article>
+
+          <!-- row 2 -->
+          <article class="cart-row">
+            <div class="cart-cell cart-cell--check">
+              <input type="checkbox" checked />
+            </div>
+
+            <div class="cart-cell cart-cell--item">
+              <div class="cart-item">
+                <div class="cart-item__thumb">
+                  <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/09fbe5dfb3-854f6874ce67ddda6d1e.png"
+                    alt="오페라의 유령 포스터" />
+                </div>
+
+                <div class="cart-item__info">
+                  <p class="cart-item__title">오페라의 유령 포스터</p>
+                  <p class="cart-item__option">옵션: A3 / 액자(블랙)</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="cart-cell cart-cell--price">
+              <p class="money">25,000원</p>
+            </div>
+
+            <div class="cart-cell cart-cell--qty">
+              <div class="qty">
+                <button class="qty__btn" type="button" aria-label="minus">
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+                <input class="qty__input" type="number" value="2" min="1"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                <button class="qty__btn" type="button" aria-label="plus">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="cart-cell cart-cell--sum">
+              <p class="money money--strong">50,000원</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="cart-bottom">
+          <a href="#" class="link-back">
+            <i class="fa-solid fa-arrow-left"></i>
+            쇼핑 계속하기
+          </a>
+        </div>
+      </div>
+
+      <!-- right: summary -->
+      <aside class="cart-right" aria-label="결제 요약">
+        <div class="summary">
+          <h2 class="summary__title">주문 요약</h2>
+
+          <div class="summary__rows">
+            <div class="summary__row">
+              <span class="k">상품금액</span>
+              <span class="v">95,000원</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">배송비</span>
+              <span class="v">0원</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">할인</span>
+              <span class="v">0원</span>
+            </div>
+          </div>
+
+          <div class="summary__total">
+            <span class="k">결제 예정 금액</span>
+            <span class="v">95,000원</span>
+          </div>
+
+          <div class="summary__actions">
+            <button class="btn btn--solid" type="button">주문하기</button>
+            <button class="btn btn--outline" type="button">선택 상품 주문</button>
+          </div>
+
+          <p class="summary__note">
+            주문하기 버튼을 누르면 결제 페이지로 이동합니다.
+          </p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="footer" class="footer">
+    <div class="footer__inner">
+      <div class="footer__grid">
+        <div>
+          <h3 class="footer__brand">ARTSPACE</h3>
+          <p class="footer__desc">문화와 예술을 경험하는<br />새로운 방법</p>
+        </div>
+
+        <div>
+          <h4 class="footer__title">서비스</h4>
+          <ul class="footer__list">
+            <li><a href="#">What's ON</a></li>
+            <li><a href="#">게시판</a></li>
+            <li><a href="#">굿즈</a></li>
+            <li><a href="#">경매</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer__title">고객지원</h4>
+          <ul class="footer__list">
+            <li><a href="#">공지사항</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">1:1 문의</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer__title">정보</h4>
+          <ul class="footer__list">
+            <li><a href="#">이용약관</a></li>
+            <li><a href="#">개인정보처리방침</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p>© 2024 ARTSPACE. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>

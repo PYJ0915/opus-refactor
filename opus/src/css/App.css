@@ -1,8 +1,7 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 .logo {
@@ -39,4 +38,14 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.header--dark .gnb__link:hover,
+.header--dark .icon-btn:hover,
+.header--dark .admin-link:hover,
+.header--dark.is-scrolled .gnb__link:hover,
+.header--dark.is-scrolled .icon-btn:hover,
+.header--dark.is-scrolled .admin-link:hover{
+  color: rgba(255,255,255,0.75) !important;
+  opacity: 1 !important;
 }

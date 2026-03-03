@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="nknk.opus.project.board.model.mapper.BoardMapper">
+
+	<!-- 게시글 상세 조회 결과 매핑 + 이미지 목록 포함 -->
+	<resultMap id="boardDetailMap" type="Board">
+		<id property="boardNo" column="BOARD_NO" />
+		<result property="boardTitle" column="BOARD_TITLE" />
+		<result property="boardContent" column="BOARD_CONTENT" />
+		<result property="writerCompany" column="WRITER_COMPANY" />
+		<result property="boardWriteDate" column="BOARD_WRITE_DATE" />
+		<result property="boardViewCount" column="BOARD_VIEW_COUNT" />
+		<result property="boardCategory" column="BOARD_CATEGORY" />
+		<result property="boardTypeCode" column="BOARD_TYPE_CODE" />
+		<result property="memberNo" column="MEMBER_NO" />
+		<result property="boardName" column="BOARD_NAME" />
+
+		<collection property="imageList" ofType="BoardImg"
+			column="BOARD_NO" select="selectBoardImageList" />
+	</resultMap>
+
+	<!-- 게시글 목록 조회(썸네일 1장: order=0 조인) + 정렬(latest/view) -->
+	<select id="selectBoardList" resultType="Board">
+		SELECT
+		B.BOARD_NO,
+		B.BOARD_TITLE,
+		B.WRITER_COMPANY,
+		B.BOARD_WRITE_DATE,
+		B.BOARD_VIEW_COUNT,
+		B.BOARD_CATEGORY,
+		I.BOARD_IMG_PATH,
+		I.BOARD_IMG_RE
+		FROM BOARD B
+		LEFT JOIN BOARD_IMAGE I
+		ON (I.BOARD_NO = B.BOARD_NO AND
+		I.BOARD_IMG_ORDER = 0)
+		WHERE B.BOARD_DEL_FL = 'N'
+		AND B.BOARD_TYPE_CODE
+		= #{boardTypeCode}
+		<choose>
+			<when test="sort == 'view'">
+				ORDER BY B.BOARD_VIEW_COUNT DESC, B.BOARD_NO DESC
+			</when>
+			<otherwise>
+				ORDER BY B.BOARD_WRITE_DATE DESC, B.BOARD_NO DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 게시글 상세 조회(삭제글 제외) + 게시판 타입명(boardName) 포함 -->
+	<select id="selectBoardDetail" resultMap="boardDetailMap">
+		SELECT
+		B.BOARD_NO,
+		B.BOARD_TITLE,
+		B.BOARD_CONTENT,
+		B.WRITER_COMPANY,
+		B.BOARD_WRITE_DATE,
+		B.BOARD_VIEW_COUNT,
+		B.BOARD_CATEGORY,
+		B.BOARD_TYPE_CODE,
+		B.MEMBER_NO,
+		(SELECT BOARD_NAME FROM BOARD_TYPE BT
+		WHERE BT.BOARD_TYPE_CODE =
+		B.BOARD_TYPE_CODE) AS BOARD_NAME
+		FROM BOARD B
+		WHERE B.BOARD_DEL_FL = 'N'
+		AND B.BOARD_NO = #{boardNo}
+	</select>
+
+	<!-- 특정 게시글 이미지 목록 조회(ORDER 순) -->
+	<select id="selectBoardImageList" resultType="BoardImg">
+		SELECT
+		BOARD_IMG_NO,
+		BOARD_NO,
+		BOARD_IMG_PATH,
+		BOARD_IMG_OG,
+		BOARD_IMG_RE,
+		BOARD_IMG_ORDER
+		FROM BOARD_IMAGE
+		WHERE BOARD_NO = #{boardNo}
+		ORDER BY
+		BOARD_IMG_ORDER ASC
+	</select>
+
+	<!-- 조회수 증가 -->
+	<update id="updateViewCount">
+		UPDATE BOARD
+		SET BOARD_VIEW_COUNT = BOARD_VIEW_COUNT +
+		1
+		WHERE BOARD_NO = #{boardNo}
+	</update>
+
+	<!-- 게시글 등록(SEQ로 boardNo 생성) -->
+	<insert id="insertBoard" parameterType="Board">
+		<selectKey keyProperty="boardNo" resultType="int"
+			order="BEFORE">
+			SELECT SEQ_BOARD_NO.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO BOARD (
+		BOARD_NO,
+		BOARD_TYPE_CODE,
+		MEMBER_NO,
+		BOARD_TITLE,
+		BOARD_CONTENT,
+		BOARD_CATEGORY,
+		WRITER_COMPANY
+		) VALUES (
+		#{boardNo},
+		#{boardTypeCode},
+		#{memberNo},
+		#{boardTitle},
+		#{boardContent},
+		#{boardCategory},
+		#{writerCompany}
+		)
+	</insert>
+
+	<!-- 이미지 1장 등록 -->
+	<insert id="insertBoardImageOne" parameterType="BoardImg">
+		INSERT INTO
+		BOARD_IMAGE (
+		BOARD_IMG_NO,
+		BOARD_NO,
+		BOARD_IMG_PATH,
+		BOARD_IMG_OG,
+		BOARD_IMG_RE,
+		BOARD_IMG_ORDER
+		) VALUES (
+		SEQ_BOARD_IMG_NO.NEXTVAL,
+		#{boardNo},
+		#{boardImgPath},
+		#{boardImgOg},
+		#{boardImgRe},
+		#{boardImgOrder}
+		)
+	</insert>
+
+	<!-- 게시글 수정(텍스트) : 본인글만 -->
+	<update id="updateBoard" parameterType="Board">
+		UPDATE BOARD
+		SET
+		BOARD_TITLE = #{boardTitle},
+		BOARD_CONTENT = #{boardContent},
+		BOARD_CATEGORY = #{boardCategory},
+		WRITER_COMPANY = #{writerCompany},
+		BOARD_UPDATE_DATE = SYSDATE
+		WHERE
+		BOARD_NO = #{boardNo}
+		AND MEMBER_NO =
+		#{memberNo}
+		AND BOARD_DEL_FL = 'N'
+	</update>
+
+	<!-- ✅ 관리자: 게시글 수정(텍스트) : 모든 글 -->
+	<update id="adminUpdateBoard" parameterType="Board">
+		UPDATE BOARD
+		SET
+		BOARD_TITLE = #{boardTitle},
+		BOARD_CONTENT = #{boardContent},
+		BOARD_CATEGORY = #{boardCategory},
+		WRITER_COMPANY = #{writerCompany},
+		BOARD_UPDATE_DATE = SYSDATE
+		WHERE
+		BOARD_NO = #{boardNo}
+		AND BOARD_DEL_FL
+		= 'N'
+	</update>
+
+	<!-- 게시글 삭제(논리 삭제) : 본인글만 -->
+	<update id="deleteBoard">
+		UPDATE BOARD
+		SET BOARD_DEL_FL = 'Y'
+		WHERE BOARD_NO =
+		#{boardNo}
+		AND MEMBER_NO = #{memberNo}
+		AND BOARD_DEL_FL = 'N'
+	</update>
+
+	<!-- ✅ 관리자: 게시글 삭제(논리 삭제) : 모든 글 -->
+	<update id="adminDeleteBoard">
+		UPDATE BOARD
+		SET BOARD_DEL_FL = 'Y'
+		WHERE BOARD_NO =
+		#{boardNo}
+		AND BOARD_DEL_FL = 'N'
+	</update>
+
+	<!-- 해당 게시글 이미지 파일명(리네임) 전체 조회 -->
+	<select id="selectBoardImageRenames" resultType="string">
+		SELECT
+		BOARD_IMG_RE
+		FROM BOARD_IMAGE
+		WHERE BOARD_NO = #{boardNo}
+	</select>
+
+	<!-- 해당 게시글 이미지 전체 삭제 -->
+	<delete id="deleteBoardImages">
+		DELETE FROM BOARD_IMAGE
+		WHERE BOARD_NO = #{boardNo}
+	</delete>
+
+	<!-- 선택 이미지(IMG_NO 목록) 파일명 조회 -->
+	<select id="selectImageRenamesByNos" resultType="string">
+		SELECT BOARD_IMG_RE
+		FROM BOARD_IMAGE
+		WHERE BOARD_NO = #{boardNo}
+		AND
+		BOARD_IMG_NO IN
+		<foreach collection="deleteNos" item="no" open="(" close=")"
+			separator=",">
+			#{no}
+		</foreach>
+	</select>
+
+	<!-- 선택 이미지(IMG_NO 목록) DB 삭제 -->
+	<delete id="deleteImagesByNos">
+		DELETE FROM BOARD_IMAGE
+		WHERE BOARD_NO = #{boardNo}
+		AND BOARD_IMG_NO IN
+		<foreach collection="deleteNos" item="no" open="(" close=")"
+			separator=",">
+			#{no}
+		</foreach>
+	</delete>
+
+	<!-- 해당 게시글 이미지 개수 조회 -->
+	<select id="countImages" resultType="int">
+		SELECT COUNT(*)
+		FROM
+		BOARD_IMAGE
+		WHERE BOARD_NO = #{boardNo}
+	</select>
+
+	<!-- 이미지 order를 0부터 재정렬 -->
+	<update id="reorderImages">
+		MERGE INTO BOARD_IMAGE BI
+		USING (
+		SELECT
+		BOARD_IMG_NO,
+		ROW_NUMBER() OVER (ORDER BY BOARD_IMG_ORDER ASC, BOARD_IMG_NO ASC) - 1
+		AS
+		NEW_ORDER
+		FROM BOARD_IMAGE
+		WHERE BOARD_NO = #{boardNo}
+		) T
+		ON
+		(BI.BOARD_IMG_NO = T.BOARD_IMG_NO)
+		WHEN MATCHED THEN
+		UPDATE SET
+		BI.BOARD_IMG_ORDER = T.NEW_ORDER
+	</update>
+
+	<!-- 작성 게시글 조회 (기업회원: BOARD_TYPE_CODE=2 고정) -->
+	<select id="selectMyBoards" resultMap="boardDetailMap">
+		SELECT
+		B.BOARD_NO,
+		B.BOARD_TYPE_CODE,
+		B.MEMBER_NO,
+		B.BOARD_TITLE,
+		B.BOARD_CONTENT,
+		B.BOARD_WRITE_DATE,
+		B.BOARD_UPDATE_DATE,
+		B.BOARD_VIEW_COUNT,
+		B.BOARD_CATEGORY,
+		B.WRITER_COMPANY,
+		BT.BOARD_NAME
+		FROM BOARD B
+		JOIN
+		BOARD_TYPE BT
+		ON BT.BOARD_TYPE_CODE = B.BOARD_TYPE_CODE
+		WHERE
+		B.MEMBER_NO = #{memberNo}
+		AND B.BOARD_TYPE_CODE = 2
+		AND B.BOARD_DEL_FL =
+		'N'
+		ORDER BY B.BOARD_NO DESC
+	</select>
+
+</mapper>

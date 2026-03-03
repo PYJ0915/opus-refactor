@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout</title>
+
+  <!-- Icons / Font -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap"
+    rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/checkout.css" />
+</head>
+
+<body class="page">
+  <!-- HEADER -->
+  <header id="header" class="header">
+    <div class="header__inner">
+      <div class="header__left">
+        <a href="#" class="logo">OPUS</a>
+
+        <nav class="nav" aria-label="주요 메뉴">
+          <a href="#" class="nav__link">What's ON</a>
+          <a href="#" class="nav__link">게시판</a>
+          <a href="#" class="nav__link nav__link--active">굿즈</a>
+          <a href="#" class="nav__link">경매</a>
+        </nav>
+      </div>
+
+      <div class="header__right" aria-label="유틸 메뉴">
+        <button class="icon-btn" type="button" aria-label="찜">
+          <i class="fa-solid fa-heart"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="장바구니">
+          <i class="fa-solid fa-shopping-cart"></i>
+        </button>
+        <button class="icon-btn" type="button" aria-label="마이페이지">
+          <i class="fa-solid fa-user"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main checkout">
+    <!-- title -->
+    <section class="hero">
+      <h1 class="hero__title">결제</h1>
+      <p class="hero__sub">배송 정보와 결제 수단을 확인한 뒤 주문을 완료해 주세요.</p>
+    </section>
+
+    <section class="wrap">
+      <!-- LEFT -->
+      <div class="left">
+        <!-- 주문 상품 요약(간단) -->
+        <section class="card">
+          <div class="card__head">
+            <h2 class="card__title">주문 상품</h2>
+            <a href="#" class="card__link">장바구니로 돌아가기</a>
+          </div>
+
+          <div class="mini-items">
+            <div class="mini-item">
+              <div class="mini-item__thumb">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/a7f5aa7753-078f8203afee3d340d1f.png"
+                  alt="레미제라블 티셔츠" />
+              </div>
+              <div class="mini-item__info">
+                <p class="mini-item__name">레미제라블 티셔츠</p>
+                <p class="mini-item__meta">옵션: L / 블랙 · 수량 1</p>
+              </div>
+              <p class="mini-item__price">45,000원</p>
+            </div>
+
+            <div class="mini-item">
+              <div class="mini-item__thumb">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/09fbe5dfb3-854f6874ce67ddda6d1e.png"
+                  alt="오페라의 유령 포스터" />
+              </div>
+              <div class="mini-item__info">
+                <p class="mini-item__name">오페라의 유령 포스터</p>
+                <p class="mini-item__meta">옵션: A3 / 액자(블랙) · 수량 2</p>
+              </div>
+              <p class="mini-item__price">50,000원</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 배송지 -->
+        <section class="card">
+          <div class="card__head">
+            <div>
+              <h2 class="card__title">배송 정보</h2>
+              <p class="card__desc">정확한 배송을 위해 정보를 확인해 주세요.</p>
+            </div>
+
+            <button class="ghost-btn" type="button" id="openAddressModal">
+              저장 배송지 불러오기
+            </button>
+          </div>
+
+
+
+          <form class="form" action="#" method="post">
+            <div class="grid">
+              <div class="field">
+                <label class="label" for="receiver">수령인</label>
+                <input class="input" id="receiver" type="text" placeholder="이름" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="phone">연락처</label>
+                <input class="input" id="phone" type="tel" placeholder="010-0000-0000" />
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="field field--wide">
+                <label class="label" for="addr1">주소</label>
+                <div class="addr-row">
+                  <input class="input" id="addr1" type="text" placeholder="우편번호" />
+                  <button class="btn btn--outline btn--sm" type="button">주소 검색</button>
+                </div>
+              </div>
+
+              <div class="field field--wide">
+                <input class="input" type="text" placeholder="기본 주소" />
+              </div>
+
+              <div class="field field--wide">
+                <input class="input" type="text" placeholder="상세 주소" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="memo">배송 메모</label>
+              <select class="select" id="memo">
+                <option value="">선택 안 함</option>
+                <option>문 앞에 놓아주세요</option>
+                <option>경비실에 맡겨주세요</option>
+                <option>배송 전 연락 부탁드려요</option>
+                <option>직접 입력</option>
+              </select>
+              <textarea class="textarea" placeholder="직접 입력(선택)" rows="3"></textarea>
+            </div>
+          </form>
+        </section>
+
+        <!-- 배송 옵션 / 배송비 -->
+        <section class="card">
+          <div class="card__head">
+            <h2 class="card__title">배송</h2>
+            <p class="card__desc">출고 전 품질 점검 후 발송됩니다.</p>
+          </div>
+
+          <div class="ship">
+            <div class="ship__row">
+              <span class="k">배송 방법</span>
+              <span class="v">택배 배송</span>
+            </div>
+            <div class="ship__row">
+              <span class="k">배송 지역</span>
+              <span class="v">대한민국 전 지역</span>
+            </div>
+            <div class="ship__row">
+              <span class="k">배송비</span>
+              <span class="v">
+                <strong>3,000원</strong>
+                <span class="muted">· 일정 금액 이상 구매 시 무료</span>
+              </span>
+            </div>
+            <div class="ship__row">
+              <span class="k">배송 기간</span>
+              <span class="v">결제 완료 후 영업일 기준 1–3일 이내 출고</span>
+            </div>
+
+            <div class="notice">
+              <i class="fa-solid fa-circle-info"></i>
+              <p>
+                주문 폭주, 제작 일정, 택배사 사정에 따라 배송이 지연될 수 있으며,
+                지연 발생 시 개별 안내드립니다.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 결제 수단 -->
+        <section class="card">
+          <div class="card__head">
+            <h2 class="card__title">결제 수단</h2>
+            <p class="card__desc">원하시는 결제 방법을 선택해 주세요.</p>
+          </div>
+
+          <div class="pay">
+            <div class="pay__methods">
+              <label class="radio">
+                <input type="radio" name="payMethod" checked />
+                <span>카드 결제</span>
+              </label>
+              <label class="radio">
+                <input type="radio" name="payMethod" />
+                <span>간편 결제</span>
+              </label>
+              <label class="radio">
+                <input type="radio" name="payMethod" />
+                <span>무통장 입금</span>
+              </label>
+            </div>
+
+            <div class="pay__box">
+              <div class="grid">
+                <div class="field">
+                  <label class="label" for="email">이메일(영수증)</label>
+                  <input class="input" id="email" type="email" placeholder="example@opus.com" />
+                </div>
+
+                <div class="field">
+                  <label class="label" for="name">주문자</label>
+                  <input class="input" id="name" type="text" placeholder="이름" />
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- 정책/약관 -->
+        <section class="card">
+          <div class="card__head">
+            <h2 class="card__title">배송/교환/반품 정책</h2>
+            <p class="card__desc">OPUS는 세련된 경험과 신뢰 가능한 운영 기준을 함께 제공합니다.</p>
+          </div>
+
+          <details class="policy" open>
+            <summary class="policy__summary">배송 안내</summary>
+            <div class="policy__body">
+              <ul class="policy__list">
+                <li><strong>배송 방법:</strong> 택배 배송</li>
+                <li><strong>배송 지역:</strong> 대한민국 전 지역</li>
+                <li><strong>배송 비용:</strong> 기본 배송비 3,000원 / 일정 금액 이상 구매 시 무료(상세 기준은 결제 페이지 참고)</li>
+                <li><strong>배송 기간:</strong> 결제 완료 후 영업일 기준 1–3일 이내 출고 (출고 후 1–2일 추가 소요 가능)</li>
+              </ul>
+              <p class="policy__note">
+                ※ 주문 폭주, 제작 일정, 택배사 사정에 따라 배송이 지연될 수 있으며, 지연 발생 시 개별 안내드립니다.
+              </p>
+            </div>
+          </details>
+
+          <details class="policy">
+            <summary class="policy__summary">교환 및 반품 안내</summary>
+            <div class="policy__body">
+              <div class="policy__cols">
+                <div>
+                  <p class="policy__lead">교환·반품이 가능한 경우</p>
+                  <ul class="policy__list">
+                    <li>상품 수령일로부터 7일 이내 요청</li>
+                    <li>착용/사용 흔적 및 훼손이 없는 경우</li>
+                    <li>구성품(케이스, 포장재, 사은품 등) 보존</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="policy__lead">교환·반품이 불가능한 경우</p>
+                  <ul class="policy__list">
+                    <li>부주의로 훼손되거나 가치가 감소한 경우</li>
+                    <li>착용 또는 사용 흔적이 확인되는 경우</li>
+                    <li>수령 후 7일 경과</li>
+                    <li>주문 제작/별도 안내된 교환·반품 불가 상품</li>
+                  </ul>
+                </div>
+              </div>
+
+              <p class="policy__note">
+                <strong>배송비:</strong> 단순 변심은 왕복 배송비 고객 부담 / 불량·오배송은 OPUS 부담<br />
+                ※ 반품 배송비는 최초 배송비 결제 여부에 따라 차감 또는 별도 입금 안내될 수 있습니다.
+              </p>
+
+              <ol class="policy__steps">
+                <li>고객센터 또는 마이페이지를 통해 교환·반품 신청</li>
+                <li>안내에 따라 상품 회수 진행</li>
+                <li>상품 상태 확인 후 교환 또는 환불 처리</li>
+              </ol>
+
+              <p class="policy__note">※ 사전 접수 없이 임의 반송 시 처리가 지연될 수 있습니다.</p>
+            </div>
+          </details>
+
+          <details class="policy">
+            <summary class="policy__summary">환불 안내</summary>
+            <div class="policy__body">
+              <p class="policy__note">
+                반품 상품이 OPUS에 도착하여 검수 완료 후 영업일 기준 3–5일 이내 환불이 진행됩니다.
+                카드사 및 결제 수단에 따라 실제 환불 시점은 다소 차이가 있을 수 있습니다.
+              </p>
+              <p class="policy__note">
+                OPUS는 출고 전 꼼꼼하게 검수하며, 고객님께 전달되는 순간까지 품질을 가장 중요하게 생각합니다.
+                정책 관련 문의는 고객센터로 편하게 문의해 주세요.
+              </p>
+            </div>
+          </details>
+
+          <div class="agree">
+            <label class="check">
+              <input type="checkbox" />
+              <span>위 정책 및 결제 진행에 동의합니다.</span>
+            </label>
+            <label class="check">
+              <input type="checkbox" />
+              <span>개인정보 수집·이용 및 제3자 제공에 동의합니다.</span>
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT -->
+      <aside class="right" aria-label="주문 요약">
+        <div class="summary">
+          <h2 class="summary__title">주문 요약</h2>
+
+          <div class="summary__rows">
+            <div class="summary__row">
+              <span class="k">상품금액</span>
+              <span class="v">95,000원</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">배송비</span>
+              <span class="v">3,000원</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">할인</span>
+              <span class="v">0원</span>
+            </div>
+          </div>
+
+          <div class="summary__total">
+            <span class="k">총 결제 금액</span>
+            <span class="v">98,000원</span>
+          </div>
+
+          <button class="btn btn--solid btn--block" type="button">
+            98,000원 결제하기
+          </button>
+
+          <p class="summary__note">
+            결제하기 버튼을 누르면 주문이 확정되며, 결제 수단 인증 단계로 이동할 수 있습니다.
+          </p>
+
+          <div class="secure">
+            <div class="secure__item">
+              <i class="fa-solid fa-shield-halved"></i>
+              <span>보안 결제</span>
+            </div>
+            <div class="secure__item">
+              <i class="fa-solid fa-box"></i>
+              <span>출고 전 검수</span>
+            </div>
+            <div class="secure__item">
+              <i class="fa-solid fa-truck-fast"></i>
+              <span>빠른 출고</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="footer" class="footer">
+    <div class="footer__inner">
+      <div class="footer__grid">
+        <div>
+          <h3 class="footer__brand">OPUS</h3>
+          <p class="footer__desc">세련된 경험과 신뢰 가능한 운영 기준</p>
+        </div>
+
+        <div>
+          <h4 class="footer__title">서비스</h4>
+          <ul class="footer__list">
+            <li><a href="#">What's ON</a></li>
+            <li><a href="#">게시판</a></li>
+            <li><a href="#">굿즈</a></li>
+            <li><a href="#">경매</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer__title">고객지원</h4>
+          <ul class="footer__list">
+            <li><a href="#">공지사항</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">1:1 문의</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer__title">정보</h4>
+          <ul class="footer__list">
+            <li><a href="#">이용약관</a></li>
+            <li><a href="#">개인정보처리방침</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p>© 2024 OPUS. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 저장 배송지 선택 모달 -->
+  <div class="modal-overlay popup-hidden" id="addressModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addressModalTitle">
+      <div class="modal__header">
+        <h3 class="modal__title" id="addressModalTitle">저장된 배송지</h3>
+        <button class="modal__close" type="button" aria-label="닫기" id="closeAddressModal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal__body">
+        <div class="modal__tools">
+          <input class="input modal__search" type="text" placeholder="배송지명/주소 검색" />
+          <button class="btn btn--outline btn--sm addr--btn" type="button">배송지 관리</button>
+        </div>
+
+        <div class="addr-list">
+          <!-- item 1 -->
+          <label class="addr-item addr-item--active">
+            <input type="radio" name="savedAddr" checked />
+            <div class="addr-item__box">
+              <div class="addr-item__top">
+                <div class="addr-item__badges">
+                  <span class="badge badge--dark">기본</span>
+                  <span class="badge">최근</span>
+                </div>
+                <span class="addr-item__name">집</span>
+              </div>
+
+              <p class="addr-item__who">유진 박 · 010-0000-0000</p>
+              <p class="addr-item__addr">(06236) 서울 강남구 테헤란로 123, 101동 1001호</p>
+            </div>
+          </label>
+
+          <!-- item 2 -->
+          <label class="addr-item">
+            <input type="radio" name="savedAddr" />
+            <div class="addr-item__box">
+              <div class="addr-item__top">
+                <div class="addr-item__badges">
+                  <span class="badge">저장</span>
+                </div>
+                <span class="addr-item__name">회사</span>
+              </div>
+
+              <p class="addr-item__who">유진 박 · 010-0000-0000</p>
+              <p class="addr-item__addr">(48058) 부산 해운대구 센텀중앙로 45, 302호</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal__footer">
+        <button class="btn btn--outline" type="button" id="cancelAddressSelect">취소</button>
+        <button class="btn btn--solid" type="button" id="applyAddressSelect">선택한 배송지 적용</button>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+
+
+<script src="./js/checkout.js"></script>
+</html>

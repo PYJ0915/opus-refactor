@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="nknk.opus.project.chatbot.model.mapper.ChatbotMapper">
+
+	<resultMap id="chatHistoryResultMap" type="ChatHistory">
+        <id property="chatNo" column="CHAT_NO"/>
+        <result property="conversationId" column="CONVERSATION_ID"/>
+        <result property="role" column="ROLE"/>
+        <result property="content" column="CONTENT"/>
+        <result property="createdAt" column="CREATED_AT"/>
+    </resultMap>
+
+    <insert id="insertChatHistory">
+        <selectKey keyProperty="chatNo" resultType="int" order="BEFORE">
+            SELECT SEQ_CHAT.NEXTVAL FROM DUAL
+        </selectKey>
+        
+        INSERT INTO CHAT_HISTORY (
+            CHAT_NO,
+            CONVERSATION_ID,
+            ROLE,
+            CONTENT,
+            CREATED_AT
+        ) VALUES (
+            #{chatNo},
+            #{conversationId},
+            #{role},
+            #{content},
+            SYSDATE
+        )
+    </insert>
+
+    <select id="getChatHistory" resultMap="chatHistoryResultMap">
+        SELECT * FROM (
+            SELECT 
+                CHAT_NO,
+                CONVERSATION_ID,
+                ROLE,
+                CONTENT,
+                TO_CHAR(CREATED_AT, 'YYYY-MM-DD HH24:MI:SS') AS CREATED_AT
+            FROM CHAT_HISTORY
+            WHERE CONVERSATION_ID = #{conversationId}
+            ORDER BY CREATED_AT DESC
+        )
+        WHERE ROWNUM &lt;= #{limit}
+        ORDER BY CHAT_NO ASC
+    </select>
+
+</mapper>

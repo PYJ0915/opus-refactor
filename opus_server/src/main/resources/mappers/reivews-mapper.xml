@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="nknk.opus.project.reviews.model.mapper.ReviewsMapper">
+	<insert id="addReview">
+		INSERT INTO "REVIEWS"
+		VALUES(
+			SEQ_REVIEWS_NO.NEXTVAL,
+			#{memberNo},
+			#{stageNo},
+			#{reviewContent},
+			SYSDATE,
+			NULL,
+			'N'
+		)
+	</insert>
+	
+	<select id="getReviews">
+		SELECT REVIEW_NO, MEMBER_NO, REVIEW_CONTENT, REVIEW_WRITE_DATE, MEMBER_EMAIL
+		FROM REVIEWS
+		JOIN MEMBER USING (MEMBER_NO)
+		WHERE STAGE_NO = #{stageNo}
+		AND REVIEW_DEL_FL = 'N'
+		ORDER BY REVIEW_WRITE_DATE DESC
+	</select>
+	
+	<select id="getReviewsCount">
+		SELECT COUNT(*)
+		FROM REVIEWS
+		WHERE STAGE_NO = #{stageNo}
+		AND REVIEW_DEL_FL = 'N'
+	</select>
+	
+	<select id="getWriterNo">
+		SELECT MEMBER_NO
+		FROM REVIEWS
+		WHERE REVIEW_NO = #{reviewNo}
+	</select>
+	
+	<update id="updateReview">
+		UPDATE REVIEWS SET
+		REVIEW_CONTENT = #{reviewContent},
+      	REVIEW_UPDATE_DATE = SYSDATE
+      	WHERE REVIEW_NO = #{reviewNo}
+	</update>
+	
+	<update id="deleteReview">
+		UPDATE REVIEWS SET
+		REVIEW_DEL_FL = 'Y',
+      	REVIEW_UPDATE_DATE = SYSDATE
+		WHERE REVIEW_NO = #{reviewNo}
+	</update>
+	
+	<insert id="addReport">
+		INSERT INTO REPORT(REPORT_NO, REPORT_REASON, REPORT_DETAIL, REPORT_DATE, REPORT_STATUS, REPORTER_NO, REPORTED_NO, REVIEW_NO)
+		VALUES(SEQ_REPORT_NO.NEXTVAL, #{reportReason}, #{reportDetail}, SYSDATE, 'PENDING', #{reporterNo}, #{reportedNo}, #{reviewNo})
+	</insert>
+</mapper>

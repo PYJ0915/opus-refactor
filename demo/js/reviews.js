@@ -1,4 +1,3 @@
-// reviews.js
 (function () {
   const writeBtn = document.getElementById("write-review-btn");
   const cancelBtn = document.getElementById("cancel-review-btn");
@@ -40,9 +39,6 @@
     btn.addEventListener("click", () => {
       sortButtons.forEach((b) => b.classList.remove("is-active"));
       btn.classList.add("is-active");
-
-      // 여기서 실제 정렬 로직 넣고 싶으면 data-sort 값을 사용하면 됨
-      // const sortType = btn.dataset.sort; // 'latest' | 'popular'
     });
   });
 })();

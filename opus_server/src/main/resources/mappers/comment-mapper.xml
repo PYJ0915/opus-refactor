@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="nknk.opus.project.reviews.model.mapper.CommentMapper">
+
+	<select id="getComment">
+		SELECT COMMENT_NO, REVIEW_NO, MEMBER_NO, COMMENT_CONTENT, COMMENT_WRITE_DATE, MEMBER_EMAIL
+    	FROM COMMENTS
+    	JOIN MEMBER USING (MEMBER_NO)
+    	WHERE REVIEW_NO = #{reviewNo}
+      	AND COMMENT_DEL_FL = 'N'
+    	ORDER BY COMMENT_WRITE_DATE ASC
+	</select>
+	
+	<insert id="addComment">
+		INSERT INTO COMMENTS (COMMENT_NO, REVIEW_NO, MEMBER_NO, COMMENT_CONTENT, COMMENT_WRITE_DATE, COMMENT_DEL_FL)
+    	VALUES (
+        SEQ_COMMENT_NO.NEXTVAL,
+        #{reviewNo},
+        #{memberNo},
+        #{commentContent},
+        SYSDATE,
+        'N')
+	</insert>
+	
+	<select id="getWriterNo">
+	    SELECT MEMBER_NO
+    	FROM COMMENTS
+    	WHERE COMMENT_NO = #{commentNo}
+	</select>
+	
+	<update id="deleteComment">
+		UPDATE COMMENTS SET
+    	COMMENT_DEL_FL = 'Y',
+        COMMENT_UPDATE_DATE = SYSDATE
+    	WHERE COMMENT_NO = #{commentNo}
+	</update>
+	
+	<update id="updateComment">
+		UPDATE COMMENTS SET
+    	COMMENT_CONTENT = #{commentContent},
+        COMMENT_UPDATE_DATE = SYSDATE
+    	WHERE COMMENT_NO = #{commentNo}
+	</update>
+	
+	<select id="getCommentCount">
+		SELECT COUNT(*)
+	    FROM COMMENTS
+    	WHERE REVIEW_NO = #{reviewNo}
+	    AND COMMENT_DEL_FL = 'N'
+	</select>
+</mapper>

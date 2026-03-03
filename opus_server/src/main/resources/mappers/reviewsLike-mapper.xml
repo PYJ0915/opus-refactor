@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="nknk.opus.project.reviews.model.mapper.ReviewLikeMapper">
+
+	<!-- 좋아요 여부(내가 눌렀는지) -->
+    <select id="checkLike">
+       	SELECT COUNT(*)
+        FROM REVIEWS_LIKE
+        WHERE REVIEWS_NO = #{reviewNo}
+        AND MEMBER_NO = #{memberNo}
+    </select>
+
+    <!-- 좋아요 추가 -->
+    <insert id="insertLike">
+        INSERT INTO REVIEWS_LIKE (REVIEWS_NO, MEMBER_NO)
+        VALUES (#{reviewNo}, #{memberNo})
+    </insert>
+
+    <!-- 좋아요 취소 -->
+    <delete id="deleteLike">
+        DELETE FROM REVIEWS_LIKE
+        WHERE REVIEWS_NO = #{reviewNo}
+        AND MEMBER_NO = #{memberNo}
+    </delete>
+
+    <!-- 좋아요 개수 -->
+    <select id="getLikeCount" resultType="int">
+        SELECT COUNT(*)
+        FROM REVIEWS_LIKE
+        WHERE REVIEWS_NO = #{reviewNo}
+    </select>
+</mapper>

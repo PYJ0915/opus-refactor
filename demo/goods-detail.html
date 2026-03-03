@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,12 +9,13 @@
   <!-- Icons / Font -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script>window.FontAwesomeConfig = { autoReplaceSvg: "nest" };</script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous"
+    referrerpolicy="no-referrer"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
 
   <!-- CSS -->
   <link rel="stylesheet" href="./css/goods-detail.css" />
@@ -53,12 +55,9 @@
       <!-- Images -->
       <div id="product-images" class="gallery">
         <div class="gallery__main">
-          <img
-            id="mainImage"
-            class="gallery__main-img"
+          <img id="mainImage" class="gallery__main-img"
             src="https://storage.googleapis.com/uxpilot-auth.appspot.com/274e29d035-3cef6d452c66fa46f91f.png"
-            alt="premium musical merchandise poster art print in elegant frame on white background"
-          />
+            alt="premium musical merchandise poster art print in elegant frame on white background" />
         </div>
       </div>
 
@@ -85,13 +84,25 @@
 
         <div id="product-options" class="options">
           <div class="field">
-            <label class="field__label">옵션 선택</label>
+            <label className="field__label">사이즈 선택</label>
             <div class="select-wrap">
               <select id="optionSelect" class="select">
-                <option value="">옵션을 선택해주세요</option>
+                <option value="">사이즈를 선택해주세요</option>
                 <option value="A4">A4 사이즈 (21 x 29.7cm)</option>
                 <option value="A3">A3 사이즈 (29.7 x 42cm)</option>
                 <option value="A2">A2 사이즈 (42 x 59.4cm)</option>
+              </select>
+              <i class="fa-solid fa-chevron-down select__icon" aria-hidden="true"></i>
+            </div>
+          </div>
+          <div class="field">
+            <label className="field__label">색상 선택</label>
+            <div class="select-wrap">
+              <select id="optionSelect" class="select">
+                <option value="">색상을 선택해주세요</option>
+                <option value="A4">Blue</option>
+                <option value="A3">Black</option>
+                <option value="A2">Red</option>
               </select>
               <i class="fa-solid fa-chevron-down select__icon" aria-hidden="true"></i>
             </div>
@@ -159,10 +170,8 @@
               </p>
 
               <div class="detail-image">
-                <img
-                  src="https://storage.googleapis.com/uxpilot-auth.appspot.com/a836af4842-f9fc24c0abdad5a48c3c.png"
-                  alt="musical les miserables poster art detail high quality print"
-                />
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/a836af4842-f9fc24c0abdad5a48c3c.png"
+                  alt="musical les miserables poster art detail high quality print" />
               </div>
 
               <h3 class="section-subtitle">제품 특징</h3>
@@ -174,10 +183,8 @@
               </ul>
 
               <div class="detail-image">
-                <img
-                  src="https://storage.googleapis.com/uxpilot-auth.appspot.com/7e3b69a2e4-5b2e411b3921c96684f3.png"
-                  alt="framed poster hanging on modern white wall interior design"
-                />
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/7e3b69a2e4-5b2e411b3921c96684f3.png"
+                  alt="framed poster hanging on modern white wall interior design" />
               </div>
 
               <h3 class="section-subtitle">제품 사양</h3>
@@ -222,8 +229,120 @@
         <!-- SHIPPING -->
         <div class="tab-panel" id="tab-shipping">
           <div class="detail-wrap">
-            <h2 class="section-title">배송/교환/반품</h2>
-            <p class="muted">여기에 배송/교환/반품 정책 내용을 넣으면 돼.</p>
+            <header class="policy__header">
+              <h2 class="policy__title">배송/교환/반품 정책</h2>
+              <p class="policy__subtitle">OPUS는 세련된 경험과 신뢰 가능한 운영 기준을 함께 제공합니다.</p>
+            </header>
+            <!-- OPUS 배송/교환/반품 정책 (Copy & Paste) -->
+            <section class="policy policy--opus" aria-label="OPUS 배송/교환/반품 정책">
+              <article class="policy__section" id="shipping">
+                <h3 class="policy__section-title">배송 안내</h3>
+                <p class="policy__text">
+                  OPUS는 주문 확인 후, 상품의 품질을 한 번 더 점검한 뒤 출고됩니다.
+                </p>
+
+                <ul class="policy__list">
+                  <li><strong>배송 방법</strong>: 택배 배송</li>
+                  <li><strong>배송 지역</strong>: 대한민국 전 지역</li>
+                  <li>
+                    <strong>배송 비용</strong>:
+                    <ul class="policy__sublist">
+                      <li>기본 배송비 3,000원</li>
+                      <li>일정 금액 이상 구매 시 무료 배송 (상세 기준은 결제 페이지 참고)</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <strong>배송 기간</strong>:
+                    <ul class="policy__sublist">
+                      <li>결제 완료 후 영업일 기준 1–3일 이내 출고</li>
+                      <li>출고 후 배송까지는 지역에 따라 1–2일 정도 소요될 수 있습니다.</li>
+                    </ul>
+                  </li>
+                </ul>
+
+                <p class="policy__note">
+                  ※ 주문 폭주, 제작 일정, 택배사 사정에 따라 배송이 지연될 수 있으며, 지연이 발생할 경우 개별 안내드립니다.
+                </p>
+              </article>
+
+              <article class="policy__section" id="exchange-return">
+                <h3 class="policy__section-title">교환 및 반품 안내</h3>
+                <p class="policy__text">
+                  OPUS는 고객님의 만족스러운 쇼핑 경험을 위해 아래와 같은 기준으로 교환·반품을 운영합니다.
+                </p>
+
+                <div class="policy__grid">
+                  <section class="policy__card" aria-label="교환·반품 가능">
+                    <h4 class="policy__card-title">교환·반품이 가능한 경우</h4>
+                    <ul class="policy__list">
+                      <li>상품 수령일로부터 <strong>7일 이내</strong> 교환·반품 요청 시</li>
+                      <li>상품의 <strong>착용 흔적, 사용 흔적, 훼손</strong>이 없는 경우</li>
+                      <li>구성품(케이스, 포장재, 사은품 등)이 모두 보존된 상태</li>
+                    </ul>
+                  </section>
+
+                  <section class="policy__card" aria-label="교환·반품 불가">
+                    <h4 class="policy__card-title">교환·반품이 불가능한 경우</h4>
+                    <ul class="policy__list">
+                      <li>고객님의 부주의로 상품이 훼손되거나 가치가 감소한 경우</li>
+                      <li>착용 또는 사용 흔적이 확인되는 경우</li>
+                      <li>상품 수령 후 7일이 경과한 경우</li>
+                      <li>주문 제작 상품 또는 별도 안내된 교환·반품 불가 상품</li>
+                    </ul>
+                  </section>
+                </div>
+              </article>
+
+              <article class="policy__section" id="fees">
+                <h3 class="policy__section-title">교환·반품 배송비 안내</h3>
+
+                <ul class="policy__list">
+                  <li>
+                    <strong>단순 변심</strong>에 의한 교환·반품:
+                    <span>왕복 배송비 고객 부담</span>
+                  </li>
+                  <li>
+                    <strong>상품 불량 또는 오배송</strong>의 경우:
+                    <span>배송비 전액 OPUS 부담</span>
+                  </li>
+                </ul>
+
+                <p class="policy__note">
+                  ※ 반품 배송비는 최초 배송비 결제 여부에 따라 차감 또는 별도 입금 안내될 수 있습니다.
+                </p>
+              </article>
+
+              <article class="policy__section" id="process">
+                <h3 class="policy__section-title">교환·반품 절차</h3>
+
+                <ol class="policy__steps">
+                  <li>고객센터 또는 마이페이지를 통해 교환·반품 신청</li>
+                  <li>안내에 따라 상품 회수 진행</li>
+                  <li>상품 상태 확인 후 교환 또는 환불 처리</li>
+                </ol>
+
+                <p class="policy__note">
+                  ※ 사전 접수 없이 임의로 반송하신 경우 처리가 지연될 수 있습니다.
+                </p>
+              </article>
+
+              <article class="policy__section" id="refund">
+                <h3 class="policy__section-title">환불 안내</h3>
+
+                <ul class="policy__list">
+                  <li>반품 상품이 OPUS에 도착하여 검수 완료 후 <strong>영업일 기준 3–5일 이내</strong> 환불이 진행됩니다.</li>
+                  <li>카드사 및 결제 수단에 따라 실제 환불 시점은 다소 차이가 있을 수 있습니다.</li>
+                </ul>
+              </article>
+
+              <footer class="policy__footer">
+                <h3 class="policy__section-title">안내사항</h3>
+                <p class="policy__text">
+                  OPUS는 모든 상품을 출고 전 꼼꼼하게 검수하고 있으며, 고객님께 전달되는 순간까지 품질을 가장 중요하게 생각합니다.<br />
+                  정책 관련 문의는 언제든 고객센터를 통해 편하게 문의해 주세요.
+                </p>
+              </footer>
+            </section>
           </div>
         </div>
       </div>
@@ -280,4 +399,5 @@
   <!-- JS -->
   <script src="./js/goods-detail.js"></script>
 </body>
+
 </html>

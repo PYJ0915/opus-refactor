@@ -1,0 +1,286 @@
+/* proposalsWrite.css (정리본) */
+
+.proposals-write-page{
+  /* ✅ 공통 변수 */
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --black: #111;
+  --radius: 12px;
+  --control-h: 38px;
+
+  padding: 80px 0;
+  background-color: #fff;
+}
+
+.proposals-write-page .write-container{
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+.proposals-write-page .write-header{
+  border-bottom: 2px solid var(--black);
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+}
+
+.proposals-write-page .write-header h1{
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.proposals-write-page .write-sub{
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* 상단 구분/카테고리 2칸 */
+.proposals-write-page .form-section{
+  display: flex;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.proposals-write-page .form-group{
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.proposals-write-page .form-group label{
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* 라디오 */
+.proposals-write-page .radio-group{
+  display: flex;
+  gap: 20px;
+  height: var(--control-h);
+  align-items: center;
+}
+
+/* input/select 공통 */
+.proposals-write-page .pp-input,
+.proposals-write-page .pp-select{
+  width: 100%;
+  height: var(--control-h);
+  padding: 0 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  outline: none;
+  font-weight: 700; /* ✅ 톤 통일 */
+}
+
+.proposals-write-page .pp-select option{
+  font-weight: 700;
+}
+
+/* textarea */
+.proposals-write-page .pp-textarea{
+  width: 100%;
+  height: 400px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  resize: none;
+  outline: none;
+  line-height: 1.5; /* ✅ 가독성 */
+}
+
+.proposals-write-page .pp-textarea::placeholder{
+  font-size: 16px;
+}
+
+/* focus */
+.proposals-write-page .pp-input:focus-visible,
+.proposals-write-page .pp-select:focus-visible,
+.proposals-write-page .pp-textarea:focus-visible{
+  border-color: var(--black);
+  box-shadow: 0 0 0 3px rgba(17,17,17,.12);
+}
+
+/* 하단 버튼 */
+.proposals-write-page .write-footer{
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+.proposals-write-page .btn-cancel,
+.proposals-write-page .btn-submit{
+  padding: 12px 40px;
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.proposals-write-page .btn-cancel{
+  background: #fff;
+  border: 1px solid var(--border);
+  color: #666;
+}
+
+.proposals-write-page .btn-submit{
+  background: var(--black);
+  color: #fff;
+  border: none;
+}
+
+/* ================= 이미지 업로드 UI ================= */
+
+.proposals-write-page .label-row{
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.proposals-write-page .hint{
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.proposals-write-page .upload-row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.proposals-write-page .upload-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--control-h);
+  padding: 0 20px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+
+.proposals-write-page .upload-btn input{
+  display: none;
+}
+
+.proposals-write-page .upload-help{
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* 미리보기 그리드 */
+.proposals-write-page .preview-grid{
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.proposals-write-page .preview-item{
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #f3f4f6;
+  min-height: 100px;
+  aspect-ratio: 3 / 4; /* ✅ 비율은 컨테이너가 가짐 */
+}
+
+.proposals-write-page .preview-item img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.proposals-write-page .preview-remove{
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(17, 17, 17, 0.55);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.proposals-write-page .preview-badge{
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.75);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* 삭제 예정 시 흐리게 */
+.proposals-write-page .preview-item.is-deleting{
+  opacity: 0.4;
+  filter: grayscale(60%);
+}
+
+/* ================= Responsive ================= */
+
+@media (max-width: 1100px){
+  .proposals-write-page .preview-grid{
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 860px){
+  .proposals-write-page .write-container{
+    padding: 0 20px;
+  }
+
+  .proposals-write-page .form-section{
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .proposals-write-page .pp-textarea{
+    height: 320px;
+  }
+
+  .proposals-write-page .preview-grid{
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 520px){
+  .proposals-write-page{
+    padding: 64px 0;
+  }
+
+  .proposals-write-page .write-container{
+    padding: 0 16px;
+  }
+
+  .proposals-write-page .write-footer{
+    flex-direction: column;
+  }
+
+  .proposals-write-page .btn-cancel,
+  .proposals-write-page .btn-submit{
+    width: 100%;
+  }
+
+  .proposals-write-page .preview-grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

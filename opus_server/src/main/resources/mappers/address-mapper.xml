@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper
+	namespace="nknk.opus.project.address.model.mapper.AddressMapper">
+
+	<select id="selectAddresses">
+		SELECT ADDRESS_NO, RECIPIENT, RECIPIENT_TEL,
+		POSTCODE,
+		BASIC_ADDRESS, DETAIL_ADDRESS, IS_DEFAULT, DELIVERY_REQ
+		FROM
+		ADDRESS
+		WHERE MEMBER_NO =
+		#{memberNo}
+	</select>
+
+	<insert id="addAddress">
+		INSERT INTO ADDRESS VALUES(
+		SEQ_ADDRESS.NEXTVAL,
+		#{memberNo}, #{recipient}, #{recipientTel},
+		#{postcode},
+		#{basicAddress}, #{detailAddress}, DEFAULT, #{deliveryReq}, SYSDATE,
+		NULL)
+	</insert>
+
+	<update id="updateAddress">
+		UPDATE ADDRESS SET
+		RECIPIENT = #{recipient},
+		RECIPIENT_TEL = #{recipientTel},
+		POSTCODE = #{postcode},
+		BASIC_ADDRESS =
+		#{basicAddress},
+		DETAIL_ADDRESS = #{detailAddress},
+		DELIVERY_REQ =
+		#{deliveryReq},
+		ADDRESS_UPDATE_DATE = SYSDATE
+		WHERE ADDRESS_NO =
+		#{addressNo}
+		AND MEMBER_NO = #{memberNo}
+	</update>
+
+	<delete id="deleteAddress">
+		DELETE FROM ADDRESS WHERE ADDRESS_NO = #{addressNo}
+		AND MEMBER_NO = #{memberNo}
+	</delete>
+
+	<!-- 기본 배송지 해제 -->
+	<update id="clearDefaultAddress">
+		UPDATE ADDRESS SET IS_DEFAULT = 'N'
+		WHERE MEMBER_NO = #{memberNo} AND IS_DEFAULT = 'Y'
+	</update>
+
+	<!-- 기본 배송지 설정 -->
+	<update id="setDefaultAddress">
+		UPDATE ADDRESS SET IS_DEFAULT = 'Y'
+		WHERE ADDRESS_NO = #{addressNo}
+	</update>
+
+</mapper>

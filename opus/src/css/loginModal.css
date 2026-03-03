@@ -1,0 +1,293 @@
+/* 1. 배경 오버레이 (공통) */
+.lm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 9999;
+}
+
+/* 2. 모달 박스 (공통) */
+.lm-modal {
+  width: 420px;
+  max-width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+/* 3. 헤더 영역 (공통) */
+.lm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.lm-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: #111827;
+}
+
+.lm-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 8px;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.lm-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* 4. 본문 폼 영역 (공통) */
+.lm-body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lm-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #111827;
+  font-weight: 600;
+}
+
+/* 5. 입력창 (공통) */
+.lm-input {
+  height: 42px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  color: #111827;
+  transition: border-color 0.2s;
+}
+
+.lm-input:focus {
+  border-color: #111827;
+}
+
+/* 6. ⭐ 회원가입용: 중복확인 버튼 + 인풋 나란히 배치 */
+.lm-input-group {
+  display: flex;
+  gap: 8px; /* 인풋과 버튼 사이 간격 */
+}
+
+.lm-input-group .lm-input {
+  flex: 1; /* 인풋창이 남는 공간 다 차지 */
+}
+
+/* 중복확인 버튼 (회원가입 전용) */
+.lm-link {
+  height: 42px;
+  border: 1px solid #111827;
+  background: #fff;
+  color: #111827;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap; /* 글자 줄바꿈 방지 */
+  transition: all 0.2s;
+}
+
+.lm-link:hover {
+  background: #f3f4f6;
+}
+
+.lm-link:disabled {
+  border-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* 7. 에러 메시지 */
+.lm-error {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 13px;
+  background: rgba(185, 28, 28, 0.08);
+  border: 1px solid rgba(185, 28, 28, 0.18);
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+/* 8. 제출 버튼 (로그인/가입하기 공통) */
+.lm-submit {
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: opacity 0.2s;
+}
+
+.lm-submit:hover {
+  opacity: 0.9;
+}
+
+.lm-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 9. 푸터 영역 (아이디/비번찾기, 회원가입) */
+.lm-footer {
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: center;
+  gap: 12px;               /* 버튼 사이 간격 */
+  margin-top: 16px;
+}
+
+/* 푸터 전용 버튼 스타일 (테두리 제거) */
+.lm-footer .lm-link {
+  height: auto;            /* 기존 높이 해제 */
+  border: none;            /* 테두리 제거 */
+  background: none;        /* 배경 제거 */
+  padding: 0;              /* 패딩 제거 */
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;          /* 회색 계열 */
+  display: flex;
+  align-items: center;
+}
+
+/* 세로 구분선 구현 (|) */
+.lm-footer .lm-link:not(:last-child)::after {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  background-color: #d1d5db; /* 구분선 색상 */
+  margin-left: 12px;         /* 선 오른쪽 간격 */
+  cursor: default;
+}
+
+.lm-footer .lm-link:hover {
+  background: none;        /* 기존 hover 효과 제거 */
+  color: #111827;          /* 진한 색으로 변경 */
+  text-decoration: underline;
+}
+
+/* 1. 토스트 위치 조정 (헤더 아래 중앙) */
+.Toastify__toast-container--top-right {
+  top: 80px !important; /* 현재 사이트 헤더 높이에 맞춰 조정하세요 */
+}
+
+.lm-google{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  background:#fff;
+  color:#3c4043;
+  border:1px solid #dadce0;
+  width:100%;    
+}
+
+.lm-google:hover{
+  background:#e6e8e9;
+}
+
+/* =========================================================
+   Responsive (Login Modal - Centered)
+   가운데 정렬 유지 버전
+========================================================= */
+
+@media (max-width: 1100px){
+  /* 여백만 살짝 줄임 */
+  .lm-overlay{
+    padding: 20px;
+  }
+
+  .lm-modal{
+    width: 400px;
+  }
+}
+
+@media (max-width: 860px){
+  /* 태블릿 */
+  .lm-overlay{
+    padding: 18px;
+  }
+
+  .lm-modal{
+    width: 420px;
+    max-width: 100%;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 520px){
+  /* ✅ 모바일 중앙 모달 */
+  .lm-overlay{
+    padding: 14px;
+    align-items: center;   /* ⭐ 중앙 유지 (중요) */
+    justify-content: center;
+  }
+
+  .lm-modal{
+    width: 100%;
+    max-width: 100%;
+    border-radius: 14px;
+  }
+
+  .lm-header{
+    padding: 16px 16px 10px;
+  }
+
+  .lm-body{
+    padding: 14px 16px 16px;
+    gap: 10px;
+  }
+
+  /* 인풋 + 중복확인 버튼 세로 정렬 */
+  .lm-input-group{
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .lm-link{
+    width: 100%;
+    justify-content: center;
+  }
+
+  .lm-submit{
+    width: 100%;
+  }
+
+  .lm-footer{
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* 토스트 위치 모바일 보정 */
+  .Toastify__toast-container--top-right{
+    top: 72px !important;
+    right: 12px !important;
+  }
+}

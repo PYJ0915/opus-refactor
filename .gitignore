@@ -14,6 +14,9 @@ Servers
 .classpath
 .project
 
+.env
+.env.*
+
 ### Eclipse ###
 .metadata
 bin/

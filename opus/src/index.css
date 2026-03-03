@@ -66,3 +66,126 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* =========================
+   Header on Hero (Top only)
+   - 스크롤 최상단에서만 흰 글씨로
+========================= */
+
+/* 헤더가 히어로 위에 떠있다면(투명 배경) */
+.header.is-on-hero {
+  background: transparent;
+}
+
+/* 헤더 내부 텍스트/링크 색 강제 */
+.header.is-on-hero,
+.header.is-on-hero a,
+.header.is-on-hero button,
+.header.is-on-hero .nav a,
+.header.is-on-hero .logo {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* 흐릿함(투명도/필터) 제거용: 혹시 기존에 opacity 적용되어 있을 때 대비 */
+.header.is-on-hero * {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* 링크 hover도 흰 계열로 */
+.header.is-on-hero a:hover {
+  color: #ffffff !important;
+}
+
+/* =========================
+   HERO BASE
+========================= */
+
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 680px;
+  overflow: hidden;
+}
+
+/* 히어로 배경 */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  background:
+    radial-gradient(
+      60% 50% at 50% 30%,
+      rgba(255, 255, 255, 0.08),
+      rgba(0, 0, 0, 0.85)
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.55),
+      rgba(0, 0, 0, 0.9)
+    );
+
+  filter: saturate(1.1);
+}
+
+/* =========================
+   HERO CONTENT
+========================= */
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.hero__text {
+  color: rgba(255, 255, 255, 0.95);
+  max-width: 720px;
+}
+
+.hero__title {
+  font-size: clamp(48px, 6vw, 72px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+
+.hero__place {
+  font-size: 18px;
+  line-height: 1.7;
+  opacity: 0.9;
+  margin-bottom: 40px;
+}
+
+.hero__date {
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  opacity: 0.85;
+}
+
+/* =========================
+   HEADER + HERO BLEND
+========================= */
+
+.header.is-on-hero {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.header.is-scrolled {
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+

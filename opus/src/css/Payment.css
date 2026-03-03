@@ -1,0 +1,300 @@
+/* Payment.css */
+
+:root {
+  --bg: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --soft: #f9fafb;
+  --soft2: #f3f4f6;
+  --dark: #111827;
+  --dark2: #1f2937;
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --error: #ef4444;
+  --error-light: #fee2e2;
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ============== MAIN LAYOUT ============== */
+.payment-success,
+.payment-fail {
+  min-height: 100vh;
+  padding-top: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============== LOADING ============== */
+.payment-loading {
+  min-height: 100vh;
+  padding-top: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: var(--soft);
+}
+
+.payment-loading p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* ============== RESULT SECTION ============== */
+.payment-result {
+  width: min(640px, 90%);
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 48px 32px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+  text-align: center;
+}
+
+/* ============== ICON ============== */
+.payment-result__icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--success-light);
+}
+
+.payment-result__icon i {
+  font-size: 40px;
+  color: var(--success);
+}
+
+.payment-result__icon--error {
+  background: var(--error-light);
+}
+
+.payment-result__icon--error i {
+  color: var(--error);
+}
+
+/* ============== TITLE ============== */
+.payment-result__title {
+  margin: 0 0 32px;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--text);
+}
+
+/* ============== INFO BOX ============== */
+.payment-result__info {
+  background: var(--soft2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px 28px;
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.payment-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.payment-info-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.payment-info-row:first-child {
+  padding-top: 0;
+}
+
+.payment-info-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.payment-info-value {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--text);
+  text-align: right;
+  word-break: break-all;
+}
+
+/* 가상계좌 정보 강조 */
+.payment-result__info .payment-info-row:has(.info-label:contains("계좌번호")) {
+  background: #fff;
+  margin: 8px -12px;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+/* ============== ERROR BOX ============== */
+.payment-result__error {
+  background: var(--error-light);
+  border: 1px solid var(--error);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.payment-error-code {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.payment-error-message {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--error);
+  line-height: 1.6;
+}
+
+/* ============== ACTIONS ============== */
+.payment-result__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.payment-btn {
+  border-radius: 8px;
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .15s ease;
+  border: 2px solid transparent;
+  min-width: 160px;
+}
+
+.payment-btn--outline {
+  background: #fff;
+  border-color: var(--dark);
+  color: var(--dark);
+}
+
+.payment-btn--outline:hover {
+  background: var(--soft2);
+  transform: translateY(-2px);
+}
+
+.payment-btn--solid {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: #fff;
+}
+
+.payment-btn--solid:hover {
+  background: var(--dark2);
+  border-color: var(--dark2);
+  transform: translateY(-2px);
+}
+
+/* ============== NOTICE (가상계좌 전용) ============== */
+.payment-notice {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+}
+
+.payment-notice i {
+  color: #ffc107;
+  font-size: 20px;
+  margin-top: 2px;
+}
+
+.payment-notice p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #856404;
+  line-height: 1.6;
+}
+
+/* ============== RESPONSIVE ============== */
+@media (max-width: 640px) {
+  .payment-result {
+    padding: 32px 24px;
+  }
+
+  .payment-result__title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .payment-result__icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 20px;
+  }
+
+  .payment-result__icon i {
+    font-size: 32px;
+  }
+
+  .payment-result__info {
+    padding: 20px 16px;
+  }
+
+  .payment-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .payment-info-value {
+    text-align: left;
+  }
+
+  .payment-result__actions {
+    flex-direction: column;
+  }
+
+  .payment-btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-result__title {
+    font-size: 20px;
+  }
+
+  .payment-info-label,
+  .payment-info-value {
+    font-size: 13px;
+  }
+
+  .payment-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}

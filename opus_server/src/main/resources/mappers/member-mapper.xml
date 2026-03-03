@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper
+	namespace="nknk.opus.project.member.model.mapper.MemberMapper">
+
+	<select id="login" resultType="Member">
+		SELECT
+		MEMBER_NO,
+		MEMBER_EMAIL,
+		MEMBER_PW,
+		MEMBER_TEL,
+		MEMBER_ROLE,
+		LOGIN_TYPE,
+		ENROLL_DATE,
+		MEMBER_DEL_FL
+		FROM MEMBER
+		WHERE MEMBER_EMAIL = #{memberEmail}
+		AND MEMBER_DEL_FL = 'N'
+	</select>
+
+	<insert id="signup" parameterType="Member">
+		INSERT INTO MEMBER (
+		MEMBER_NO,
+		MEMBER_EMAIL,
+		MEMBER_PW,
+		MEMBER_TEL,
+		ENROLL_DATE,
+		MEMBER_DEL_FL,
+		MEMBER_ROLE,
+		LOGIN_TYPE
+		) VALUES (
+		SEQ_MEMBER_NO.NEXTVAL,
+		#{memberEmail},
+		#{memberPw},
+		#{memberTel},
+		DEFAULT,
+		DEFAULT,
+		NVL(#{memberRole}, 'MEMBER'),
+		NVL(#{loginType},
+		'NORMAL')
+		)
+	</insert>
+
+	<update id="updateTel" parameterType="Member">
+		UPDATE MEMBER
+		SET MEMBER_TEL
+		= #{memberTel}
+		WHERE
+		MEMBER_NO = #{memberNo}
+	</update>
+
+	<select id="checkTel" resultType="_int">
+		SELECT COUNT(*)
+		FROM MEMBER
+		WHERE MEMBER_TEL = #{tel}
+		AND MEMBER_DEL_FL = 'N'
+	</select>
+
+	<select id="selectCurrentPw" resultType="string">
+		SELECT MEMBER_PW
+		FROM
+		MEMBER
+		WHERE MEMBER_NO = #{memberNo}
+	</select>
+
+	<update id="changePw">
+		UPDATE MEMBER
+		SET MEMBER_PW = #{newPw}
+		WHERE
+		MEMBER_NO =
+		#{memberNo}
+	</update>
+
+	<select id="getActiveTransactionCount" parameterType="int"
+		resultType="int">
+		SELECT
+		(SELECT COUNT(*)
+		FROM UNVEILING
+		WHERE MEMBER_NO =
+		#{memberNo}
+		AND UNVEILING_STATUS = 'UPCOMING')
+		+
+		(SELECT COUNT(*)
+		FROM
+		TOTAL_ORDER
+		WHERE MEMBER_NO = #{memberNo}
+		AND ORDER_STATUS = 'READY')
+		AS
+		active_count
+		FROM DUAL
+	</select>
+
+	<update id="withdrawMember" parameterType="int">
+		UPDATE MEMBER
+		SET
+		MEMBER_DEL_FL = 'Y',
+		WITHDRAWAL_DATE = SYSDATE
+		WHERE MEMBER_NO =
+		#{memberNo}
+	</update>
+
+	<select id="findByEmail" parameterType="string"
+		resultType="Member">
+		SELECT
+		MEMBER_NO,
+		MEMBER_EMAIL,
+		MEMBER_TEL,
+		MEMBER_ROLE,
+		LOGIN_TYPE,
+		ENROLL_DATE,
+		MEMBER_DEL_FL,
+		WITHDRAWAL_DATE
+		FROM MEMBER WHERE
+		MEMBER_EMAIL = #{memberEmail}
+		AND MEMBER_DEL_FL = 'N'
+	</select>
+
+	<select id="checkEmail" resultType="int">
+		SELECT COUNT(*)
+		FROM MEMBER
+		WHERE MEMBER_EMAIL = #{email}
+		AND MEMBER_DEL_FL = 'N'
+	</select>
+
+	<insert id="insertMember" parameterType="Member">
+		<selectKey keyProperty="memberNo" resultType="_int"
+			order="BEFORE">
+			SELECT SEQ_MEMBER_NO.NEXTVAL FROM DUAL
+		</selectKey>
+
+		INSERT INTO MEMBER (
+		MEMBER_NO,
+		MEMBER_EMAIL,
+		MEMBER_PW,
+		MEMBER_TEL,
+		MEMBER_ROLE,
+		LOGIN_TYPE,
+		ENROLL_DATE,
+		MEMBER_DEL_FL
+		) VALUES (
+		#{memberNo},
+		#{memberEmail},
+		#{memberPw},
+		#{memberTel},
+		NVL(#{memberRole}, 'MEMBER'),
+		NVL(#{loginType}, 'NORMAL'),
+		SYSDATE,
+		'N'
+		)
+	</insert>
+
+	<!-- memberNo로 이메일 조회 -->
+	<select id="findEmailByMemberNo" parameterType="int"
+		resultType="string">
+		SELECT MEMBER_EMAIL
+		FROM MEMBER
+		WHERE MEMBER_NO =
+		#{memberNo}
+		AND MEMBER_DEL_FL = 'N'
+	</select>
+
+	<!-- 응찰 시 회원 정보 확인 -->
+	<select id="findByMemberNo" resultType="Member">
+		SELECT
+		MEMBER_NO,
+		MEMBER_EMAIL,
+		MEMBER_TEL,
+		MEMBER_ROLE,
+		LOGIN_TYPE
+		FROM MEMBER
+		WHERE
+		MEMBER_NO = #{memberNo}
+		AND MEMBER_DEL_FL = 'N'
+	</select>
+
+</mapper>

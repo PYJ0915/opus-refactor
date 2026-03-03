@@ -1,0 +1,331 @@
+/* 챗봇 버튼 */
+.chatbot-button {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border: 1px solid #111827;
+  border-radius: 999px;
+  background: #111827;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(17, 24, 39, 0.18);
+  transition: all 0.2s ease;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbot-button:hover {
+  background: #1f2937;
+  border-color: #1f2937;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.24);
+}
+
+/* 챗봇 컨테이너 */
+.chatbot-container {
+  position: fixed;
+  bottom: 100px;
+  right: 40px;
+  width: 400px;
+  height: 650px;
+  background: #fff;
+  border: 1px solid #111827;
+  border-radius: 2px;
+  box-shadow: 0 10px 40px rgba(17, 24, 39, 0.12);
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  animation: slideUp 0.25s ease;
+  overflow: hidden;
+
+  border-radius: 10px;
+}
+
+/* 헤더 */
+.chatbot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  background: #111827;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.chatbot-header__info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chatbot-header__info i {
+  font-size: 20px;
+  color: #d1d5db;
+}
+
+.chatbot-title {
+  display: block;
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+
+.chatbot-model {
+  display: block;
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+.chatbot-header__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.chatbot-header__new,
+.chatbot-header__close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  background: transparent;
+  color: #d1d5db;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+
+.chatbot-header__new:hover,
+.chatbot-header__close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+/* 메시지 영역 */
+.chatbot-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #fff;
+}
+
+.chatbot-messages::-webkit-scrollbar {
+  width: 4px;
+}
+.chatbot-messages::-webkit-scrollbar-track {
+  background: #f9fafb;
+}
+.chatbot-messages::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+
+/* 메시지 */
+.message {
+  display: flex;
+  gap: 10px;
+  animation: fadeIn 0.2s ease;
+}
+
+.message--user {
+  flex-direction: row-reverse;
+}
+
+.message__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.message--user .message__avatar {
+  background: #111827;
+  border-color: #111827;
+  color: #fff;
+}
+
+.message__content {
+  max-width: 75%;
+  padding: 12px 14px;
+  background: #f3f4f6;
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.message--user .message__content {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
+
+.message__meta {
+  margin-top: 6px;
+  font-size: 10px;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+/* 로딩 애니메이션 */
+.message__content--loading {
+  display: flex;
+  gap: 5px;
+  padding: 14px 16px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+
+.message__content--loading span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #9ca3af;
+  animation: bounce 1.4s infinite ease-in-out;
+}
+
+.message__content--loading span:nth-child(1) { animation-delay: -0.32s; }
+.message__content--loading span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40%            { transform: scale(1);   opacity: 1; }
+}
+
+/* 입력 영역 */
+.chatbot-input {
+  display: flex;
+  gap: 8px;
+  padding: 14px 16px;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.chatbot-input textarea {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 2px;
+  resize: none;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  max-height: 100px;
+  background: #fff;
+  color: #111827;
+  transition: border-color 0.15s ease;
+}
+
+.chatbot-input textarea::placeholder {
+  color: #9ca3af;
+}
+
+.chatbot-input textarea:focus {
+  outline: none;
+  border-color: #9ca3af;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
+}
+
+.chatbot-input button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #111827;
+  border-radius: 2px;
+  background: #111827;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.chatbot-input button:hover:not(:disabled) {
+  background: #1f2937;
+  border-color: #1f2937;
+}
+
+.chatbot-input button:disabled {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* 푸터 */
+.chatbot-footer {
+  padding: 8px;
+  text-align: center;
+  font-size: 11px;
+  color: #9ca3af;
+  border-top: 1px solid #f3f4f6;
+  background: #fafafa;
+  letter-spacing: 0.02em;
+}
+
+/* 애니메이션 */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+  .chatbot-container {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+
+  .chatbot-button {
+    bottom: 80px;
+    right: 16px;
+  }
+}
