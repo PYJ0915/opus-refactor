@@ -3,9 +3,11 @@ package nknk.opus.project.member.model.service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.member.model.dto.Member;
 import nknk.opus.project.member.model.dto.Role;
@@ -25,18 +28,20 @@ import nknk.opus.project.member.model.mapper.MemberMapper;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-	@Autowired
-	private MemberMapper mapper;
+	private final MemberMapper mapper;
 
-	@Autowired
-	private BCryptPasswordEncoder encoder;
+	private final BCryptPasswordEncoder encoder;
 
-	@Autowired
-	private JavaMailSender mailSender;
-
-	private final Map<String, String> authStorage = new HashMap<>();
+	private final JavaMailSender mailSender;
+	
+	private final StringRedisTemplate redisTemplate;
+	
+	private static final String AUTH_CODE_PREFIX = "email:auth:";
+	
+	private static final long AUTH_CODE_TTL = 5L; // 분
 
 	/* 로그인 */
 	@Override
@@ -73,7 +78,12 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		String code = String.format("%06d", new Random().nextInt(1000000));
-		authStorage.put(email, code);
+		redisTemplate.opsForValue().set(
+			    AUTH_CODE_PREFIX + email,
+			    code,
+			    AUTH_CODE_TTL,
+			    TimeUnit.MINUTES
+			);
 
 		try {
 			String htmlContent = """
@@ -130,8 +140,14 @@ public class MemberServiceImpl implements MemberService {
 	/* 이메일 인증번호 확인 */
 	@Override
 	public boolean verifyCode(String email, String code) {
-		String savedCode = authStorage.get(email);
-		return savedCode != null && savedCode.equals(code);
+	    String savedCode = redisTemplate.opsForValue()
+	                                    .get(AUTH_CODE_PREFIX + email);
+	    if (savedCode == null || !savedCode.equals(code)) {
+	        return false;
+	    }
+	    // 인증 성공 즉시 삭제 (재사용 방지)
+	    redisTemplate.delete(AUTH_CODE_PREFIX + email);
+	    return true;
 	}
 
 	/* 회원가입 */

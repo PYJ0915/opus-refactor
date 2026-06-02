@@ -24,6 +24,7 @@ const Selections = () => {
     try {
 
       console.log("==== 상품 목록 조회 시작 ====")
+      
       const resp = await fetchGoodsList();
 
       if (resp.status == 200) {

@@ -86,8 +86,7 @@ export async function getAllMusicals({
     params.set("shprfnm", search.trim())
   }
   
-  const BASE_URL = "https://opus-api.duckdns.org";
-  const res = await fetch(`${BASE_URL}/onStage/musicals?${params.toString()}`);
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/onStage/musicals?${params.toString()}`);
   
   if(!res.ok) {
     throw new Error(`KOPIS 요청 실패 : ${res.status}`);
@@ -139,7 +138,7 @@ function parseRelates(db) {
 // 상세 뮤지컬 공연 조회
 export async function getMusicalDetail(serviceKey, mt20id) {
   const res = await fetch(
-    `https://opus-api.duckdns.org/onStage/musicals/detail?service=${serviceKey}&mt20id=${mt20id}`
+    `${import.meta.env.VITE_API_URL}/onStage/musicals/detail?service=${serviceKey}&mt20id=${mt20id}`
   );
 
   if(!res.ok) {
