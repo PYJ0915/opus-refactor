@@ -100,17 +100,13 @@ export default function MusicalList({ status, search }) {
   // -------------------------------------------
 
   useEffect(() => {
-    if (status !== "all" || !loginMemberNo || !allItems.length) return;
+    if (status !== "all" || !allItems.length) return;
 
     const fetchPrefer = async () => {
       try {
-        const savedResp = await axiosApi.get("/myPage/savedList", {
-          params: { memberNo: loginMemberNo },
-        });
+        const savedResp = await axiosApi.get("/myPage/savedList");
 
-        const likedResp = await axiosApi.get("/myPage/likeList", {
-          params: { memberNo: loginMemberNo },
-        });
+        const likedResp = await axiosApi.get("/myPage/likeList");
 
         const savedIds = savedResp.data || [];
         const likedIds = likedResp.data || [];
@@ -123,7 +119,7 @@ export default function MusicalList({ status, search }) {
     };
 
     fetchPrefer();
-  }, [status, loginMemberNo, allItems]);
+  }, [status, allItems]);
 
   const filteredItems = useMemo(() => {
     return allItems.filter((item) => {

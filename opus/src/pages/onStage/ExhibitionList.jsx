@@ -152,17 +152,13 @@ export default function ExhibitionList({ search, status }) {
   }, [allItems, status, search]);
 
   useEffect(() => {
-    if (status !== "all" || !loginMemberNo || !allItems.length) return;
+    if (status !== "all" || !allItems.length) return;
 
       const fetchPrefer = async () => {
         try {
-          const savedResp = await axiosApi.get("/myPage/savedList", {
-            params: { memberNo: loginMemberNo }
-          });
+          const savedResp = await axiosApi.get("/myPage/savedList");
         
-          const likedResp = await axiosApi.get("/myPage/likeList", {
-            params: { memberNo: loginMemberNo }
-          });
+          const likedResp = await axiosApi.get("/myPage/likeList");
         
           const savedIds = savedResp.data || [];
           const likedIds = likedResp.data || [];
@@ -184,7 +180,7 @@ export default function ExhibitionList({ search, status }) {
       };
     
       fetchPrefer();
-    }, [status, loginMemberNo, allItems]);
+    }, [status, allItems]);
     
   if (isLoading) {
     return <div style={{ padding: 80 }}>전시 불러오는 중...</div>;

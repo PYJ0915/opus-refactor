@@ -21,12 +21,8 @@ const SavedList = () => {
 
   useEffect(() => {
     const fetchSavedList = async () => {
-      if (!loginMemberNo) return;
-
       try {
-        const res = await axiosApi.get("/myPage/savedList", {
-          params: { memberNo: loginMemberNo }
-        });
+        const res = await axiosApi.get("/myPage/savedList");
 
         const stageNos = res.data;
 
@@ -68,7 +64,7 @@ const SavedList = () => {
     };
 
     fetchSavedList();
-  }, [loginMemberNo]);
+  }, []);
 
   const goToDetail = (stageNo) => {
     if (!stageNo) return;

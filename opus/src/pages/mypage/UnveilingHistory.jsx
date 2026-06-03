@@ -13,18 +13,15 @@ const UnveilingHistory = () => {
 
   useEffect(() => {
     const fetchUnveilingHistory = async () => {
-      if (!loginMemberNo) return;
       try {
-        const res = await axiosApi.get("/myPage/unveilingHistory", {
-          params: { memberNo: loginMemberNo }
-        });
+        const res = await axiosApi.get("/myPage/unveilingHistory");
         setHistoryItems(res.data);
       } catch (err) {
         console.error("응찰 내역 조회 실패:", err);
       }
     };
     fetchUnveilingHistory();
-  }, [loginMemberNo]);
+  }, []);
 
   // 낙찰 여부 + 결제 상태를 하나로 묶어서 우측에 표시
   const getStatusBadges = (item) => {

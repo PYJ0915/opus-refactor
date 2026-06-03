@@ -21,12 +21,8 @@ const ReviewList = () => {
 
   useEffect(() => {
     const fetchReviewList = async () => {
-      if (!loginMemberNo) return;
-
       try {
-        const res = await axiosApi.get("/myPage/reviewList", {
-          params: { memberNo: loginMemberNo }
-        });
+        const res = await axiosApi.get("/myPage/reviewList");
 
         const reviews = res.data;
 
