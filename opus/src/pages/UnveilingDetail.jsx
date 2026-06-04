@@ -5,6 +5,7 @@ import "../css/UnveilingDetail.css";
 import { useAuthStore } from "../components/auth/useAuthStore";
 import axiosApi from "../api/axiosAPI";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
@@ -273,11 +274,11 @@ export default function UnveilingDetail() {
   // 응찰 버튼 클릭 → 모달 오픈
   const onBid = useCallback(() => {
     if (!isLoggedIn) {
-      alert("로그인 후 응찰할 수 있습니다.");
+      toast.error("로그인 후 응찰할 수 있습니다.");
       return;
     }
     if (bidState && !bidState.bidAllowedFl) {
-      alert(bidState.reason || "현재 응찰할 수 없습니다.");
+      toast.error(bidState.reason || "현재 응찰할 수 없습니다.");
       return;
     }
 
@@ -330,7 +331,7 @@ export default function UnveilingDetail() {
 
       await fetchBidState();
       setModal(false);
-      alert("응찰이 완료되었습니다.");
+      toast.success("응찰이 완료되었습니다.");
 
     } catch (err) {
       const status = err?.response?.status;
@@ -357,12 +358,12 @@ export default function UnveilingDetail() {
     try {
       const { data } = await axiosApi.post(`/api/unveilings/${unveilingNo}/pay`);
       setPayModal(false);
-      alert(data.message || "결제가 완료되었습니다.");
+      toast.success(data.message || "결제가 완료되었습니다.");
       await fetchBidState();
     } catch (err) {
       const msg = err?.response?.data?.message || "결제 중 오류가 발생했습니다.";
       setPayModal(false);
-      alert(msg);
+      toast.error(msg);
     } finally {
       setPayLoading(false);
     }

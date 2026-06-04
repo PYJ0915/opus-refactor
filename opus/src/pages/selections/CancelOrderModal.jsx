@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "../../css/CancelOrderModal.css";
+import { toast } from "react-toastify";
+import { showConfirm } from "../../components/toast/ToastUtils";
 
 const CancelOrderModal = ({ isOpen, onClose, onConfirm, orderInfo }) => {
 
@@ -39,19 +41,21 @@ const CancelOrderModal = ({ isOpen, onClose, onConfirm, orderInfo }) => {
 
   // 취소 확인 핸들러
   const handleConfirm = () => {
-    if (!cancelReason.trim()) {
-      alert("취소 사유를 선택하거나 입력해주세요.");
-      return;
-    }
-    
-    // 확인 선택 시 주문 취소
-    if(!confirm("취소 후에는 되돌릴 수 없습니다. 현재 주문을 취소하시겠습니까?")) return;
+  if (!cancelReason.trim()) {
+    toast.warning("취소 사유를 선택하거나 입력해주세요.");
+    return;
+  }
 
-    // 주문 취소 함수에 취소 사유 전달
-    onConfirm(cancelReason);
-    // 모달 닫기 핸들러
-    handleClose();
-  };
+  showConfirm(
+    "주문을 취소하시겠습니까?",
+    "취소 후에는 되돌릴 수 없습니다.",
+    () => {
+      onConfirm(cancelReason);
+      handleClose();
+    },
+    "주문 취소"
+  );
+};
 
   // 모달 닫기 핸들러
   const handleClose = () => {

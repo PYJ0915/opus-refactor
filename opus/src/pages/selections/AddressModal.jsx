@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import "../../css/AddressModal.css";
 import { useAddressStore } from "../../store/useAddressStore";
 import { useDaumPostcodePopup } from "react-daum-postcode";
+import { toast } from "react-toastify";
+import { showConfirm } from "../../components/toast/ToastUtils";
 
 const AddressModal = ({ isOpen, onClose, onApply }) => {
 
@@ -56,12 +58,12 @@ const AddressModal = ({ isOpen, onClose, onApply }) => {
         // 수정
         console.log("==== 주소 수정 시작 ====")
         await updateAddress(editingAddress.addressNo, form);
-        alert("배송지가 수정되었습니다!");
+        toast.success("배송지가 수정되었습니다!");
       } else {
         // 신규 추가
         console.log("==== 주소 추가 시작 ====")
         await addAddress(form);
-        alert("배송지가 추가되었습니다!");
+        toast.success("배송지가 추가되었습니다!");
       }
 
       // 공통 후처리
@@ -70,25 +72,29 @@ const AddressModal = ({ isOpen, onClose, onApply }) => {
 
     } catch (error) {
       console.error(error);
-      alert("저장에 실패했습니다.");
+      toast.error("저장에 실패했습니다.");
     }
 
   };
 
   // 주소 삭제 핸들러
-  const handleDelete = async (id) => {
-    if (!confirm("배송지를 삭제하시겠습니까?")) return;
+  const handleDelete = (id) => {
+  showConfirm(
+    "배송지를 삭제하시겠습니까?",
+    "삭제 후에는 복구할 수 없습니다.",
+    async () => {
+      try {
+        await deleteAddress(id);
 
-    try {
-      console.log("==== 주소 삭제 시작 ====")
-      await deleteAddress(id);
-      alert("배송지가 삭제되었습니다!");
-    } catch (error) {
-      console.error(err);
-      alert("삭제에 실패했습니다.");
-    }
-
-  };
+        toast.success("배송지가 삭제되었습니다.");
+      } catch (error) {
+        console.error(error);
+        toast.error("삭제에 실패했습니다.");
+      }
+    },
+    "삭제"
+  );
+};
 
   const handleSetDefault = async (id) => {
     console.log("==== 기본 배송지 설정 시작 ====")

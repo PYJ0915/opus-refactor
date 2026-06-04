@@ -7,6 +7,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axiosApi from '../../api/axiosAPI';
 import { useAuthStore } from '../../components/auth/useAuthStore';
+import { toast } from 'react-toastify';
 
 export default function MusicalDetail () {
   const { mt20id } = useParams();
@@ -40,16 +41,16 @@ export default function MusicalDetail () {
   const copyURL = async () => {
     try {
       await navigator.clipboard.writeText(currentURL);
-      alert('URL이 복사되었습니다');
+      toast.success('URL이 복사되었습니다');
     } catch (err) {
-      alert('복사에 실패했습니다');
+      toast.error('복사에 실패했습니다');
     }
   };
 
   // Like, Dislike  
   const toggleLike = async() => {
     if (!loginMemberNo) {
-      alert("로그인 후 이용해주세요.");
+      toast.error("로그인 후 이용해주세요.");
       return;
     }
 
@@ -63,10 +64,10 @@ export default function MusicalDetail () {
       if(res.data === 1){
         setLike(true);
         setDislike(false);
-        alert("좋아요에 추가되었습니다.")
+        toast.success("좋아요에 추가되었습니다.")
       } else if(res.data === -1) {
         setLike(false);
-        alert("좋아요가 취소되었습니다.")
+        toast.success("좋아요가 취소되었습니다.")
       }
     } catch (error) {
       console.log(error);
@@ -75,7 +76,7 @@ export default function MusicalDetail () {
 
   const toggleDislike = async() => {
     if (!loginMemberNo) {
-      alert("로그인 후 이용해주세요.");
+      toast.error("로그인 후 이용해주세요.");
       return;
     }
 
@@ -89,10 +90,10 @@ export default function MusicalDetail () {
       if(res.data === 1) {
         setDislike(true);
         setLike(false);
-        alert("싫어요에 추가되었습니다.");
+        toast.success("싫어요에 추가되었습니다.");
       } else if(res.data === -1) {
         setLike(false);
-        alert("싫어요가 취소되었습니다.");
+        toast.success("싫어요가 취소되었습니다.");
       }
     } catch (error) {
       console.log(error);
@@ -102,7 +103,7 @@ export default function MusicalDetail () {
   // Save
   const savePerform = async() => {
     if (!loginMemberNo) {
-      alert("로그인 후 이용해주세요.");
+      toast.error("로그인 후 이용해주세요.");
       return;
     }
 
@@ -114,10 +115,10 @@ export default function MusicalDetail () {
 
       if(res.status === 200) {
         setSave(true);
-        alert("찜에 추가되었습니다.")
+        toast.success("찜에 추가되었습니다.")
       } else if (res.data === 1) {
         setSave(false);
-        alert("찜이 취소되었습니다.")
+        toast.success("찜이 취소되었습니다.")
       }
     } catch (error) {
       console.log(error)
@@ -156,7 +157,7 @@ export default function MusicalDetail () {
                   <button className="btn btn-primary" id='book-btn' type="button" key={idx}
                     onClick={() => {
                       if (!relate.url) {
-                        alert("예매 링크가 없는 공연입니다.");
+                        toast.error("예매 링크가 없는 공연입니다.");
                         return;
                       }
                       window.open(relate.url, "_blank", "noopener,noreferrer");
@@ -277,7 +278,7 @@ export default function MusicalDetail () {
                   <button className="btn btn-sm btn-outline" id='more-review-btn' type="button"
                     onClick={() => {
                       if(!loginMemberNo) {
-                        alert("로그인 후 이용해주세요.");
+                        toast.error("로그인 후 이용해주세요.");
                         return;
                       }
                       navigate(`/onStage/reviews/${data.mt20id}`)

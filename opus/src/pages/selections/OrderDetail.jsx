@@ -5,6 +5,7 @@ import Loading from "../../components/common/Loading";
 import "../../css/OrderDetail.css";
 import CancelOrderModal from "./CancelOrderModal";
 import ScrollToTop from "../../components/common/ScrollToTop";
+import { toast } from "react-toastify";
 
 const OrderDetail = () => {
   const { orderNo } = useParams();
@@ -29,7 +30,7 @@ const OrderDetail = () => {
         setOrder(data);
       } catch (error) {
         console.error("주문 상세 조회 실패:", error);
-        alert("주문 정보를 불러오는데 실패했습니다.");
+        toast.error("주문 정보를 불러오는데 실패했습니다.");
         navigate("/mypage/orders");
       } finally {
         setIsLoading(false);
@@ -49,14 +50,14 @@ const OrderDetail = () => {
     try {
       console.log("주문 취소 시작", order.orderId, cancelReason);
       await orderApi.cancelOrder(order.orderId, cancelReason);
-      alert("주문이 취소되었습니다.");
+      toast.success("주문이 취소되었습니다.");
 
       // 새로고침
       const data = await orderApi.getOrderDetail(orderNo);
       setOrder(data);
     } catch (error) {
       console.error("주문 취소 실패:", error);
-      alert(error.response?.data?.message || "주문 취소에 실패했습니다.");
+      toast.error(error.response?.data?.message || "주문 취소에 실패했습니다.");
     }
   };
 

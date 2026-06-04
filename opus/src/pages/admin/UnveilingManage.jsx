@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosApi from "../../api/axiosAPI";
 import "../../css/GoodsRegist.css";
+import { toast } from "react-toastify";
 
 const STATUS_LABEL = {
   LIVE: "진행중",
@@ -42,7 +43,7 @@ const UnveilingManage = () => {
       setItems(res.data);
     } catch (e) {
       console.error(e);
-      alert("경매 목록 조회에 실패했습니다.");
+      toast.error("경매 목록 조회에 실패했습니다.");
     } finally {
       setLoading(false);
     }
@@ -59,7 +60,7 @@ const UnveilingManage = () => {
 
   const handleSubmit = async () => {
     if (!form.unveilingTitle || !form.productionArtist || !form.startPrice || !form.finishDate) {
-      alert("작품명, 작가명, 시작가, 마감일시는 필수입니다.");
+      toast.warning("작품명, 작가명, 시작가, 마감일시는 필수입니다.");
       return;
     }
 
@@ -69,12 +70,12 @@ const UnveilingManage = () => {
         ...form,
         startPrice: Number(form.startPrice),
       });
-      alert("경매가 등록되었습니다.");
+      toast.success("경매가 등록되었습니다.");
       setForm({ ...EMPTY_FORM });
       setView("list");
     } catch (e) {
       console.error(e);
-      alert("경매 등록에 실패했습니다.");
+      toast.error("경매 등록에 실패했습니다.");
     } finally {
       setSubmitLoading(false);
     }

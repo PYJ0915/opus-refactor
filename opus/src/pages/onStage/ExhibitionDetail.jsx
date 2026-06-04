@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../../components/auth/useAuthStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getAllExhibitions } from '../../api/kcisaAPI';
+import { toast } from 'react-toastify';
 
 export default function ExhibitionDetail () {
   const { exhibitionId } = useParams();
@@ -35,15 +36,15 @@ export default function ExhibitionDetail () {
   const copyURL = async () => {
     try {
       await navigator.clipboard.writeText(currentURL);
-      alert('URL이 복사되었습니다');
+      toast.success('URL이 복사되었습니다');
     } catch (err) {
-      alert('복사에 실패했습니다');
+      toast.error('복사에 실패했습니다');
     }
   };
 
   const toggleLike = async () => {
     if (!loginMemberNo) {
-      alert("로그인 후 이용해주세요.");
+      toast.error("로그인 후 이용해주세요.");
       return;
     }
     
@@ -57,10 +58,10 @@ export default function ExhibitionDetail () {
       if (res.data === 1) {
         setLike(true);
         setDislike(false);
-        alert("좋아요에 추가되었습니다.");
+        toast.success("좋아요에 추가되었습니다.");
       } else if (res.data === -1) {
         setLike(false);
-        alert("좋아요가 취소되었습니다.");
+        toast.success("좋아요가 취소되었습니다.");
       }
     } catch (error) {
       console.log(error);
@@ -69,7 +70,7 @@ export default function ExhibitionDetail () {
 
   const toggleDislike = async () => {
     if (!loginMemberNo) {
-      alert("로그인 후 이용해주세요.");
+      toast.error("로그인 후 이용해주세요.");
       return;
     }
 
@@ -83,10 +84,10 @@ export default function ExhibitionDetail () {
       if (res.data === 1) {
         setDislike(true);
         setLike(false);
-        alert("싫어요에 추가되었습니다.");
+        toast.success("싫어요에 추가되었습니다.");
       } else if (res.data === -1) {
         setDislike(false);
-        alert("싫어요가 취소되었습니다.");
+        toast.success("싫어요가 취소되었습니다.");
       }
     } catch (error) {
       console.log(error);
@@ -95,7 +96,7 @@ export default function ExhibitionDetail () {
 
   const savePerform = async () => {
     if (!loginMemberNo) {
-      alert("로그인 후 이용해주세요.");
+      toast.error("로그인 후 이용해주세요.");
       return;
     }
     
@@ -105,7 +106,7 @@ export default function ExhibitionDetail () {
         stageNo: item.exhibitionId
       });
 
-      alert(res.data);
+      toast.success(res.data);
       setSave(prev => !prev);
     } catch (error) {
       console.log(error);
@@ -151,7 +152,7 @@ export default function ExhibitionDetail () {
                 <button className='btn btn-primary' id='book-btn' type='button'
                   onClick={() => {
                     if(!item.url) {
-                      alert("상세 보기 기능이 없는 전시입니다.");
+                      toast.error("상세 보기 기능이 없는 전시입니다.");
                       return;
                     }
                     window.open(item.url, "_blank", "noopener,noreferrer")
@@ -261,7 +262,7 @@ export default function ExhibitionDetail () {
                   <button className="btn btn-sm btn-outline" id='more-review-btn' type="button"
                     onClick={() => {
                       if(!loginMemberNo) {
-                        alert("로그인 후 이용해주세요.");
+                        toast.error("로그인 후 이용해주세요.");
                         return;
                       }
                       navigate(`/onStage/reviews/${item.exhibitionId}`)

@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import '../../css/pages/onStage/reviews.css'
 import axiosApi from '../../api/axiosAPI';
 import { useAuthStore } from "../../components/auth/useAuthStore";
+import { toast } from "react-toastify";
+import { showConfirm } from "../../components/toast/ToastUtils";
 
 export default function Reviews() {
   const { stageNo } = useParams();
@@ -139,12 +141,12 @@ export default function Reviews() {
 
   const submitReview = async() => {
     if (!token) {
-      alert("로그인 후 이용해주세요.");
+      toast.error("로그인 후 이용해주세요.");
       return;
     }
 
     if(writeReview.trim().length === 0) {
-      alert("후기를 입력해주세요.");
+      toast.warning("후기를 입력해주세요.");
       return;
     };
 
@@ -154,7 +156,7 @@ export default function Reviews() {
     })
 
     if (res.status === 200) {
-      alert("후기가 등록되었습니다.");
+      toast.success("후기가 등록되었습니다.");
       setWriteReview("");
       setIsFormOpen(false);
       document.activeElement?.blur(); 
@@ -162,28 +164,30 @@ export default function Reviews() {
       showReviews();
       showReviewsCount();
     } else {
-      alert("후기 등록에 실패하였습니다.");
+      toast.error("후기 등록에 실패하였습니다.");
     }
   }
 
   // 후기 삭제
-  const deleteReview = async(reviewNo) => {
-    if(!confirm("후기를 삭제하시겠습니까?")) return;
-
-    try {
-      const resp = await axiosApi.post("/reviews/deleteReview", {
-        reviewNo
-      })
-
-      if(resp.status === 200) {
-        alert("후기가 삭제되었습니다.");
-        showReviews();
-        showReviewsCount();
+  const deleteReview = async (reviewNo) => {
+  showConfirm(
+    "후기를 삭제하시겠습니까?",
+    "삭제한 후기는 복구할 수 없습니다.",
+    async () => {
+      try {
+        const resp = await axiosApi.post("/reviews/deleteReview", { reviewNo });
+        if (resp.status === 200) {
+          toast.success("후기가 삭제되었습니다.");
+          showReviews();
+          showReviewsCount();
+        }
+      } catch (error) {
+        toast.error("후기 삭제에 실패했습니다.");
       }
-    } catch (error) {
-      console.log(error); 
-    }
-  }
+    },
+    "삭제"
+  );
+};
 
   // 댓글 조회
   const [openCommentId, setOpenCommentId] = useState(null);
@@ -217,14 +221,14 @@ export default function Reviews() {
 
   const submitComment = async(reviewNo) => {
     if(!token) {
-      alert("로그인 후 이용해주세요.");
+      toast.error("로그인 후 이용해주세요.");
       return;
     }
 
     const content = inputComment[reviewNo];
 
     if(!content || content.trim().length === 0) {
-      alert("댓글을 입력해주세요.");
+      toast.warning("댓글을 입력해주세요.");
       return;
     }
 
@@ -235,7 +239,7 @@ export default function Reviews() {
       })
 
       if(resp.status === 200) {
-        alert("댓글이 등록되었습니다.");
+        toast.success("댓글이 등록되었습니다.");
         getCommentCount(reviewNo);
 
         setInputComment(prev => ({
@@ -260,33 +264,43 @@ export default function Reviews() {
   }
 
   // 댓글 삭제
-  const deleteComment = async(commentNo, reviewNo) => {
-    if(!confirm("댓글을 삭제하시겠습니까?")) return;
+  const deleteComment = (commentNo, reviewNo) => {
+  showConfirm(
+    "댓글을 삭제하시겠습니까?",
+    "삭제한 댓글은 복구할 수 없습니다.",
+    async () => {
+      try {
+        const resp = await axiosApi.post("/comment/deleteComment", {
+          commentNo
+        });
 
-    try {
-      const resp = await axiosApi.post("/comment/deleteComment", {
-        commentNo
-      })
+        if (resp.status === 200) {
+          toast.success("댓글이 삭제되었습니다.");
 
-      if(resp.status === 200) {
-        alert("댓글이 삭제되었습니다.");
-        getCommentCount(reviewNo);
-    
-      const resp = await axiosApi.get("/comment/getComment", {
-        params: {reviewNo}
-      })
+          getCommentCount(reviewNo);
 
-      if(resp.status === 200){
-        setComment(prev => ({
-          ...prev,
-          [reviewNo] : resp.data
-        }))
+          const commentResp = await axiosApi.get(
+            "/comment/getComment",
+            {
+              params: { reviewNo }
+            }
+          );
+
+          if (commentResp.status === 200) {
+            setComment(prev => ({
+              ...prev,
+              [reviewNo]: commentResp.data
+            }));
+          }
+        }
+      } catch (error) {
+        toast.error("댓글 삭제에 실패했습니다.");
+        console.error(error);
       }
-    }
-    } catch (error) {
-      console.log(error);
-    }
-  }
+    },
+    "삭제"
+  );
+};
 
   // 댓글 수정
   const [editCommentId, setEditCommentId] = useState(null);
@@ -312,7 +326,7 @@ export default function Reviews() {
       });
 
       if (resp.status === 200) {
-        alert("댓글이 수정되었습니다.");
+        toast.success("댓글이 수정되었습니다.");
         setEditCommentId(null);
 
         const resp = await axiosApi.get("/comment/getComment", {
@@ -393,7 +407,7 @@ export default function Reviews() {
 
   const toggleLike = async (reviewNo) => {
     if (!token) {
-      alert("로그인 후 이용해주세요.");
+      toast.error("로그인 후 이용해주세요.");
       return;
     }
 
@@ -427,7 +441,7 @@ export default function Reviews() {
 
   const submitReport = async (review) => {
     if (!token) {
-      alert("로그인 후 이용해주세요.");
+      toast.error("로그인 후 이용해주세요.");
       return;
     }
 
@@ -435,12 +449,12 @@ export default function Reviews() {
     const reasonDetail = reportReason[review.reviewNo] || "";
 
     if (!selectedReason) {
-      alert("신고 사유를 선택해주세요.");
+      toast.warning("신고 사유를 선택해주세요.");
       return;
     }
 
     if (selectedReason === "기타" && reasonDetail.trim().length === 0) {
-      alert("기타 사유를 선택한 경우 상세 내용을 입력해주세요.");
+      toast.warning("기타 사유를 선택한 경우 상세 내용을 입력해주세요.");
       return;
     }
 
@@ -454,7 +468,7 @@ export default function Reviews() {
       });
 
       if (resp.status === 200) {
-        alert("신고가 접수되었습니다.");
+        toast.success("신고가 접수되었습니다.");
         setReportOpenId(null);
 
         setReportReason(prev => ({ ...prev, [review.reviewNo]: "" }));

@@ -8,6 +8,7 @@ import CartSuccessModal from "./CartSuccessModal";
 import { fetchGoodsDetail, fetchGoodsImgList, fetchGoodsOptions } from "../../api/selectionsAPI";
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import ScrollToTop from "../../components/common/ScrollToTop";
+import { toast } from "react-toastify";
 
 
 const SelectionsDetail = () => {
@@ -128,19 +129,19 @@ const SelectionsDetail = () => {
   const handleQty = (nextQty) => {
 
     if ((hasSize || hasColor) && !selectedOptionRow) {
-      alert("옵션을 먼저 선택해주세요.");
+      toast.warning("옵션을 먼저 선택해주세요.");
       return;
     }
 
     if (nextQty < 1) {
-      alert("최소 수량은 1개입니다.");
+      toast.warning("최소 수량은 1개입니다.");
       return;
     }
 
     const stock = effectiveOptionRow?.stock;
 
     if (stock != null && nextQty > stock) {
-      alert("선택 가능한 재고 수량을 초과했습니다.");
+      toast.warning("선택 가능한 재고 수량을 초과했습니다.");
       return;
     }
 
@@ -250,7 +251,7 @@ const SelectionsDetail = () => {
     if ((effectiveOptionRow.stock ?? 0) === 0) return;
 
     if (qty > effectiveOptionRow.stock) {
-      alert("재고 이하의 수량만 선택 가능합니다.");
+      toast.warning("재고 이하의 수량만 선택 가능합니다.");
       setQty(1);
     }
 
@@ -273,19 +274,19 @@ const SelectionsDetail = () => {
   const handleAddToCart = () => {
     // 옵션 검증
     if ((hasSize || hasColor) && !selectedOptionRow) {
-      alert("옵션을 먼저 선택해주세요.");
+      toast.warning("옵션을 먼저 선택해주세요.");
       return;
     }
 
     const row = effectiveOptionRow;
     if (!row) {
-      alert("상품 정보를 불러오지 못했습니다.");
+      toast.error("상품 정보를 불러오지 못했습니다.");
       return;
     }
 
     // 재고 검증
     if (row.stock != null && qty > row.stock) {
-      alert("선택 가능한 재고 수량을 초과했습니다.");
+      toast.warning("선택 가능한 재고 수량을 초과했습니다.");
       return;
     }
 
@@ -317,24 +318,24 @@ const SelectionsDetail = () => {
   const handleBuyNow = async () => {
     // 옵션 검증
     if ((hasSize || hasColor) && !selectedOptionRow) {
-      alert("옵션을 먼저 선택해주세요.");
+      toast.warning("옵션을 먼저 선택해주세요.");
       return;
     }
 
     const row = effectiveOptionRow;
     if (!row) {
-      alert("상품 정보를 불러오지 못했습니다.");
+      toast.error("상품 정보를 불러오지 못했습니다.");
       return;
     }
 
     // 재고 검증
     if (row.stock != null && qty > row.stock) {
-      alert("선택 가능한 재고 수량을 초과했습니다.");
+      toast.warning("선택 가능한 재고 수량을 초과했습니다.");
       return;
     }
 
     if (!isLoggedIn) {
-      alert("상품 구매는 로그인 후 이용 가능힙니다.");
+      toast.error("상품 구매는 로그인 후 이용 가능힙니다.");
       return;
     }
 
@@ -365,7 +366,7 @@ const SelectionsDetail = () => {
     console.log("addItem 결과", result)
 
     if (!result?.success) {
-      alert("장바구니 추가에 실패했습니다.");
+      toast.error("장바구니 추가에 실패했습니다.");
       return;
     }
 
