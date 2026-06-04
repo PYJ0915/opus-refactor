@@ -187,7 +187,7 @@ export default function MusicalList({ status, search }) {
           <h2>내가 저장한 공연</h2>
           <div style={{ position: "relative" }}>
             <button
-              onClick={() => scrollLeft(likedScrollRef)} style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
+              onClick={() => scrollLeft(savedScrollRef)} style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
             >
               ‹
             </button>
@@ -213,7 +213,7 @@ export default function MusicalList({ status, search }) {
             </div>
 
             <button
-                onClick={() => scrollRight(likedScrollRef)}
+                onClick={() => scrollRight(savedScrollRef)}
                 style={{ position: "absolute", right: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
               >
                 ›

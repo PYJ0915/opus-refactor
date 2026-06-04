@@ -3,7 +3,6 @@ package nknk.opus.project.admin.controller;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.admin.model.dto.GoodsRegist;
 import nknk.opus.project.admin.model.service.AdminService;
-import nknk.opus.project.common.exception.ApiExceptionHandler;
 import nknk.opus.project.reviews.model.dto.Report;
 import nknk.opus.project.reviews.model.dto.Reviews;
 import nknk.opus.project.selections.model.dto.Goods;
@@ -30,16 +29,10 @@ import nknk.opus.project.unveiling.model.dto.Unveiling;
 @Slf4j
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
-    private final ApiExceptionHandler apiExceptionHandler;
-
-	@Autowired
-	private AdminService service;
-
-    AdminController(ApiExceptionHandler apiExceptionHandler) {
-        this.apiExceptionHandler = apiExceptionHandler;
-    }
+	private final AdminService service;
 	
 	@GetMapping("/report")
 	public ResponseEntity<List<Report>> getReport() {

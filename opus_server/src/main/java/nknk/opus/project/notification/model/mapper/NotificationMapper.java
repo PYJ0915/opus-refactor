@@ -3,6 +3,7 @@ package nknk.opus.project.notification.model.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import nknk.opus.project.notification.model.dto.Notification;
 
@@ -16,7 +17,7 @@ public interface NotificationMapper {
     int countUnread(int memberNo);
 
     // 단건 읽음 처리
-    int markAsRead(int notiNo);
+    int markAsRead(@Param("notiNo") int notiNo, @Param("memberNo") int memberNo);
 
     // 전체 읽음 처리
     int markAllAsRead(int memberNo);
@@ -25,9 +26,11 @@ public interface NotificationMapper {
     int insertNotification(Notification notification);
     
     // 개별 삭제
-    int deleteNotification(int notiNo);
+    int deleteNotification(@Param("notiNo") int notiNo, @Param("memberNo") int memberNo);
 
     // 전체 비우기
     int deleteAllNotifications(int memberNo);
+
+	
 
 }

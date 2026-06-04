@@ -32,15 +32,10 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public void markAsRead(int notiNo, int memberNo) {
-		// 본인 알림인지 확인 후 읽음 처리
-		List<Notification> notifications = mapper.selectNotifications(memberNo);
-		boolean isOwner = notifications.stream().anyMatch(n -> n.getNotiNo() == notiNo);
-
-		if (!isOwner) {
-			throw new BusinessException("권한이 없습니다.");
-		}
-
-		mapper.markAsRead(notiNo);
+	    int result = mapper.markAsRead(notiNo, memberNo);
+	    if (result == 0) {
+	        throw new BusinessException("권한이 없거나 알림을 찾을 수 없습니다.");
+	    }
 	}
 
 	@Override
@@ -64,19 +59,10 @@ public class NotificationServiceImpl implements NotificationService {
 	// 본인 알림인지 확인 후 삭제
 	@Override
 	public void deleteNotification(int notiNo, int memberNo) {
-		List<Notification> notifications = mapper.selectNotifications(memberNo);
-
-		Notification notification = notifications.stream().filter(n -> n.getNotiNo() == notiNo).findFirst()
-				.orElseThrow(() -> new ResourceNotFoundException("알림을 찾을 수 없습니다."));
-
-		if (notification.getMemberNo() != memberNo) {
-			throw new BusinessException("권한이 없습니다.");
-		}
-
-		int result = mapper.deleteNotification(notiNo);
-		if (result != 1) {
-			log.warn("알림 삭제 실패 - notiNo: {}", notiNo);
-		}
+	    int result = mapper.deleteNotification(notiNo, memberNo);
+	    if (result == 0) {
+	        throw new ResourceNotFoundException("알림을 찾을 수 없거나 권한이 없습니다.");
+	    }
 	}
 
 	// 전체 비우기
