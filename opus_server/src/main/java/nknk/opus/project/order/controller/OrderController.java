@@ -196,9 +196,15 @@ public class OrderController {
 	 * 배송 완료 처리 (관리자)
 	 */
 	@PutMapping("{orderNo}/complete")
-	public ResponseEntity<Void> completeDelivery(@PathVariable("orderNo") int orderNo) {
-
-		// TODO: 관리자 권한 확인
+	public ResponseEntity<Void> completeDelivery(@PathVariable("orderNo") int orderNo, 
+			Authentication authentication) {
+		
+		// ROLE_ADMIN인지 확인
+	    boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+	    
+	    if (!isAdmin) {
+	        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+	    }
 
 		orderService.completeDelivery(orderNo);
 
