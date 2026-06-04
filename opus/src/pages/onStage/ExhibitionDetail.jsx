@@ -23,7 +23,7 @@ export default function ExhibitionDetail () {
     queryKey: ["exhibitionDetail", exhibitionId],
     queryFn: async () => {
       const exhibitions = await getAllExhibitions({
-        serviceKey: "bcec5111-252e-47c3-9dca-4b943cf5a0ed",
+        serviceKey: import.meta.env.VITE_KCISA_KEY,
         pageParam: 1
       });
       return exhibitions.find(e => String(e.exhibitionId) === exhibitionId);

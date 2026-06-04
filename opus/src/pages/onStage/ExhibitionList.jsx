@@ -7,7 +7,7 @@ import { useContentStore } from "../../store/useContentStore.js";
 import axiosApi from '../../api/axiosAPI';
 import { useAuthStore } from "../../components/auth/useAuthStore";
 
-const SERVICE_KEY = "bcec5111-252e-47c3-9dca-4b943cf5a0ed";
+const SERVICE_KEY = import.meta.env.VITE_KCISA_KEY;
 
 // 날짜 파싱하기 (<PERIOD>2026-01-30~2026-05-03</PERIOD>)
 function parsePeriod(period) {
@@ -136,7 +136,7 @@ export default function ExhibitionList({ search, status }) {
           : getStatus(e.period) === "02" ? "전시중" : "전시완료"
       })));
     }
-  }, [allItems]);
+  }, [allItems, setExhibitions]);
 
   // -------------------------------------------
 

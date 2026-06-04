@@ -43,7 +43,7 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
     fetchUnreadCount();
     const timer = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(timer);
-  }, [isLoggedIn]);
+  }, [isLoggedIn, fetchUnreadCount]);
 
   // 패널 열릴 때 목록 조회
   useEffect(() => {

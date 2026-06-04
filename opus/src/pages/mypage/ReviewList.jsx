@@ -11,7 +11,7 @@ const ReviewList = () => {
   const loginMemberNo = useAuthStore(state => state.member?.memberNo);
 
   const [reviewItems, setReviewItems] = useState([]);
-  const SERVICE_KEY = "f8d2111671454d7bb5b0102d85c7cf1c";
+  const SERVICE_KEY = import.meta.env.VITE_KOPIS_KEY;
 
   const getStageType = (stageNo) => {
     if (!stageNo) return "알 수 없음";
@@ -27,7 +27,7 @@ const ReviewList = () => {
         const reviews = res.data;
 
         const exhibitions = await getAllExhibitions({
-          serviceKey: "bcec5111-252e-47c3-9dca-4b943cf5a0ed",
+          serviceKey: import.meta.env.VITE_KCISA_KEY,
           pageParam: 1
         });
 

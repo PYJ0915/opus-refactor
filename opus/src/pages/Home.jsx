@@ -4,8 +4,8 @@ import MdPickSlider from "../components/MdPickSlider";
 import { getAllExhibitions } from "../api/kcisaAPI";
 import { getAllMusicals, dateRange } from "../api/kopisAPI";
 
-const EXHIBITION_KEY = "bcec5111-252e-47c3-9dca-4b943cf5a0ed";
-const MUSICAL_KEY = "f8d2111671454d7bb5b0102d85c7cf1c";
+const EXHIBITION_KEY = import.meta.env.VITE_KCISA_KEY;
+const MUSICAL_KEY = import.meta.env.VITE_KOPIS_KEY;
 
 function parsePeriod(period) {
   if (!period || !period.includes("~")) return null;

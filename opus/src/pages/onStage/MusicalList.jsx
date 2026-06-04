@@ -8,7 +8,7 @@ import axiosApi from "../../api/axiosAPI";
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import { useContentStore } from "../../store/useContentStore.js";
 
-const SERVICE_KEY = "f8d2111671454d7bb5b0102d85c7cf1c";
+const SERVICE_KEY = import.meta.env.VITE_KOPIS_KEY;
 
 export default function MusicalList({ status, search }) {
   const loginMemberNo = useAuthStore(state => state.member?.memberNo);
@@ -95,7 +95,7 @@ export default function MusicalList({ status, search }) {
         status: m.prfstate
       })));
     }
-  }, [allItems]);
+  }, [allItems, setMusicals]);
 
   // -------------------------------------------
 

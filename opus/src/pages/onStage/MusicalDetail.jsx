@@ -19,7 +19,7 @@ export default function MusicalDetail () {
   const modalBackground = useRef();
   const loginMemberNo = useAuthStore(state => state.member?.memberNo);
   
-  const SERVICE_KEY = "f8d2111671454d7bb5b0102d85c7cf1c";
+  const SERVICE_KEY = import.meta.env.VITE_KOPIS_KEY;
   
   const { isPending, error, data } = useQuery({
     queryKey : ["kopis", "detail", mt20id],
