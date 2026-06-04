@@ -3,7 +3,6 @@ import Loading from "../../components/common/Loading"
 import "../../css/Selections.css";
 import { NavLink } from "react-router-dom";
 import { fetchGoodsList } from "../../api/selectionsAPI";
-import ScrollToTop from "../../components/common/ScrollToTop";
 import { useContentStore } from "../../store/useContentStore";
 
 const Selections = () => {
@@ -179,8 +178,6 @@ const Selections = () => {
           </div>
         </section>
       )}
-
-      <ScrollToTop />
 
     </main>
   )

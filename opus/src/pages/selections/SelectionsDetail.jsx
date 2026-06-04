@@ -7,7 +7,6 @@ import { useCartStore } from "../../store/useCartStore";
 import CartSuccessModal from "./CartSuccessModal";
 import { fetchGoodsDetail, fetchGoodsImgList, fetchGoodsOptions } from "../../api/selectionsAPI";
 import { useAuthStore } from "../../components/auth/useAuthStore";
-import ScrollToTop from "../../components/common/ScrollToTop";
 import { toast } from "react-toastify";
 
 
@@ -744,8 +743,6 @@ const SelectionsDetail = () => {
             </div>
           </div>
         </section>
-
-        <ScrollToTop />
 
         <CartSuccessModal
           isOpen={isCartModalOpen}

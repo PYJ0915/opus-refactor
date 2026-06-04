@@ -10,7 +10,6 @@ import { useAddressStore } from "../../store/useAddressStore";
 // 토스페이먼츠 연동
 import { loadTossPayments } from '@tosspayments/payment-sdk';
 import { orderApi } from "../../api/orderAPI";
-import ScrollToTop from "../../components/common/ScrollToTop";
 import { toast } from "react-toastify";
 
 const Checkout = () => {

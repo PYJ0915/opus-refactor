@@ -4,7 +4,6 @@ import { orderApi } from "../../api/orderAPI";
 import Loading from "../../components/common/Loading";
 import "../../css/OrderDetail.css";
 import CancelOrderModal from "./CancelOrderModal";
-import ScrollToTop from "../../components/common/ScrollToTop";
 import { toast } from "react-toastify";
 
 const OrderDetail = () => {
