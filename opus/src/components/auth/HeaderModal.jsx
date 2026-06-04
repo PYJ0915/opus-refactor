@@ -44,8 +44,6 @@ export default function HeaderModal({ variant }) {
     );
   }, [logout, navigate]);
 
-  const authState = useAuthStore(state => state);
-
   return (
     <>
       <Header

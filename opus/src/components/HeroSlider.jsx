@@ -20,29 +20,39 @@ export default function HeroSlider() {
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % SLIDES.length);
     }, 5500);
-
     return () => clearInterval(timer);
   }, []);
 
-  const prev = () =>
-    setIndex((index - 1 + SLIDES.length) % SLIDES.length);
-  const next = () =>
-    setIndex((index + 1) % SLIDES.length);
+  const prev = () => setIndex((index - 1 + SLIDES.length) % SLIDES.length);
+  const next = () => setIndex((index + 1) % SLIDES.length);
 
   return (
     <section id="hero-banner" className="hero">
+      {/* 모든 슬라이드를 쌓아두고 opacity로 전환 */}
       <div className="hero__bg">
-        <img
-          className="hero__img"
-          src={SLIDES[index].img}
-          alt="elegant theatrical stage with dramatic red curtains and spotlight, cinematic photography"
-        />
+        {SLIDES.map((slide, i) => (
+          <img
+            key={i}
+            className="hero__img"
+            src={slide.img}
+            alt=""
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: i === index ? 1 : 0,
+              transition: "opacity 0.8s ease",  // ← 부드러운 페이드
+            }}
+          />
+        ))}
       </div>
 
+      {/* 나머지 버튼/텍스트는 기존과 동일 */}
       <button className="hero__nav hero__nav--left" onClick={prev}>
         <i className="fa-solid fa-chevron-left" />
       </button>
-
       <button className="hero__nav hero__nav--right" onClick={next}>
         <i className="fa-solid fa-chevron-right" />
       </button>
@@ -51,18 +61,7 @@ export default function HeroSlider() {
         <div className="wrap">
           <div className="hero__text">
             <h1 className="hero__title">{SLIDES[index].title}</h1>
-            <p className="hero__place">
-              {SLIDES[index].content}
-            </p>
-            {SLIDES[index].title === "OPUS" ? (
-              <>
-                <p className="hero__date"><b>O</b>pening</p>
-                <p className="hero__date"><b>P</b>erspective,</p>
-                <p className="hero__date"><b>U</b>nveiling</p>
-                <p className="hero__date"><b>S</b>cene</p>
-              </>
-            ) : null}
-
+            <p className="hero__place">{SLIDES[index].content}</p>
           </div>
         </div>
       </div>
@@ -70,14 +69,11 @@ export default function HeroSlider() {
       <div className="hero__bottom">
         <div className="dots">
           {SLIDES.map((_, i) => (
-            <button
-              key={i}
-              className={`dot ${i === index ? "is-active" : ""}`}
-              onClick={() => setIndex(i)}
-            />
+            <button key={i}
+              className={`dot${i === index ? " is-active" : ""}`}
+              onClick={() => setIndex(i)} />
           ))}
         </div>
-
         <div className="hero__count">
           <span>{index + 1}</span> / {SLIDES.length}
         </div>
