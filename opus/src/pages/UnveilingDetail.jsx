@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { unveilingData } from "../data/unveilingData";
 import "../css/UnveilingDetail.css";
 import { useAuthStore } from "../components/auth/useAuthStore";
 import axiosApi from "../api/axiosAPI";
 import axios from "axios";
 import { toast } from "react-toastify";
+import LoadingSpinner from "../components/common/LoadingSpinner";
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
@@ -35,31 +35,6 @@ const STATUS = {
   UPCOMING: { text: "예정", key: "soon" },
   ENDED: { text: "종료", key: "ended" },
 };
-
-function normalizeFromDummy(item) {
-  return {
-    unveilingNo: item.id,
-    image: item.image,
-    alt: item.alt || "auction item image",
-    status: item.status ?? "LIVE",
-    title: item.detailTitle ?? item.title ?? "무제 (Untitled)",
-    artist: item.artist ? `${item.artist} 작가` : "작가 정보",
-    year: item.year ?? "",
-    material: item.material ?? "",
-    size: item.size ?? "",
-    estimate: item.estimate ?? "",
-    startPrice: item.startPrice ?? "",
-    currentPrice: item.currentPrice ?? item.pricing?.display ?? "",
-    bidCount: item.bidCount ?? item.stats?.count ?? 0,
-    endAt: item.endAt ?? null,
-    endAtLabel: item.endAtLabel ?? "",
-    description: item.description ?? [],
-    artistName: item.artistName ?? (item.artist ?? ""),
-    artistBio: item.artistBio ?? "",
-    exhibitions: item.exhibitions ?? "",
-    awards: item.awards ?? "",
-  };
-}
 
 function normalizeFromApi(data, fallbackUnveilingNo, fallbackDetail) {
   const formatKRW = (n) => `₩${Number(n).toLocaleString("ko-KR")}`;
@@ -120,39 +95,9 @@ export default function UnveilingDetail() {
   const { id } = useParams();
   const unveilingNo = useMemo(() => Number(id), [id]);
 
-  const dummyItem = useMemo(() => {
-    if (!Number.isFinite(unveilingNo)) return null;
-    return unveilingData.find((v) => v.id === unveilingNo) ?? null;
-  }, [unveilingNo]);
-
-  const dummyDetail = useMemo(() => {
-    if (dummyItem) return normalizeFromDummy(dummyItem);
-    return {
-      unveilingNo,
-      image: "",
-      alt: "auction item image",
-      status: "LIVE",
-      title: "경매 상세",
-      artist: "",
-      year: "",
-      material: "",
-      size: "",
-      estimate: "",
-      startPrice: "",
-      currentPrice: "",
-      bidCount: 0,
-      endAt: null,
-      endAtLabel: "",
-      description: [],
-      artistName: "",
-      artistBio: "",
-      exhibitions: "",
-      awards: "",
-    };
-  }, [dummyItem, unveilingNo]);
-
   // ===== State =====
-  const [detail, setDetail] = useState(dummyDetail);
+  const [detail, setDetail] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [bidState, setBidState] = useState(null);
   const [showTop, setShowTop] = useState(false);
 
@@ -170,10 +115,10 @@ export default function UnveilingDetail() {
 
   // 라우트 이동 시 리셋
   useEffect(() => {
-    setDetail(dummyDetail);
+    setDetail(null);
     setBidState(null);
     setShowTop(false);
-  }, [dummyDetail]);
+  }, [unveilingNo]);
 
   // Top 버튼 스크롤 감지
   useEffect(() => {
@@ -190,10 +135,13 @@ export default function UnveilingDetail() {
   // ===== API 호출 =====
   const fetchDetail = useCallback(async () => {
     try {
+      setIsLoading(true);
       const { data } = await axiosApi.get(`/api/unveilings/${unveilingNo}`);
-      setDetail((prev) => normalizeFromApi(data, unveilingNo, prev));
+      setDetail(normalizeFromApi(data, unveilingNo, null));
     } catch {
-      // noop
+      // 에러 처리
+    } finally {
+      setIsLoading(false);
     }
   }, [unveilingNo]);
 
@@ -235,16 +183,22 @@ export default function UnveilingDetail() {
   }, [fetchBidState, unveilingNo, bidState?.unveilingStatus]);
 
   // 카운트다운 (1초 간격)
-  const [remain, setRemain] = useState(() => getRemaining(detail.endAt));
+  const [remain, setRemain] = useState(() =>
+    getRemaining(detail?.endAt)
+  );
+
   useEffect(() => {
-    const tick = () => setRemain(getRemaining(detail.endAt));
+    const tick = () => setRemain(getRemaining(detail?.endAt));
+
     tick();
+
     const t = setInterval(tick, 1000);
+
     return () => clearInterval(t);
-  }, [detail.endAt]);
+  }, [detail?.endAt]);
 
   // ===== 상태 판단 =====
-  const serverStatus = bidState?.unveilingStatus || detail.status;
+  const serverStatus = bidState?.unveilingStatus || detail?.status;
   const status = STATUS[serverStatus] ?? STATUS.LIVE;
   const { isLoggedIn, member } = useAuthStore();
 
@@ -285,15 +239,15 @@ export default function UnveilingDetail() {
     const social = member?.loginType !== "NORMAL";
     setIsSocialLogin(social);
 
-    const minutesLeft = detail.endAt
+    const minutesLeft = detail?.endAt
       ? (new Date(detail.endAt) - new Date()) / 1000 / 60
       : Infinity;
     setIsUrgent(minutesLeft <= 1);
-    
+
     setModalPw("");
     setModalError("");
     setModal(true);
-  }, [isLoggedIn, bidState, member, detail.endAt]);
+  }, [isLoggedIn, bidState, member, detail?.endAt]);
 
   // 응찰 모달 확인 클릭 → 비밀번호 검증 후 입찰
   const onBidConfirm = useCallback(async () => {
@@ -387,6 +341,12 @@ export default function UnveilingDetail() {
   }
 
   // ===== 렌더링 =====
+  if (isLoading) return <LoadingSpinner text="경매 정보를 불러오는 중..." />;
+  if (!detail) return (
+    <div style={{ textAlign: "center", padding: 80 }}>
+      경매 정보를 불러올 수 없습니다.
+    </div>
+  );
   return (
     <div className="page unveiling-detail">
       <main className="container">
