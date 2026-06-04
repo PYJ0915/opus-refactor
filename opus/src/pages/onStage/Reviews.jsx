@@ -125,14 +125,12 @@ export default function Reviews() {
 
   const saveEdit = async(reviewNo) => {
     try {
-      const resp = await axiosApi.post("/reviews/updateReview", {
-        reviewNo,
-        reviewContent : editReview,
-      })
+      const resp = await axiosApi.put(`/reviews/${reviewNo}`, { reviewContent: editReview });
 
       if(resp.status === 200) {
         setEditId(null);
         showReviews();
+        toast.success("후기가 수정되었습니다.");
       }
     } catch (error) {
       console.log(error);
@@ -175,13 +173,15 @@ export default function Reviews() {
     "삭제한 후기는 복구할 수 없습니다.",
     async () => {
       try {
-        const resp = await axiosApi.post("/reviews/deleteReview", { reviewNo });
+        const resp = await axiosApi.delete(`/reviews/${reviewNo}`);
+        console.log(resp);
         if (resp.status === 200) {
           toast.success("후기가 삭제되었습니다.");
           showReviews();
           showReviewsCount();
         }
       } catch (error) {
+        console.log(error);
         toast.error("후기 삭제에 실패했습니다.");
       }
     },
@@ -270,9 +270,7 @@ export default function Reviews() {
     "삭제한 댓글은 복구할 수 없습니다.",
     async () => {
       try {
-        const resp = await axiosApi.post("/comment/deleteComment", {
-          commentNo
-        });
+        const resp = await axiosApi.delete(`/comment/${commentNo}`);
 
         if (resp.status === 200) {
           toast.success("댓글이 삭제되었습니다.");
@@ -320,10 +318,7 @@ export default function Reviews() {
 
   const saveEditComment = async (commentNo, reviewNo) => {
     try {
-      const resp = await axiosApi.post("/comment/updateComment", {
-        commentNo,
-        commentContent: editCommentContent
-      });
+      const resp = await axiosApi.put(`/comment/${commentNo}`, { commentContent: editCommentContent });
 
       if (resp.status === 200) {
         toast.success("댓글이 수정되었습니다.");

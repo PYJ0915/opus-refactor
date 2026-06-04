@@ -64,8 +64,8 @@ const GoodsForm = ({ editTarget, onSuccess, onCancel }) => {
         // 기존 상세 이미지 (order != 0)
         if (detail.images) {
           const detailImgList = detail.images
-            .filter((img) => img.goodsImgOrder !== "0")
-            .sort((a, b) => Number(a.goodsImgOrder) - Number(b.goodsImgOrder))
+            .filter((img) => img.goodsImgOrder !== 0)
+            .sort((a, b) => a.goodsImgOrder - b.goodsImgOrder)
             .map((img) => ({
               goodsImgNo: img.goodsImgNo,
               url: `${import.meta.env.VITE_API_URL}${img.goodsImgPath}${img.goodsImgRe}`,

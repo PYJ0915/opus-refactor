@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,13 +21,13 @@ import nknk.opus.project.reviews.model.dto.Reviews;
 import nknk.opus.project.reviews.model.service.ReviewsService;
 
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("reviews")
 public class ReviewsController {
 
 	@Autowired
 	private ReviewsService service;
 	
-	@GetMapping("/getReviews")
+	@GetMapping("getReviews")
 	public ResponseEntity<List<Reviews>> getReviews(@RequestParam("stageNo") String stageNo) {
 		try {
 			List<Reviews> result = service.getReviews(stageNo);
@@ -35,7 +38,7 @@ public class ReviewsController {
 		}
 	}
 	
-	@GetMapping("/getReviewsCount")
+	@GetMapping("getReviewsCount")
 	public ResponseEntity<Integer> showReviewsCount(@RequestParam("stageNo") String stageNo) {
 		try {
 			int result = service.getReviewsCount(stageNo);
@@ -47,7 +50,7 @@ public class ReviewsController {
 		}
 	}
 	
-	@PostMapping("/addReview")
+	@PostMapping("addReview")
 	public ResponseEntity<String> addReview(Authentication authentication, @RequestBody Reviews inputReview) {
 
 		try {
@@ -66,53 +69,33 @@ public class ReviewsController {
 		}
 	}
 	
-	@PostMapping("/updateReview")
-	public ResponseEntity<String> updateReview(Authentication authentication, @RequestBody Reviews inputReview) {
-		try {
-			int loginMemberNo = Integer.parseInt(authentication.getName());
-			int writerNo = service.getWriterNo(inputReview.getReviewNo());
-			
-			if(loginMemberNo != writerNo) {
-				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("수정 권한이 없습니다.");
-			}
-			
-			int result = service.updateReview(inputReview);
-			
-			if(result == 0) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("후기 수정에 실패하였습니다.");
-			}
-			
-			return ResponseEntity.status(HttpStatus.OK).body("후기를 수정하였습니다.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
+	@DeleteMapping("{reviewNo}")
+	public ResponseEntity<Void> deleteReview(@PathVariable("reviewNo") int reviewNo,
+	                                         Authentication authentication) {
+	    int loginMemberNo = Integer.parseInt(authentication.getName());
+	    int writerNo = service.getWriterNo(reviewNo);
+	    if (writerNo != loginMemberNo) {
+	        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+	    }
+	    service.deleteReview(reviewNo);
+	    return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("{reviewNo}")
+	public ResponseEntity<Void> updateReview(@PathVariable("reviewNo") int reviewNo,
+	                                         @RequestBody Reviews inputReview,
+	                                         Authentication authentication) {
+	    int loginMemberNo = Integer.parseInt(authentication.getName());
+	    int writerNo = service.getWriterNo(reviewNo);
+	    if (writerNo != loginMemberNo) {
+	        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+	    }
+	    inputReview.setReviewNo(reviewNo);
+	    service.updateReview(inputReview);
+	    return ResponseEntity.ok().build();
 	}
 	
-	@PostMapping("/deleteReview")
-	public ResponseEntity<String> deleteReview(Authentication authentication, @RequestBody Reviews inputReview) {
-		try {
-			int loginMemberNo = Integer.parseInt(authentication.getName());
-			int writerNo = service.getWriterNo(inputReview.getReviewNo());
-			
-			if(writerNo != loginMemberNo) {
-				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("수정 권한이 없습니다.");
-			}
-			
-			int result = service.deleteReview(inputReview.getReviewNo());
-			
-			if(result == 0) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("후기 삭제에 실패하였습니다.");
-			}
-			
-			return ResponseEntity.status(HttpStatus.OK).body("후기를 삭제하였습니다.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
-	}
-	
-    @PostMapping("/addReport")
+    @PostMapping("addReport")
     public ResponseEntity<String> addReport(Authentication authentication, @RequestBody Report report) {
         try {
             int reporterNo = Integer.parseInt(authentication.getName());
