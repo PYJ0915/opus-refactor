@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { orderApi } from "../../api/orderAPI";
 import Loading from "../../components/common/Loading";
 import "../../css/OrderDetail.css";
-import CancelOrderModal from "./CancelOrderModal";
+import CancelOrderModal from "../../components/selections/CancelOrderModal";
 import { toast } from "react-toastify";
 
 const OrderDetail = () => {
