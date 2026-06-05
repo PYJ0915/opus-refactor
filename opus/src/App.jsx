@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Selections from "./pages/selections/Selections";
 import SelectionsDetail from "./pages/selections/SelectionsDetail";
@@ -36,8 +36,24 @@ import Privacy from "./pages/footer/Privacy";
 import Admin from "./pages/admin/Admin";
 import MyPosts from "./pages/mypage/MyPosts";
 import AdminProtectedRoute from "./components/auth/AdminProtectedRoute";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function App() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleAuthExpired = (e) => {
+      toast.error(e.detail.message, { toastId: "auth-expired" });
+      navigate("/", { replace: true });
+    };
+
+    window.addEventListener("auth:expired", handleAuthExpired);
+    return () => window.removeEventListener("auth:expired", handleAuthExpired);
+  }, [navigate]);
+
+
   return (
     <>
       <AuthInitializer />

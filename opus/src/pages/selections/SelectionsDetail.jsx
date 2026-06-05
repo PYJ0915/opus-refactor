@@ -4,10 +4,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../components/common/Loading";
 import "../../css/Selections-detail.css";
 import { useCartStore } from "../../store/useCartStore";
-import CartSuccessModal from "./CartSuccessModal";
+import CartSuccessModal from "../../components/selections/CartSuccessModal";
 import { fetchGoodsDetail, fetchGoodsImgList, fetchGoodsOptions } from "../../api/selectionsAPI";
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import { toast } from "react-toastify";
+import { addRecentlyViewed } from "../../utils/recentlyViewed";
+import RecentlyViewed from "../../components/selections/RecentlyViewed";
 
 
 const SelectionsDetail = () => {
@@ -62,6 +64,13 @@ const SelectionsDetail = () => {
       if (resp.status === 200) {
         console.log("상품 상세 조회 완료", resp.data);
         setGoodsDetail(resp.data);
+
+        addRecentlyViewed({
+          goodsNo: resp.data.goodsNo,
+          goodsName: resp.data.goodsName,
+          goodsPrice: resp.data.goodsPrice,
+          goodsThumbnail: resp.data.goodsThumbnail,
+        });
       }
 
     } catch (error) {
@@ -743,6 +752,8 @@ const SelectionsDetail = () => {
             </div>
           </div>
         </section>
+
+        <RecentlyViewed currentGoodsNo={goodsId} />
 
         <CartSuccessModal
           isOpen={isCartModalOpen}

@@ -113,7 +113,7 @@ public class AdminServiceImpl implements AdminService {
 			thumbnail.transferTo(new File(uploadPath + fileName));
 
 			GoodsImg thumbImg = GoodsImg.builder().goodsNo(goodsNo).goodsImgPath("/images/goods/").goodsImgRe(fileName)
-					.goodsImgOrder("0").build();
+					.goodsImgOrder(0).build();
 
 			mapper.insertGoodsImg(thumbImg);
 		}
@@ -134,7 +134,7 @@ public class AdminServiceImpl implements AdminService {
 					img.transferTo(new File(uploadPath + fileName));
 
 					GoodsImg goodsImg = GoodsImg.builder().goodsNo(goodsNo).goodsImgPath("/images/goods/")
-							.goodsImgRe(fileName).goodsImgOrder(String.valueOf(order)).build();
+							.goodsImgRe(fileName).goodsImgOrder(order).build();
 
 					mapper.insertGoodsImg(goodsImg);
 
@@ -209,7 +209,7 @@ public class AdminServiceImpl implements AdminService {
 			// 기존 썸네일 삭제 후 재삽입
 			mapper.deleteGoodsImgByOrder(goodsNo, "0");
 			GoodsImg thumbImg = GoodsImg.builder().goodsNo(goodsNo).goodsImgPath("/images/goods/").goodsImgRe(fileName)
-					.goodsImgOrder("0").build();
+					.goodsImgOrder(0).build();
 			mapper.insertGoodsImg(thumbImg);
 		}
 
@@ -225,7 +225,7 @@ public class AdminServiceImpl implements AdminService {
 					img.transferTo(new File(uploadPath + fileName));
 
 					GoodsImg goodsImg = GoodsImg.builder().goodsNo(goodsNo).goodsImgPath("/images/goods/")
-							.goodsImgRe(fileName).goodsImgOrder(String.valueOf(lastOrder)).build();
+							.goodsImgRe(fileName).goodsImgOrder(lastOrder).build();
 					mapper.insertGoodsImg(goodsImg);
 				}
 			}

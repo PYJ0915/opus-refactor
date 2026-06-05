@@ -1,7 +1,7 @@
 /* Checkout.jsx */
 import { useEffect, useRef, useState } from "react";
 import "../../css/Checkout.css";
-import AddressModal from "./AddressModal";
+import AddressModal from "../../components/selections/AddressModal";
 import { useCartStore } from "../../store/useCartStore";
 import { useNavigate } from "react-router-dom";
 import { useDaumPostcodePopup } from 'react-daum-postcode'; // 다음 주소 API

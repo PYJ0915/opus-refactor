@@ -30,7 +30,7 @@ axiosApi.interceptors.response.use(
     // 401(Unauthorized) 에러 발생 시
     if (error?.response?.status === 401) {
       const url = error.config?.url || "";
-      
+
       // 로그인/구글로그인 중 401은 여기서 가로채지 않음 (로그인 실패는 컴포넌트에서 처리)
       if (!url.includes("/auth/login") && !url.includes("/auth/google")) {
         // 1) 클라이언트 인증 정보 초기화
@@ -50,11 +50,12 @@ axiosApi.interceptors.response.use(
 
         const serverMsg = extracted || fallbackMsg;
 
-        alert(serverMsg);
-        window.location.href = "/";
+        window.dispatchEvent(
+          new CustomEvent("auth:expired", { detail: { message: serverMsg } })
+        );
 
         // 이후 컴포넌트 로직이 실행되지 않도록 중단
-        return new Promise(() => {});
+        return new Promise(() => { });
       }
     }
 
