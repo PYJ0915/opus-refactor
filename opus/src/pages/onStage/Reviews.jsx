@@ -8,6 +8,7 @@ import { useLike } from '../../hooks/useLike';
 import { useReport } from '../../hooks/useReport';
 
 import ReviewItem from '../../components/reviews/ReviewItem';
+import StarRating from "../../components/common/StarRating";
 
 export default function Reviews() {
   const { stageNo } = useParams();
@@ -25,6 +26,7 @@ export default function Reviews() {
     sortType, setSortType,
     isFormOpen, openForm, closeForm,
     writeReview, setWriteReview,
+    writeRating, setWriteRating,
     submitReview,
     editId, editReview, setEditReview,
     clickEditBtn, clickEditCancelBtn, saveEdit,
@@ -67,10 +69,14 @@ export default function Reviews() {
 
         <div
           id="review-form"
-          className={`card card--p-lg ${isFormOpen ? "" : "hidden"}`}
+          className={`card card--p-lg${isFormOpen ? "" : "hidden"}`}
           aria-hidden={isFormOpen ? "false" : "true"}
         >
           <div className="form">
+            <div className="field" style={{ marginBottom: 12 }}>
+              <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>별점</p>
+              <StarRating rating={writeRating} onChange={setWriteRating} size={28} />
+            </div>
             <div className="field">
               <textarea
                 className="textarea"
@@ -81,7 +87,7 @@ export default function Reviews() {
             </div>
             <div className="form__actions">
               <button className="btn btn--outline" type="button" id="cancel-review-btn" onClick={closeForm}>취소</button>
-              <button className="btn btn--dark" type="button" id='submit-review-btn' onClick={submitReview}>등록하기</button>
+              <button className="btn btn--dark" type="button" id="submit-review-btn" onClick={submitReview}>등록하기</button>
             </div>
           </div>
         </div>

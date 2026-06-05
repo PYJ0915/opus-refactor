@@ -8,8 +8,9 @@ import { useAuthStore } from '../../components/auth/useAuthStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getAllExhibitions } from '../../api/kcisaAPI';
 import { toast } from 'react-toastify';
+import StarRating from '../../components/common/StarRating';
 
-export default function ExhibitionDetail () {
+export default function ExhibitionDetail() {
   const { exhibitionId } = useParams();
   const navigate = useNavigate();
   const loginMemberNo = useAuthStore(state => state.member?.memberNo);
@@ -31,6 +32,15 @@ export default function ExhibitionDetail () {
     enabled: !!exhibitionId
   });
 
+  const { data: avgRating } = useQuery({
+    queryKey: ["avgRating", exhibitionId],
+    queryFn: async () => {
+      const res = await axiosApi.get(`/reviews/averageRating?stageNo=${exhibitionId}`);
+      return res.data;
+    },
+    enabled: !!exhibitionId,
+  });
+
   const currentURL = window.location.href;
 
   const copyURL = async () => {
@@ -47,7 +57,7 @@ export default function ExhibitionDetail () {
       toast.error("로그인 후 이용해주세요.");
       return;
     }
-    
+
     try {
       const res = await axiosApi.post("/stage/like", {
         memberNo: loginMemberNo,
@@ -99,7 +109,7 @@ export default function ExhibitionDetail () {
       toast.error("로그인 후 이용해주세요.");
       return;
     }
-    
+
     try {
       const res = await axiosApi.post("/stage/save", {
         memberNo: loginMemberNo,
@@ -132,7 +142,7 @@ export default function ExhibitionDetail () {
     },
     enabled: !!bestReview?.reviewNo
   });
-  
+
   if (isLoading) return <div>로딩 중...</div>;
   if (!item) return <div>잘못된 접근입니다.</div>;
 
@@ -143,22 +153,22 @@ export default function ExhibitionDetail () {
           <section className="left-col">
             <div className="poster-sticky" id="poster-section">
               <div className="poster-box">
-                {item.image? <img className="poster-img" src={item.image} alt={`${item.title} 포스터`} />
-                  : <div className="poster-img" style={{height : 220}} />
+                {item.image ? <img className="poster-img" src={item.image} alt={`${item.title} 포스터`} />
+                  : <div className="poster-img" style={{ height: 220 }} />
                 }
               </div>
 
               <div className="poster-actions">
                 <button className='btn btn-primary' id='book-btn' type='button'
                   onClick={() => {
-                    if(!item.url) {
+                    if (!item.url) {
                       toast.error("상세 보기 기능이 없는 전시입니다.");
                       return;
                     }
                     window.open(item.url, "_blank", "noopener,noreferrer")
                   }}>
-                    상세 보기
-                  </button>
+                  상세 보기
+                </button>
 
                 <div className="actions-row">
                   <button className="btn btn-outline" type="button" onClick={toggleLike}>
@@ -190,7 +200,7 @@ export default function ExhibitionDetail () {
 
               {shareModalOpen &&
                 <div className={'share-modal-container'} ref={modalBackground} onClick={e => {
-                  if(e.target === modalBackground.current) {
+                  if (e.target === modalBackground.current) {
                     setShareModalOpen(false);
                   }
                 }}>
@@ -230,38 +240,44 @@ export default function ExhibitionDetail () {
               <div className="meta-box">
                 <div className="meta-row">
                   <div className="meta-label">일정</div>
-                  <div className='meta-value'>{item.period ? <span dangerouslySetInnerHTML={{__html : item.period}}></span> : "(알 수 없음)"}</div>
+                  <div className='meta-value'>{item.period ? <span dangerouslySetInnerHTML={{ __html: item.period }}></span> : "(알 수 없음)"}</div>
                 </div>
                 <div className="meta-row">
                   <div className="meta-label">장소</div>
-                  <div className='meta-value'>{item.place ? <span dangerouslySetInnerHTML={{__html : item.place}}></span> : "(알 수 없음)"}</div>
+                  <div className='meta-value'>{item.place ? <span dangerouslySetInnerHTML={{ __html: item.place }}></span> : "(알 수 없음)"}</div>
                 </div>
                 <div className="meta-row">
                   <div className="meta-label">관람시간</div>
-                  <div className='meta-value'>{item.eventPeriod ? <span dangerouslySetInnerHTML={{__html : item.eventPeriod}}></span> : "(알 수 없음)"}</div>
+                  <div className='meta-value'>{item.eventPeriod ? <span dangerouslySetInnerHTML={{ __html: item.eventPeriod }}></span> : "(알 수 없음)"}</div>
                 </div>
                 <div className="meta-row">
                   <div className="meta-label">관람등급</div>
-                  <div className="meta-value">{item.age ? <span dangerouslySetInnerHTML={{__html : item.age}}></span> : "(알 수 없음)"}</div>
+                  <div className="meta-value">{item.age ? <span dangerouslySetInnerHTML={{ __html: item.age }}></span> : "(알 수 없음)"}</div>
                 </div>
               </div>
 
               <div className="section">
                 <h2 className="section-title">상세 정보</h2>
-                <div className='desc' id='descText'>{item.desc ? <span dangerouslySetInnerHTML={{__html : item.desc}}></span>: "(알 수 없음)"}</div>
+                <div className='desc' id='descText'>{item.desc ? <span dangerouslySetInnerHTML={{ __html: item.desc }}></span> : "(알 수 없음)"}</div>
               </div>
 
               <div className="section section-divider" id="cast-section">
                 <h2 className="section-title">작가</h2>
-                <div className="desc" id='cast-desc-div'>{item.author ? <span dangerouslySetInnerHTML={{__html : item.author}}></span> : "(알 수 없음)"}</div>
+                <div className="desc" id='cast-desc-div'>{item.author ? <span dangerouslySetInnerHTML={{ __html: item.author }}></span> : "(알 수 없음)"}</div>
               </div>
 
               <div className="section" id="reviews-section">
                 <div className="reviews-head">
                   <h2 className="section-title">관람 후기</h2>
+                  {avgRating > 0 && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <StarRating rating={Math.round(avgRating)} readonly size={18} />
+                      <span style={{ fontSize: 14, color: "#6b7280" }}>평균 {avgRating}점</span>
+                    </div>
+                  )}
                   <button className="btn btn-sm btn-outline" id='more-review-btn' type="button"
                     onClick={() => {
-                      if(!loginMemberNo) {
+                      if (!loginMemberNo) {
                         toast.error("로그인 후 이용해주세요.");
                         return;
                       }
@@ -276,7 +292,7 @@ export default function ExhibitionDetail () {
                         <div className="review__user">
                           <div>
                             <div className="review__name">{bestReview.memberEmail?.replace(/(.{3}).+(@.+)/, "$1***$2")}</div>
-                            <div className="review__date">{bestReview.reviewWriteDate?.substring(0,10)}</div>
+                            <div className="review__date">{bestReview.reviewWriteDate?.substring(0, 10)}</div>
                           </div>
                         </div>
 

@@ -9,6 +9,7 @@ export function useReviews(stageNo, { onLoaded } = {}) {
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [writeReview, setWriteReview] = useState("");
+  const [writeRating, setWriteRating] = useState(0);
 
   const openForm = () => setIsFormOpen(v => !v);
   const closeForm = () => setIsFormOpen(false);
@@ -69,6 +70,11 @@ export function useReviews(stageNo, { onLoaded } = {}) {
       return;
     }
 
+    if (writeRating === 0) {
+      toast.warning("별점을 선택해주세요.");
+      return;
+    }
+
     if (writeReview.trim().length === 0) {
       toast.warning("후기를 입력해주세요.");
       return;
@@ -76,12 +82,14 @@ export function useReviews(stageNo, { onLoaded } = {}) {
 
     const res = await axiosApi.post("/reviews/addReview", {
       stageNo,
-      reviewContent: writeReview
+      reviewContent: writeReview,
+      reviewRating: writeRating
     });
 
     if (res.status === 200) {
       toast.success("후기가 등록되었습니다.");
       setWriteReview("");
+      setWriteRating(0);
       setIsFormOpen(false);
       document.activeElement?.blur();
       showReviews();
@@ -144,6 +152,7 @@ export function useReviews(stageNo, { onLoaded } = {}) {
     sortType, setSortType,
     isFormOpen, openForm, closeForm,
     writeReview, setWriteReview,
+    writeRating, setWriteRating,
     submitReview,
     editId, editReview, setEditReview,
     clickEditBtn, clickEditCancelBtn, saveEdit,

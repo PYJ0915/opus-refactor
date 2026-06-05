@@ -22,4 +22,6 @@ public interface ReviewsMapper {
 	int deleteReview(int reviewNo);
 
 	int addReport(Report report);
+	
+	double getAverageRating(String stageNo);
 }

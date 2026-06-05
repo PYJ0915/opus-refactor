@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import CommentSection, { maskEmail } from './CommentSection';
+import StarRating from "../common/StarRating";
 
 const REPORT_REASONS = [
   "영리목적/홍보성", "개인정보노출", "불법정보",
@@ -133,6 +134,7 @@ export default function ReviewItem({
 
       {/* 본문 */}
       <div className="review__body">
+        <StarRating rating={review.reviewRating} readonly size={16} />
         {editId !== review.reviewNo ? (
           <p className='text'>{review.reviewContent}</p>
         ) : (

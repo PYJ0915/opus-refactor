@@ -113,4 +113,10 @@ public class ReviewsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+    
+    @GetMapping("/averageRating")
+    public ResponseEntity<Double> getAverageRating(@RequestParam("stageNo") String stageNo) {
+        double avg = service.getAverageRating(stageNo);
+        return ResponseEntity.ok(avg);
+    }
 }

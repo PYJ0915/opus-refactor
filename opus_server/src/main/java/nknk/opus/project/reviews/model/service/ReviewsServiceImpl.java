@@ -53,4 +53,9 @@ public class ReviewsServiceImpl implements ReviewsService {
 	}
 
 
+	@Override
+	public double getAverageRating(String stageNo) {
+	    return mapper.getAverageRating(stageNo);
+	}
+	
 }
