@@ -1,24 +1,3 @@
-/* UnveilingDetail.css
-   - Page-scoped styles only
-   - Based on auction-item.css but without global resets
-*/
-
-/* (선택) 이 파일에서만 쓸 토큰 */
-:root{
-  --ud-max: 1280px;
-  --ud-text: #111827;
-  --ud-muted: #6b7280;
-  --ud-line: #e5e7eb;
-
-  --ud-bg-soft: #f9fafb;
-  --ud-dark: #111827;
-  --ud-dark2: #1f2937;
-
-  --ud-amber-bg: #fffbeb;
-  --ud-amber-line: #fcd34d;
-  --ud-amber-text: #b45309;
-}
-
 .unveiling-detail{
   min-height: 100vh;
   color: var(--ud-text);

@@ -1,0 +1,37 @@
+:root {
+  /* ── 색상 ── */
+  --text:   #111827;   /* gray-900 */
+  --muted:  #6b7280;   /* gray-500 */
+  --muted2: #9ca3af;   /* gray-400 */
+  --line:   #e5e7eb;   /* gray-200 */
+  --line2:  #d1d5db;   /* gray-300 */
+  --soft:   #f9fafb;   /* gray-50  */
+  --soft2:  #f3f4f6;   /* gray-100 */
+  --bg:     #ffffff;
+  --dark:   #111827;
+  --dark2:  #1f2937;   /* gray-800 */
+  --black:  #111111;
+
+  /* ── 레이아웃 ── */
+  --wrap:      1440px;
+  --pad:       48px;
+  --header-h:  72px;
+
+  /* ── 공통 UI ── */
+  --radius:      12px;
+  --radius-sm:   2px;
+  --radius-pill: 999px;
+  --shadow:      0 10px 30px rgba(0, 0, 0, 0.06);
+
+  /* ── 의미론적 색상 ── */
+  --danger:  #dc2626;
+  --info:    #2563eb;
+  --success: #10b981;
+  --warning: #f59e0b;
+}
+
+@media (max-width: 560px) {
+  :root {
+    --pad: 16px;
+  }
+}

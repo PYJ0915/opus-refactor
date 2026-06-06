@@ -542,7 +542,6 @@ details[open] .checkout_policy__summary::after {
 
 /* RESPONSIVE */
 @media (max-width: 1200px) {
-  :root { --pad: 28px; }
   .checkout_wrap { grid-template-columns: 1fr 340px; }
 }
 

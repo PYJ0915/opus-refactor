@@ -1,18 +1,3 @@
-:root {
-  --black: #111;
-  --text: #111;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --bg: #fff;
-
-  --wrap: 1280px;
-  --pad: 32px;
-
-  --radius: 12px;
-  --radius-pill: 999px;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-}
-
 * {
   box-sizing: border-box;
 }

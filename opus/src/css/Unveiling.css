@@ -1,21 +1,3 @@
-/* Unveiling page only */
-:root{
-  --max: 1440px;
-  --text: #111827;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-
-  --black: #111111;
-  --bg-soft: #f9fafb;
-
-  --danger: #dc2626;
-  --info: #2563eb;
-  --ended: #6b7280;
-
-  --radius-pill: 999px;
-  --radius-soft: 12px;
-}
-
 *{ box-sizing: border-box; }
 html, body{ height: 100%; }
 body{

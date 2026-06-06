@@ -1,20 +1,3 @@
-:root {
-  --text: #111827;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --soft: #f3f4f6;
-  --bg: #fff;
-  --dark: #111827;
-
-  --wrap: 1440px;
-  --pad: 48px;
-
-  --radius-sm: 2px;
-  --radius-pill: 999px;
-  /* rounded-sm 느낌 */
-  --shadow: 0 10px 30px rgba(0, 0, 0, .08);
-}
-
 * {
   box-sizing: border-box;
 }
@@ -342,10 +325,6 @@ img {
 
 /* responsive */
 @media (max-width: 1200px) {
-  :root {
-    --pad: 28px;
-  }
-
   .grid__items {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

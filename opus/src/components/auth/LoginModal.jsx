@@ -7,6 +7,7 @@ import { getSavedEmail, setSavedEmail, clearSavedEmail } from "./rememberId";
 import GoogleLoginButton from "./GoogleLoginButton";
 import SocialRegisterForm from "./SocialRegisterForm";
 import { useAuthValidation } from "./useAuthValidation";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 
 export default function LoginModal({ open, onClose, onSwitchSignup }) {
   const doLogin = useAuthStore((s) => s.login);
@@ -19,6 +20,8 @@ export default function LoginModal({ open, onClose, onSwitchSignup }) {
 
   const [isSocialRegister, setIsSocialRegister] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [showForgot, setShowForgot] = useState(false);
 
   const {
     isTelChecked,
@@ -127,9 +130,9 @@ export default function LoginModal({ open, onClose, onSwitchSignup }) {
           memberEmail: email.trim(),
           memberPw: password.trim(),
         });
-        
-          if (saveId) setSavedEmail(email.trim());
-          else clearSavedEmail();
+
+        if (saveId) setSavedEmail(email.trim());
+        else clearSavedEmail();
 
         handleLoginSuccess(res.data.token, res.data.member);
       }
@@ -199,6 +202,14 @@ export default function LoginModal({ open, onClose, onSwitchSignup }) {
 
           {errorMsg && <p className="lm-error">{errorMsg}</p>}
 
+          <div style={{ textAlign: "right", marginBottom: 12 }}>
+            <button type="button" className="lm-link"
+              style={{ fontSize: 13, color: "#6b7280" }}
+              onClick={() => setShowForgot(true)}>
+              비밀번호를 잊으셨나요?
+            </button>
+          </div>
+
           <button className="lm-submit" type="submit" disabled={!canSubmit}>
             {loading ? "처리 중..." : isSocialRegister ? "가입 완료" : "로그인"}
           </button>
@@ -217,6 +228,8 @@ export default function LoginModal({ open, onClose, onSwitchSignup }) {
             </>
           )}
         </form>
+
+        <ForgotPasswordModal open={showForgot} onClose={() => setShowForgot(false)} />
       </div>
     </div>
   );

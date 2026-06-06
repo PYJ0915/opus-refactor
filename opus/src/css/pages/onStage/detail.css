@@ -1,19 +1,4 @@
 
-:root{
-  --gray-900:#111827;
-  --gray-700:#374151;
-  --gray-600:#4b5563;
-  --gray-500:#6b7280;
-  --gray-300:#d1d5db;
-  --gray-200:#e5e7eb;
-  --gray-100:#f3f4f6;
-
-  --shadow: 0 10px 30px rgba(0,0,0,0.08);
-
-  --header-h: 72px;
-  --wrap: 1280px;
-}
-
 .detail-page, .detail-page *{ box-sizing: border-box; }
 .detail-page{ min-height: 100vh; }
 .detail-page a{ color: inherit; text-decoration: none; }

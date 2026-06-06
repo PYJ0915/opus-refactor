@@ -370,4 +370,26 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("탈퇴 처리 중 오류가 발생했습니다.");
 		}
 	}
+	
+	/* 비밀번호 재설정 — 인증코드 발송 */
+	@PostMapping("/password-reset/send")
+	public ResponseEntity<String> sendPasswordResetCode(@RequestBody Map<String, String> map) {
+	    try {
+	        service.sendPasswordResetEmail(map.get("email"));
+	        return ResponseEntity.ok("인증번호가 발송되었습니다.");
+	    } catch (Exception e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+	}
+
+	/* 비밀번호 재설정 — 인증코드 확인 + 변경 */
+	@PostMapping("/password-reset/confirm")
+	public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> map) {
+	    try {
+	        service.resetPassword(map.get("email"), map.get("code"), map.get("newPw"));
+	        return ResponseEntity.ok("비밀번호가 변경되었습니다.");
+	    } catch (Exception e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+	}
 }
