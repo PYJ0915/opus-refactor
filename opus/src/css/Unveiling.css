@@ -186,6 +186,7 @@ img{ display:block; max-width: 100%; }
   flex-direction:column;
   gap: 8px;
   z-index: 2;
+  padding: 0 10px;
 }
 .card__title{
   margin:0;
