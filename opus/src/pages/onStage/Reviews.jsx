@@ -69,7 +69,7 @@ export default function Reviews() {
 
         <div
           id="review-form"
-          className={`card card--p-lg${isFormOpen ? "" : "hidden"}`}
+          className={`card card--p-lg${isFormOpen ? "" : " hidden"}`}
           aria-hidden={isFormOpen ? "false" : "true"}
         >
           <div className="form">

@@ -143,82 +143,60 @@ export default function MusicalList({ status, search }) {
     <>
       {status === "all" && loginMemberNo && (
         <section className="show-row">
-          <h2>내가 좋아요 누른 공연</h2>
-          <div style={{ position: "relative" }}>
-            <button
-              onClick={() => scrollLeft(likedScrollRef)} style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
-            >
-              ‹
-            </button>
-
-            <div ref={likedScrollRef} className="show-grid show-grid--row">
-              {likedItems.map((item) => (
-                <article key={item.mt20id} className="show-card">
-                  <Link to={`/onStage/musical/${item.mt20id}`}>
-                    <div className="show-card__thumb">
-                      <img src={item.poster?.replace("http://", "https://")} alt={item.prfnm} />
-                      <span className="show-badge show-badge--dark">
-                        {item.prfstate || "상태없음"}
-                      </span>
-                    </div>
-                    <h3 className="show-card__title">{item.prfnm}</h3>
-                    <p className="show-card__meta">
-                      {item.prfpdfrom} ~ {item.prfpdto}
-                    </p>
-                    <p className="show-card__meta">{item.fcltynm}</p>
-                  </Link>
-                </article>
-              ))}
+          <h2 className="exhibition-title">내가 좋아요 누른 공연</h2>
+          {likedItems.length === 0 ? (
+            <p className="empty-text">좋아요를 누른 공연이 없습니다.</p>
+          ) : (
+            <div style={{ position: "relative" }}>
+              <button onClick={() => scrollLeft(likedScrollRef)} style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}>‹</button>
+              <div ref={likedScrollRef} className="show-grid show-grid--row">
+                {likedItems.map((item) => (
+                  <article key={item.mt20id} className="show-card">
+                    <Link to={`/onStage/musical/${item.mt20id}`}>
+                      <div className="show-card__thumb">
+                        <img src={item.poster?.replace("http://", "https://")} alt={item.prfnm} />
+                        <span className="show-badge show-badge--dark">{item.prfstate || "상태없음"}</span>
+                      </div>
+                      <h3 className="show-card__title">{item.prfnm}</h3>
+                      <p className="show-card__meta">{item.prfpdfrom} ~ {item.prfpdto}</p>
+                      <p className="show-card__meta">{item.fcltynm}</p>
+                    </Link>
+                  </article>
+                ))}
+              </div>
+              <button onClick={() => scrollRight(likedScrollRef)} style={{ position: "absolute", right: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}>›</button>
             </div>
-
-              <button
-                onClick={() => scrollRight(likedScrollRef)}
-                style={{ position: "absolute", right: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
-              >
-                ›
-              </button>
-            </div >
-        </section >
+          )}
+        </section>
       )
-}
+      }
 
       {status === "all" && loginMemberNo && (
         <section className="show-row">
-          <h2>내가 저장한 공연</h2>
-          <div style={{ position: "relative" }}>
-            <button
-              onClick={() => scrollLeft(savedScrollRef)} style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
-            >
-              ‹
-            </button>
-
-            <div ref={savedScrollRef} className="show-grid show-grid--row">
-              {savedItems.map((item) => (
-                <article key={item.mt20id} className="show-card">
-                  <Link to={`/onStage/musical/${item.mt20id}`}>
-                    <div className="show-card__thumb">
-                      <img src={item.poster?.replace("http://", "https://")} alt={item.prfnm} />
-                      <span className="show-badge show-badge--dark">
-                        {item.prfstate || "상태없음"}
-                      </span>
-                    </div>
-                    <h3 className="show-card__title">{item.prfnm}</h3>
-                    <p className="show-card__meta">
-                      {item.prfpdfrom} ~ {item.prfpdto}
-                    </p>
-                    <p className="show-card__meta">{item.fcltynm}</p>
-                  </Link>
-                </article>
-              ))}
+          <h2 className="exhibition-title">내가 저장한 공연</h2>
+          {savedItems.length === 0 ? (
+            <p className="empty-text">저장한 공연이 없습니다.</p>
+          ) : (
+            <div style={{ position: "relative" }}>
+              <button onClick={() => scrollLeft(savedScrollRef)} style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}>‹</button>
+              <div ref={savedScrollRef} className="show-grid show-grid--row">
+                {savedItems.map((item) => (
+                  <article key={item.mt20id} className="show-card">
+                    <Link to={`/onStage/musical/${item.mt20id}`}>
+                      <div className="show-card__thumb">
+                        <img src={item.poster?.replace("http://", "https://")} alt={item.prfnm} />
+                        <span className="show-badge show-badge--dark">{item.prfstate || "상태없음"}</span>
+                      </div>
+                      <h3 className="show-card__title">{item.prfnm}</h3>
+                      <p className="show-card__meta">{item.prfpdfrom} ~ {item.prfpdto}</p>
+                      <p className="show-card__meta">{item.fcltynm}</p>
+                    </Link>
+                  </article>
+                ))}
+              </div>
+              <button onClick={() => scrollRight(savedScrollRef)} style={{ position: "absolute", right: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}>›</button>
             </div>
-
-            <button
-                onClick={() => scrollRight(savedScrollRef)}
-                style={{ position: "absolute", right: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
-              >
-                ›
-            </button>
-          </div>
+          )}
         </section>
       )}
 

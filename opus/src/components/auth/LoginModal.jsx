@@ -202,14 +202,6 @@ export default function LoginModal({ open, onClose, onSwitchSignup }) {
 
           {errorMsg && <p className="lm-error">{errorMsg}</p>}
 
-          <div style={{ textAlign: "right", marginBottom: 12 }}>
-            <button type="button" className="lm-link"
-              style={{ fontSize: 13, color: "#6b7280" }}
-              onClick={() => setShowForgot(true)}>
-              비밀번호를 잊으셨나요?
-            </button>
-          </div>
-
           <button className="lm-submit" type="submit" disabled={!canSubmit}>
             {loading ? "처리 중..." : isSocialRegister ? "가입 완료" : "로그인"}
           </button>
@@ -223,6 +215,10 @@ export default function LoginModal({ open, onClose, onSwitchSignup }) {
               <div className="lm-footer">
                 <button type="button" className="lm-link" onClick={onSwitchSignup}>
                   회원가입 (기업 회원은 별도 문의)
+                </button>
+                <button type="button" className="lm-link"
+                  onClick={() => setShowForgot(true)}>
+                  비밀번호를 잊으셨나요?
                 </button>
               </div>
             </>

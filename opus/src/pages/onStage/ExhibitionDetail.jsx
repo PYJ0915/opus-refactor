@@ -9,6 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getAllExhibitions } from '../../api/kcisaAPI';
 import { toast } from 'react-toastify';
 import StarRating from '../../components/common/StarRating';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 export default function ExhibitionDetail() {
   const { exhibitionId } = useParams();
@@ -143,7 +144,13 @@ export default function ExhibitionDetail() {
     enabled: !!bestReview?.reviewNo
   });
 
-  if (isLoading) return <div>로딩 중...</div>;
+  if (isLoading) return (
+    <main className="detail-page">
+      <div className="container" style={{ display: 'flex', justifyContent: 'center', paddingTop: 120 }}>
+        <LoadingSpinner text="전시 정보를 불러오고 있습니다" />
+      </div>
+    </main>
+  )
   if (!item) return <div>잘못된 접근입니다.</div>;
 
   return (
@@ -269,12 +276,6 @@ export default function ExhibitionDetail() {
               <div className="section" id="reviews-section">
                 <div className="reviews-head">
                   <h2 className="section-title">관람 후기</h2>
-                  {avgRating > 0 && (
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <StarRating rating={Math.round(avgRating)} readonly size={18} />
-                      <span style={{ fontSize: 14, color: "#6b7280" }}>평균 {avgRating}점</span>
-                    </div>
-                  )}
                   <button className="btn btn-sm btn-outline" id='more-review-btn' type="button"
                     onClick={() => {
                       if (!loginMemberNo) {
@@ -284,6 +285,12 @@ export default function ExhibitionDetail() {
                       navigate(`/onStage/reviews/${item.exhibitionId}`)
                     }}>후기 더보기</button>
                 </div>
+                {avgRating > 0 && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
+                    <StarRating rating={avgRating} readonly size={16} />
+                    <span style={{ fontSize: 13, color: "#6b7280" }}>평균 {avgRating}점</span>
+                  </div>
+                )}
 
                 <div className="reviews">
                   {bestReview ? (

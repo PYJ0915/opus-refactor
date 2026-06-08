@@ -4,9 +4,9 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import App from "./App";
+import "./css/variables.css"
 import "./css/index.css";
 import "./css/slider.css";
-import "./css/variables.css"
 // import "./css/Unveiling.css";
 // import "./css/UnveilingDetail.css";
 

@@ -8,8 +8,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axiosApi from '../../api/axiosAPI';
 import { useAuthStore } from '../../components/auth/useAuthStore';
 import { toast } from 'react-toastify';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
+import StarRating from '../../components/common/StarRating';
 
-export default function MusicalDetail () {
+export default function MusicalDetail() {
   const { mt20id } = useParams();
   const navigate = useNavigate();
   const [shareModalOpen, setShareModalOpen] = useState(false);
@@ -18,22 +20,31 @@ export default function MusicalDetail () {
   const [dislike, setDislike] = useState(false);
   const modalBackground = useRef();
   const loginMemberNo = useAuthStore(state => state.member?.memberNo);
-  
+
   const SERVICE_KEY = import.meta.env.VITE_KOPIS_KEY;
-  
+
   const { isPending, error, data } = useQuery({
-    queryKey : ["kopis", "detail", mt20id],
+    queryKey: ["kopis", "detail", mt20id],
     queryFn: async () => getMusicalDetail(SERVICE_KEY, mt20id),
   });
 
   // 관람 후기
-  const { data : bestReview } = useQuery({
-    queryKey : ["bestReview", mt20id],
-    queryFn : async () => {
+  const { data: bestReview } = useQuery({
+    queryKey: ["bestReview", mt20id],
+    queryFn: async () => {
       const res = await axiosApi.get(`/stage/bestReview?stageNo=${mt20id}`);
       return res.data;
     }
   })
+
+  const { data: avgRating } = useQuery({
+    queryKey: ["avgRating", mt20id],
+    queryFn: async () => {
+      const res = await axiosApi.get(`/reviews/averageRating?stageNo=${mt20id}`);
+      return res.data;
+    },
+    enabled: !!mt20id,
+  });
 
   // =============== react-share 사용하기 ===============
   const currentURL = window.location.href;
@@ -48,7 +59,7 @@ export default function MusicalDetail () {
   };
 
   // Like, Dislike  
-  const toggleLike = async() => {
+  const toggleLike = async () => {
     if (!loginMemberNo) {
       toast.error("로그인 후 이용해주세요.");
       return;
@@ -56,16 +67,16 @@ export default function MusicalDetail () {
 
     try {
       const res = await axiosApi.post("/stage/like", {
-        memberNo : loginMemberNo,
-        stageNo : mt20id,
-        preferType : "LIKE"
+        memberNo: loginMemberNo,
+        stageNo: mt20id,
+        preferType: "LIKE"
       })
 
-      if(res.data === 1){
+      if (res.data === 1) {
         setLike(true);
         setDislike(false);
         toast.success("좋아요에 추가되었습니다.")
-      } else if(res.data === -1) {
+      } else if (res.data === -1) {
         setLike(false);
         toast.success("좋아요가 취소되었습니다.")
       }
@@ -74,7 +85,7 @@ export default function MusicalDetail () {
     }
   }
 
-  const toggleDislike = async() => {
+  const toggleDislike = async () => {
     if (!loginMemberNo) {
       toast.error("로그인 후 이용해주세요.");
       return;
@@ -82,16 +93,16 @@ export default function MusicalDetail () {
 
     try {
       const res = await axiosApi.post("/stage/dislike", {
-        memberNo : loginMemberNo,
-        stageNo : mt20id,
-        preferType : "DISLIKE"
+        memberNo: loginMemberNo,
+        stageNo: mt20id,
+        preferType: "DISLIKE"
       })
 
-      if(res.data === 1) {
+      if (res.data === 1) {
         setDislike(true);
         setLike(false);
         toast.success("싫어요에 추가되었습니다.");
-      } else if(res.data === -1) {
+      } else if (res.data === -1) {
         setLike(false);
         toast.success("싫어요가 취소되었습니다.");
       }
@@ -101,7 +112,7 @@ export default function MusicalDetail () {
   }
 
   // Save
-  const savePerform = async() => {
+  const savePerform = async () => {
     if (!loginMemberNo) {
       toast.error("로그인 후 이용해주세요.");
       return;
@@ -109,11 +120,11 @@ export default function MusicalDetail () {
 
     try {
       const res = await axiosApi.post("/stage/save", {
-        memberNo : loginMemberNo,
-        stageNo : mt20id
+        memberNo: loginMemberNo,
+        stageNo: mt20id
       })
 
-      if(res.status === 200) {
+      if (res.status === 200) {
         setSave(true);
         toast.success("찜에 추가되었습니다.")
       } else if (res.data === 1) {
@@ -136,7 +147,13 @@ export default function MusicalDetail () {
     enabled: !!bestReview?.reviewNo
   });
 
-  if (isPending) return 'Loading...'
+  if (isPending) return (
+    <main className="detail-page">
+      <div className="container" style={{ display: 'flex', justifyContent: 'center', paddingTop: 120 }}>
+        <LoadingSpinner text="공연 정보를 불러오고 있습니다" />
+      </div>
+    </main>
+  )
   if (error) return error.message
   if (!data) return 'No data'
 
@@ -147,8 +164,8 @@ export default function MusicalDetail () {
           <section className="left-col">
             <div className="poster-sticky" id="poster-section">
               <div className="poster-box">
-                {data.poster? <img className="poster-img" src={data.poster} alt={`${data.prfnm} 포스터`} />
-                  :  <div className="poster-img" style={{height : 220}} />
+                {data.poster ? <img className="poster-img" src={data.poster} alt={`${data.prfnm} 포스터`} />
+                  : <div className="poster-img" style={{ height: 220 }} />
                 }
               </div>
 
@@ -162,7 +179,7 @@ export default function MusicalDetail () {
                       }
                       window.open(relate.url, "_blank", "noopener,noreferrer");
                     }}>
-                      {relate.name}에서 예매하기
+                    {relate.name}에서 예매하기
                   </button>
                 ))}
 
@@ -196,7 +213,7 @@ export default function MusicalDetail () {
 
               {shareModalOpen &&
                 <div className={'share-modal-container'} ref={modalBackground} onClick={e => {
-                  if(e.target === modalBackground.current) {
+                  if (e.target === modalBackground.current) {
                     setShareModalOpen(false);
                   }
                 }}>
@@ -259,7 +276,7 @@ export default function MusicalDetail () {
                   {data.styurls.length > 0 && (
                     <div className='desc'>
                       {data.styurls.map((url, idx) => (
-                        <img key = {idx} className='desc-img'
+                        <img key={idx} className='desc-img'
                           src={url} alt={`${data.prfnm} 상세 이미지 ${idx + 1}`} />
                       ))}
                     </div>
@@ -277,13 +294,19 @@ export default function MusicalDetail () {
                   <h2 className="section-title">관람 후기</h2>
                   <button className="btn btn-sm btn-outline" id='more-review-btn' type="button"
                     onClick={() => {
-                      if(!loginMemberNo) {
+                      if (!loginMemberNo) {
                         toast.error("로그인 후 이용해주세요.");
                         return;
                       }
                       navigate(`/onStage/reviews/${data.mt20id}`)
                     }}>후기 더보기</button>
                 </div>
+                {avgRating > 0 && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
+                    <StarRating rating={avgRating} readonly size={16} />
+                    <span style={{ fontSize: 13, color: "#6b7280" }}>평균 {avgRating}점</span>
+                  </div>
+                )}
 
                 <div className="reviews">
                   {bestReview ? (
@@ -292,7 +315,7 @@ export default function MusicalDetail () {
                         <div className="review__user">
                           <div>
                             <div className="review__name">{bestReview.memberEmail?.replace(/(.{3}).+(@.+)/, "$1***$2")}</div>
-                            <div className="review__date">{bestReview.reviewWriteDate?.substring(0,10)}</div>
+                            <div className="review__date">{bestReview.reviewWriteDate?.substring(0, 10)}</div>
                           </div>
                         </div>
 

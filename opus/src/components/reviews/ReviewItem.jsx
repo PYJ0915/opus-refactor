@@ -143,9 +143,9 @@ export default function ReviewItem({
       </div>
 
       {editId === review.reviewNo && (
-        <div>
-          <button onClick={() => onSaveEdit(review.reviewNo)}>저장</button>
-          <button onClick={onCancelEdit}>취소</button>
+        <div className="review__edit-actions">
+          <button className="btn btn--outline btn--sm" onClick={onCancelEdit}>취소</button>
+          <button className="btn btn--dark btn--sm" onClick={() => onSaveEdit(review.reviewNo)}>저장</button>
         </div>
       )}
 

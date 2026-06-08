@@ -215,6 +215,23 @@ img{ display:block; max-width:100%; }
   color:var(--muted);
 }
 
+.exhibition-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 40px 0 12px;
+}
+
+.show-row {
+  margin-bottom: 48px;
+}
+
+.empty-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  padding: 8px 0 0;
+}
+
 /* ================= RESPONSIVE ================= */
 @media (max-width: 860px){
   .search-row{ flex-direction:column; }
