@@ -508,39 +508,7 @@ details[open] .checkout_policy__summary::after {
 
 .checkout_secure__item i { color: #6b7280; }
 
-/* ===== Ghost Button (공통) ===== */
-.ghost-btn {
-  height: 40px;
-  padding: 0 16px;
-  border: 1px solid var(--line2);
-  border-radius: var(--radius-sm);
-  background: #fff;
-  color: #374151;
-  font-size: 13px;
-  font-weight: 900;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background .15s ease, border-color .15s ease, color .15s ease, transform .12s ease;
-}
-
 .checkout_card__head .ghost-btn { margin-left: auto; }
-
-.ghost-btn:hover {
-  background: var(--soft2);
-  border-color: #9ca3af;
-  color: #111827;
-  transform: translateY(-1px);
-}
-
-.ghost-btn:active { transform: translateY(0); }
-
-.ghost-btn:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
 
 /* RESPONSIVE */
 @media (max-width: 1200px) {

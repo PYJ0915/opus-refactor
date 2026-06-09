@@ -32,7 +32,9 @@ button {
   cursor: pointer;
 }
 
-.page{ min-height: 100vh; }
+.page {
+  min-height: 100vh;
+}
 
 .wrap {
   max-width: var(--wrap);
@@ -565,6 +567,39 @@ button {
 
 .to-top:hover {
   background: rgba(255, 255, 255, 0.98);
+}
+
+/* 공통 버튼 */
+.ghost-btn {
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.ghost-btn:hover {
+  background: var(--soft2);
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+.ghost-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.ghost-btn:active {
+  transform: translateY(0);
 }
 
 /* ============ Responsive ============ */

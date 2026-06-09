@@ -64,23 +64,6 @@
   gap: 10px;
 }
 
-.ghost-btn {
-  height: 40px;
-  padding: 0 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 2px;
-  background: #fff;
-  color: #374151;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background .15s ease, border-color .15s ease;
-}
-
-.ghost-btn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-}
-
 /* list box */
 .cart-box {
   border: 1px solid #e5e7eb;
