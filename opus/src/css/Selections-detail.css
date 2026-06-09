@@ -329,6 +329,9 @@
 }
 
 .goods_tab {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
   padding: 16px 4px;
   font-size: 13px;
   color: #4b5563;

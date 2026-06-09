@@ -28,6 +28,10 @@ input {
   font: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
 .page{ min-height: 100vh; }
 
 .wrap {
