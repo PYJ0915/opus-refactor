@@ -9,10 +9,11 @@ import { useAuthStore } from "../../components/auth/useAuthStore";
 import { useContentStore } from "../../store/useContentStore.js";
 import ShowCardSkeleton from "../../components/common/ShowCardSkeleton.jsx";
 
-const SERVICE_KEY = import.meta.env.VITE_KOPIS_KEY;
-
 export default function MusicalList({ status, search }) {
   const loginMemberNo = useAuthStore(state => state.member?.memberNo);
+
+  const SERVICE_KEY = import.meta.env.VITE_KOPIS_KEY;
+  const INVALID_POSTER_PATTERNS = ["noimage", "no_image", "default", "null"];
 
   const bottomRef = useRef(null);
   const likedScrollRef = useRef(null);
@@ -81,10 +82,15 @@ export default function MusicalList({ status, search }) {
 
   const allItems = useMemo(() => {
     if (!data) return [];
-    return data.pages.flatMap((page) => page.items);
+    return data.pages
+      .flatMap((page) => page.items)
+      .filter(item => {
+        const poster = item.poster;
+        if (!poster || poster.trim() === "") return false;
+        return !INVALID_POSTER_PATTERNS.some(p => poster.toLowerCase().includes(p));
+      });
   }, [data]);
 
-  // 챗봇에게 데이터 전달용 (박유진 추가)
   const setMusicals = useContentStore((s) => s.setMusicals);
 
   useEffect(() => {
@@ -98,15 +104,12 @@ export default function MusicalList({ status, search }) {
     }
   }, [allItems, setMusicals]);
 
-  // -------------------------------------------
-
   useEffect(() => {
     if (status !== "all" || !allItems.length) return;
 
     const fetchPrefer = async () => {
       try {
         const savedResp = await axiosApi.get("/myPage/savedList");
-
         const likedResp = await axiosApi.get("/myPage/likeList");
 
         const savedIds = savedResp.data || [];
@@ -137,6 +140,18 @@ export default function MusicalList({ status, search }) {
     });
   }, [allItems, status, search]);
 
+  // 공통 카드 이미지 렌더러 — 로드 실패 시 플레이스홀더로 대체
+  const PosterImg = ({ src, alt }) => (
+    <img
+      src={src?.replace("http://", "https://")}
+      alt={alt}
+      onError={(e) => {
+        e.currentTarget.src = "/no-thumbnail.png";
+        e.currentTarget.onerror = null;
+      }}
+    />
+  );
+
   if (isLoading) {
     return (
       <section className="show-row">
@@ -165,7 +180,7 @@ export default function MusicalList({ status, search }) {
                   <article key={item.mt20id} className="show-card">
                     <Link to={`/onStage/musical/${item.mt20id}`}>
                       <div className="show-card__thumb">
-                        <img src={item.poster?.replace("http://", "https://")} alt={item.prfnm} />
+                        <PosterImg src={item.poster} alt={item.prfnm} />
                         <span className="show-badge show-badge--dark">{item.prfstate || "상태없음"}</span>
                       </div>
                       <h3 className="show-card__title">{item.prfnm}</h3>
@@ -179,8 +194,7 @@ export default function MusicalList({ status, search }) {
             </div>
           )}
         </section>
-      )
-      }
+      )}
 
       {status === "all" && loginMemberNo && (
         <section className="show-row">
@@ -195,7 +209,7 @@ export default function MusicalList({ status, search }) {
                   <article key={item.mt20id} className="show-card">
                     <Link to={`/onStage/musical/${item.mt20id}`}>
                       <div className="show-card__thumb">
-                        <img src={item.poster?.replace("http://", "https://")} alt={item.prfnm} />
+                        <PosterImg src={item.poster} alt={item.prfnm} />
                         <span className="show-badge show-badge--dark">{item.prfstate || "상태없음"}</span>
                       </div>
                       <h3 className="show-card__title">{item.prfnm}</h3>
@@ -218,7 +232,7 @@ export default function MusicalList({ status, search }) {
             <article key={item.mt20id} className="show-card">
               <Link to={`/onStage/musical/${item.mt20id}`}>
                 <div className="show-card__thumb">
-                  <img src={item.poster?.replace("http://", "https://")} alt={item.prfnm} />
+                  <PosterImg src={item.poster} alt={item.prfnm} />
                   <span className="show-badge show-badge--dark">
                     {item.prfstate || "상태없음"}
                   </span>

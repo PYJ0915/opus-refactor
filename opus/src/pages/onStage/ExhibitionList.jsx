@@ -9,8 +9,8 @@ import { useAuthStore } from "../../components/auth/useAuthStore";
 import ShowCardSkeleton from "../../components/common/ShowCardSkeleton";
 
 const SERVICE_KEY = import.meta.env.VITE_KCISA_KEY;
+const INVALID_THUMB_PATTERNS = ["noimage", "no_image", "default", "null"];
 
-// 날짜 파싱하기 (<PERIOD>2026-01-30~2026-05-03</PERIOD>)
 function parsePeriod(period) {
   if (!period || !period.includes("~")) return null;
 
@@ -20,7 +20,6 @@ function parsePeriod(period) {
     const y = Number(str.slice(0, 4));
     const m = Number(str.slice(5, 7));
     const d = Number(str.slice(8, 10));
-
     return new Date(y, m - 1, d);
   }
 
@@ -30,7 +29,6 @@ function parsePeriod(period) {
   }
 }
 
-// 상태(진행중, 진행예정, 진행완료) 가져오기
 function getStatus(period) {
   const parsedPeriod = parsePeriod(period);
   if (!parsedPeriod) return null;
@@ -43,6 +41,20 @@ function getStatus(period) {
   if (today < startDate) return "01";
   if (today > endDate) return "03";
   return "02";
+}
+
+// 공통 카드 이미지 렌더러 — 로드 실패 시 플레이스홀더로 대체
+function ThumbImg({ src, alt }) {
+  return (
+    <img
+      src={src?.replace("http://", "https://")}
+      alt={alt}
+      onError={(e) => {
+        e.currentTarget.src = "/no-thumbnail.png";
+        e.currentTarget.onerror = null;
+      }}
+    />
+  );
 }
 
 export default function ExhibitionList({ search, status }) {
@@ -113,8 +125,11 @@ export default function ExhibitionList({ search, status }) {
 
     flatItems.forEach(item => {
       const key = item.exhibitionId;
-
       if (!key) return;
+
+      const thumb = item.image;
+      if (!thumb || thumb.trim() === "") return;
+      if (INVALID_THUMB_PATTERNS.some(p => thumb.toLowerCase().includes(p))) return;
 
       if (!map.has(key)) {
         map.set(key, item);
@@ -124,7 +139,6 @@ export default function ExhibitionList({ search, status }) {
     return Array.from(map.values());
   }, [data])
 
-  // 챗봇에게 데이터 전달용 (박유진 추가)
   const setExhibitions = useContentStore((s) => s.setExhibitions);
 
   useEffect(() => {
@@ -136,10 +150,10 @@ export default function ExhibitionList({ search, status }) {
         status: getStatus(e.period) === "01" ? "전시예정"
           : getStatus(e.period) === "02" ? "전시중" : "전시완료"
       })));
+
+
     }
   }, [allItems, setExhibitions]);
-
-  // -------------------------------------------
 
   const filteredItems = useMemo(() => {
     return allItems.filter(item => {
@@ -158,7 +172,6 @@ export default function ExhibitionList({ search, status }) {
     const fetchPrefer = async () => {
       try {
         const savedResp = await axiosApi.get("/myPage/savedList");
-
         const likedResp = await axiosApi.get("/myPage/likeList");
 
         const savedIds = savedResp.data || [];
@@ -170,11 +183,9 @@ export default function ExhibitionList({ search, status }) {
         setSavedItems(
           allItems.filter(item => savedIdStr.includes(item.exhibitionId))
         );
-
         setLikedItems(
           allItems.filter(item => likedIdStr.includes(item.exhibitionId))
         );
-
       } catch (error) {
         console.error(error);
       }
@@ -225,11 +236,7 @@ export default function ExhibitionList({ search, status }) {
                   <article key={item.exhibitionId} className="show-card">
                     <Link to={`/onStage/exhibition/${item.exhibitionId}`} state={{ item }}>
                       <div className="show-card__thumb">
-                        {item.image ? (
-                          <img src={item.image?.replace("http://", "https://")} alt={item.title} />
-                        ) : (
-                          <div style={{ height: 220 }} />
-                        )}
+                        <ThumbImg src={item.image} alt={item.title} />
                       </div>
                       <h3 className="show-card__title">{item.title}</h3>
                       <p className="show-card__meta">{item.period}</p>
@@ -270,11 +277,7 @@ export default function ExhibitionList({ search, status }) {
                   <article key={item.exhibitionId} className="show-card">
                     <Link to={`/onStage/exhibition/${item.exhibitionId}`} state={{ item }}>
                       <div className="show-card__thumb">
-                        {item.image ? (
-                          <img src={item.image?.replace("http://", "https://")} alt={item.title} />
-                        ) : (
-                          <div style={{ height: 220 }} />
-                        )}
+                        <ThumbImg src={item.image} alt={item.title} />
                       </div>
                       <h3 className="show-card__title">{item.title}</h3>
                       <p className="show-card__meta">{item.period}</p>
@@ -302,11 +305,7 @@ export default function ExhibitionList({ search, status }) {
             <article key={item.exhibitionId} className="show-card">
               <Link to={`/onStage/exhibition/${item.exhibitionId}`} state={{ item }}>
                 <div className="show-card__thumb">
-                  {item.image ? (
-                    <img src={item.image?.replace("http://", "https://")} alt={item.title} />
-                  ) : (
-                    <div style={{ height: 220 }} />
-                  )}
+                  <ThumbImg src={item.image} alt={item.title} />
                   <span className="show-badge show-badge--dark">
                     {getStatus(item.period) === "01"
                       ? "전시예정"

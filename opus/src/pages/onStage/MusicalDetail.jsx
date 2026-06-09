@@ -10,6 +10,7 @@ import { useAuthStore } from '../../components/auth/useAuthStore';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import StarRating from '../../components/common/StarRating';
+import { saveStageCache, loadStageCache } from "../../api/stageCache";
 
 export default function MusicalDetail() {
   const { mt20id } = useParams();
@@ -18,6 +19,9 @@ export default function MusicalDetail() {
   const [save, setSave] = useState(false);
   const [like, setLike] = useState(false);
   const [dislike, setDislike] = useState(false);
+  const [cachedData, setCachedData] = useState(null);
+  const [isFromCache, setIsFromCache] = useState(false);
+  const [cacheLoading, setCacheLoading] = useState(false);
   const modalBackground = useRef();
   const loginMemberNo = useAuthStore(state => state.member?.memberNo);
 
@@ -28,14 +32,51 @@ export default function MusicalDetail() {
     queryFn: async () => getMusicalDetail(SERVICE_KEY, mt20id),
   });
 
-  // 관람 후기
+  useEffect(() => {
+    if (!data) return;
+    saveStageCache({
+      stageNo: mt20id,
+      stageType: "musical",
+      stageTitle: data.prfnm,
+      stageThumbnail: data.poster,
+      stagePeriod: `${data.prfpdfrom} ~ ${data.prfpdto}`,
+      stagePlace: data.fcltynm,
+    });
+  }, [data]);
+
+  useEffect(() => {
+    if (isPending || data) return;
+
+    setCacheLoading(true);
+
+    loadStageCache(mt20id).then(cached => {
+      if (cached) {
+        setCachedData({
+          prfnm: cached.stageTitle,
+          poster: cached.stageThumbnail,
+          prfpdfrom: cached.stagePeriod?.split("~")[0]?.trim() ?? "",
+          prfpdto: cached.stagePeriod?.split("~")[1]?.trim() ?? "",
+          fcltynm: cached.stagePlace,
+          prfruntime: null,
+          prfage: null,
+          prfcast: null,
+          styurls: [],
+          relates: [],
+          mt20id: mt20id,
+        });
+        setIsFromCache(true);
+      }
+      setCacheLoading(false);
+    });
+  }, [isPending, data, mt20id]);
+
   const { data: bestReview } = useQuery({
     queryKey: ["bestReview", mt20id],
     queryFn: async () => {
       const res = await axiosApi.get(`/stage/bestReview?stageNo=${mt20id}`);
       return res.data;
     }
-  })
+  });
 
   const { data: avgRating } = useQuery({
     queryKey: ["avgRating", mt20id],
@@ -45,96 +86,6 @@ export default function MusicalDetail() {
     },
     enabled: !!mt20id,
   });
-
-  // =============== react-share 사용하기 ===============
-  const currentURL = window.location.href;
-
-  const copyURL = async () => {
-    try {
-      await navigator.clipboard.writeText(currentURL);
-      toast.success('URL이 복사되었습니다');
-    } catch (err) {
-      toast.error('복사에 실패했습니다');
-    }
-  };
-
-  // Like, Dislike  
-  const toggleLike = async () => {
-    if (!loginMemberNo) {
-      toast.error("로그인 후 이용해주세요.");
-      return;
-    }
-
-    try {
-      const res = await axiosApi.post("/stage/like", {
-        memberNo: loginMemberNo,
-        stageNo: mt20id,
-        preferType: "LIKE"
-      })
-
-      if (res.data === 1) {
-        setLike(true);
-        setDislike(false);
-        toast.success("좋아요에 추가되었습니다.")
-      } else if (res.data === -1) {
-        setLike(false);
-        toast.success("좋아요가 취소되었습니다.")
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const toggleDislike = async () => {
-    if (!loginMemberNo) {
-      toast.error("로그인 후 이용해주세요.");
-      return;
-    }
-
-    try {
-      const res = await axiosApi.post("/stage/dislike", {
-        memberNo: loginMemberNo,
-        stageNo: mt20id,
-        preferType: "DISLIKE"
-      })
-
-      if (res.data === 1) {
-        setDislike(true);
-        setLike(false);
-        toast.success("싫어요에 추가되었습니다.");
-      } else if (res.data === -1) {
-        setLike(false);
-        toast.success("싫어요가 취소되었습니다.");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  // Save
-  const savePerform = async () => {
-    if (!loginMemberNo) {
-      toast.error("로그인 후 이용해주세요.");
-      return;
-    }
-
-    try {
-      const res = await axiosApi.post("/stage/save", {
-        memberNo: loginMemberNo,
-        stageNo: mt20id
-      })
-
-      if (res.status === 200) {
-        setSave(true);
-        toast.success("찜에 추가되었습니다.")
-      } else if (res.data === 1) {
-        setSave(false);
-        toast.success("찜이 취소되었습니다.")
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   const { data: bestReviewLikeCount } = useQuery({
     queryKey: ["bestReviewLikeCount", bestReview?.reviewNo],
@@ -147,15 +98,99 @@ export default function MusicalDetail() {
     enabled: !!bestReview?.reviewNo
   });
 
-  if (isPending) return (
+  const currentURL = window.location.href;
+
+  const copyURL = async () => {
+    try {
+      await navigator.clipboard.writeText(currentURL);
+      toast.success('URL이 복사되었습니다');
+    } catch (err) {
+      toast.error('복사에 실패했습니다');
+    }
+  };
+
+  const toggleLike = async () => {
+    if (!loginMemberNo) {
+      toast.error("로그인 후 이용해주세요.");
+      return;
+    }
+    try {
+      const res = await axiosApi.post("/stage/like", {
+        memberNo: loginMemberNo,
+        stageNo: mt20id,
+        preferType: "LIKE"
+      });
+      if (res.data === 1) {
+        setLike(true);
+        setDislike(false);
+        toast.success("좋아요에 추가되었습니다.");
+      } else if (res.data === -1) {
+        setLike(false);
+        toast.success("좋아요가 취소되었습니다.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const toggleDislike = async () => {
+    if (!loginMemberNo) {
+      toast.error("로그인 후 이용해주세요.");
+      return;
+    }
+    try {
+      const res = await axiosApi.post("/stage/dislike", {
+        memberNo: loginMemberNo,
+        stageNo: mt20id,
+        preferType: "DISLIKE"
+      });
+      if (res.data === 1) {
+        setDislike(true);
+        setLike(false);
+        toast.success("싫어요에 추가되었습니다.");
+      } else if (res.data === -1) {
+        setLike(false);
+        toast.success("싫어요가 취소되었습니다.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const savePerform = async () => {
+    if (!loginMemberNo) {
+      toast.error("로그인 후 이용해주세요.");
+      return;
+    }
+    try {
+      const res = await axiosApi.post("/stage/save", {
+        memberNo: loginMemberNo,
+        stageNo: mt20id
+      });
+      if (res.status === 200) {
+        setSave(true);
+        toast.success("찜에 추가되었습니다.");
+      } else if (res.data === 1) {
+        setSave(false);
+        toast.success("찜이 취소되었습니다.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (isPending || cacheLoading) return (
     <main className="detail-page">
       <div className="container" style={{ display: 'flex', justifyContent: 'center', paddingTop: 120 }}>
         <LoadingSpinner text="공연 정보를 불러오고 있습니다" />
       </div>
     </main>
-  )
-  if (error) return error.message
-  if (!data) return 'No data'
+  );
+
+  if (error) return error.message;
+
+  const displayData = data || cachedData;
+  if (!displayData) return <div>잘못된 접근입니다.</div>;
 
   return (
     <main className="detail-page">
@@ -164,13 +199,20 @@ export default function MusicalDetail() {
           <section className="left-col">
             <div className="poster-sticky" id="poster-section">
               <div className="poster-box">
-                {data.poster ? <img className="poster-img" src={data.poster} alt={`${data.prfnm} 포스터`} />
-                  : <div className="poster-img" style={{ height: 220 }} />
-                }
+                <img
+                  className="poster-img"
+                  src={displayData.poster || "/no-thumbnail.png"}
+                  alt={`${displayData.prfnm} 포스터`}
+                  onError={(e) => {
+                    e.currentTarget.src = "/no-thumbnail.png";
+                    e.currentTarget.onerror = null;
+                  }}
+                />
               </div>
 
               <div className="poster-actions">
-                {data.relates.map((relate, idx) => (
+                {/* 캐시 모드일 때는 예매 버튼 숨김 */}
+                {!isFromCache && displayData.relates.map((relate, idx) => (
                   <button className="btn btn-primary" id='book-btn' type="button" key={idx}
                     onClick={() => {
                       if (!relate.url) {
@@ -248,46 +290,67 @@ export default function MusicalDetail() {
                 </div>
               }
 
-              <h1 className="title">{data.prfnm || "(제목 없음)"}</h1>
+              {isFromCache && (
+                <div className="cache-notice">
+                  <i className="fa-solid fa-circle-info" />
+                  <span>
+                    현재 공연이 종료되어 저장된 정보를 표시하고 있습니다.
+                    작성하신 <strong>리뷰와 별점</strong>은 아래에서 정상적으로 확인하실 수 있어요.
+                  </span>
+                </div>
+              )}
+
+              <h1 className="title">{displayData.prfnm || "(제목 없음)"}</h1>
 
               <div className="meta-box">
+                {/* 일정·장소는 캐시에도 있으므로 항상 표시 */}
                 <div className="meta-row">
                   <div className="meta-label">일정</div>
-                  <div className="meta-value">{data.prfpdfrom} ~ {data.prfpdto}</div>
+                  <div className="meta-value">{displayData.prfpdfrom} ~ {displayData.prfpdto}</div>
                 </div>
                 <div className="meta-row">
                   <div className="meta-label">장소</div>
-                  <div className="meta-value">{data.fcltynm || "(알 수 없음)"}</div>
+                  <div className="meta-value">{displayData.fcltynm || "(알 수 없음)"}</div>
                 </div>
-                <div className="meta-row">
-                  <div className="meta-label">관람시간</div>
-                  <div className="meta-value">{data.prfruntime || "(알 수 없음)"}</div>
-                </div>
-                <div className="meta-row">
-                  <div className="meta-label">관람등급</div>
-                  <div className="meta-value">{data.prfage || "(알 수 없음)"}</div>
-                </div>
-              </div>
 
-              <div className="section">
-                <h2 className="section-title">상세 정보</h2>
-
-                <div className="desc" id="descText">
-                  {data.styurls.length > 0 && (
-                    <div className='desc'>
-                      {data.styurls.map((url, idx) => (
-                        <img key={idx} className='desc-img'
-                          src={url} alt={`${data.prfnm} 상세 이미지 ${idx + 1}`} />
-                      ))}
+                {/* 캐시 모드일 때는 관람시간·관람등급 행 자체를 숨김 */}
+                {!isFromCache && (
+                  <>
+                    <div className="meta-row">
+                      <div className="meta-label">관람시간</div>
+                      <div className="meta-value">{displayData.prfruntime || "(알 수 없음)"}</div>
                     </div>
-                  )}
-                </div>
+                    <div className="meta-row">
+                      <div className="meta-label">관람등급</div>
+                      <div className="meta-value">{displayData.prfage || "(알 수 없음)"}</div>
+                    </div>
+                  </>
+                )}
               </div>
 
-              <div className="section section-divider" id="cast-section">
-                <h2 className="section-title">출연진</h2>
-                <div className="desc" id='cast-desc-div'>{data.prfcast || "(알 수 없음)"}</div>
-              </div>
+              {/* 캐시 모드일 때는 상세 정보·출연진 섹션 숨김 */}
+              {!isFromCache && (
+                <>
+                  <div className="section">
+                    <h2 className="section-title">상세 정보</h2>
+                    <div className="desc" id="descText">
+                      {displayData.styurls.length > 0 && (
+                        <div className='desc'>
+                          {displayData.styurls.map((url, idx) => (
+                            <img key={idx} className='desc-img'
+                              src={url} alt={`${displayData.prfnm} 상세 이미지 ${idx + 1}`} />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="section section-divider" id="cast-section">
+                    <h2 className="section-title">출연진</h2>
+                    <div className="desc" id='cast-desc-div'>{displayData.prfcast || "(알 수 없음)"}</div>
+                  </div>
+                </>
+              )}
 
               <div className="section" id="reviews-section">
                 <div className="reviews-head">
@@ -298,9 +361,10 @@ export default function MusicalDetail() {
                         toast.error("로그인 후 이용해주세요.");
                         return;
                       }
-                      navigate(`/onStage/reviews/${data.mt20id}`)
+                      navigate(`/onStage/reviews/${displayData.mt20id}`);
                     }}>후기 더보기</button>
                 </div>
+
                 {avgRating > 0 && (
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
                     <StarRating rating={avgRating} readonly size={16} />
@@ -317,13 +381,11 @@ export default function MusicalDetail() {
                             <div className="review__date">{bestReview.reviewWriteDate?.substring(0, 10)}</div>
                           </div>
                         </div>
-
                         <div className="review__like">
                           <i className="fa-solid fa-thumbs-up" id='review-like-btn'></i>
                           <span className="like-count">{bestReviewLikeCount ?? 0}</span>
                         </div>
                       </div>
-
                       <p className="review__text">{bestReview.reviewContent}</p>
                     </article>
                   ) : (
@@ -338,5 +400,5 @@ export default function MusicalDetail() {
         </div>
       </div>
     </main>
-  )
+  );
 }

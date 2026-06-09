@@ -5,8 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import nknk.opus.project.reviews.model.dto.Reviews;
-import nknk.opus.project.stage.mapper.StageMapper;
+import nknk.opus.project.stage.model.dto.StageCache;
 import nknk.opus.project.stage.model.dto.StagePrefer;
+import nknk.opus.project.stage.model.mapper.StageMapper;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -61,5 +62,15 @@ public class StageServiceImpl implements StageService {
 	@Override
 	public Reviews selectBestReview(String stageNo) {
 		return mapper.selectBestReview(stageNo);
+	}
+	
+	@Override
+	public void upsertStageCache(StageCache stageCache) {
+	    mapper.upsertStageCache(stageCache);
+	}
+
+	@Override
+	public StageCache getStageCache(String stageNo) {
+	    return mapper.selectStageCache(stageNo);
 	}
 }

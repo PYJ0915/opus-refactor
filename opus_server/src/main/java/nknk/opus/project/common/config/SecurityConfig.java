@@ -69,6 +69,15 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/api/bids/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/stage/bestReview").permitAll()
 						.requestMatchers(HttpMethod.GET, "/reviews/likeCount").permitAll()
+						.requestMatchers(
+							    "/auth/**",
+							    "/stage/like",
+							    "/stage/dislike",
+							    "/stage/save",
+							    "/stage/bestReview",
+							    "/stage/cache",
+							    "/stage/cache/**")
+						.permitAll()
 
 						// 게시판: GET만 공개, 나머지 인증 필요
 						.requestMatchers(HttpMethod.GET, "/api/board/**").permitAll().requestMatchers("/api/board/**")

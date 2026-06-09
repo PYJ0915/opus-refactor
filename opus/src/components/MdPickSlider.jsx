@@ -28,7 +28,14 @@ function MdPickSlider({ title, data, type }) {
   const renderExhibitionCard = (item) => (
     <div className="mdpick-card" onClick={() => handleCardClick(item)}>
       <div className="mdpick-card__thumb">
-        <img src={item.image} alt={item.title} />
+        <img
+          src={item.image || "/images/no-thumbnail.png"}
+          alt={item.title}
+          onError={(e) => {
+            e.currentTarget.src = "/images/no-thumbnail.png";
+            e.currentTarget.onerror = null;
+          }}
+        />
       </div>
       <div className="mdpick-card__body">
         <p className="mdpick-card__title">{item.title}</p>
@@ -41,7 +48,14 @@ function MdPickSlider({ title, data, type }) {
   const renderMusicalCard = (item) => (
     <div className="mdpick-card" onClick={() => handleCardClick(item)}>
       <div className="mdpick-card__thumb">
-        <img src={item.poster} alt={item.prfnm} />
+        <img
+          src={item.poster || "/images/no-thumbnail.png"}
+          alt={item.prfnm}
+          onError={(e) => {
+            e.currentTarget.src = "/images/no-thumbnail.png";
+            e.currentTarget.onerror = null;
+          }}
+        />
       </div>
       <div className="mdpick-card__body">
         <p className="mdpick-card__title">{item.prfnm}</p>

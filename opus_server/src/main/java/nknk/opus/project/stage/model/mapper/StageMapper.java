@@ -1,8 +1,9 @@
-package nknk.opus.project.stage.mapper;
+package nknk.opus.project.stage.model.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
 import nknk.opus.project.reviews.model.dto.Reviews;
+import nknk.opus.project.stage.model.dto.StageCache;
 import nknk.opus.project.stage.model.dto.StagePrefer;
 
 @Mapper
@@ -29,4 +30,10 @@ public interface StageMapper {
 	int savePerform(StagePrefer stage);
 
 	Reviews selectBestReview(String stageNo);
+	
+	// 캐시 저장 (있으면 UPDATE, 없으면 INSERT)
+    void upsertStageCache(StageCache stageCache);
+
+    // 캐시 조회
+    StageCache selectStageCache(String stageNo);
 }
