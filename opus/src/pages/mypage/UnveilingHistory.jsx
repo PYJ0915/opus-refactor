@@ -63,7 +63,7 @@ const UnveilingHistory = () => {
     dateStr ? String(dateStr).substring(0, 10) : "-";
 
   return (
-    <main className="main orders-page">
+    <div className="orders-page">
       <section className="orders-header">
         <h1 className="orders-title">경매 응찰 내역</h1>
         <p className="orders-subtitle">
@@ -124,7 +124,7 @@ const UnveilingHistory = () => {
           ))
         )}
       </section>
-    </main>
+    </div>
   );
 };
 

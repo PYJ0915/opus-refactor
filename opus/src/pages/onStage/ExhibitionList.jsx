@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useContentStore } from "../../store/useContentStore.js";
 import axiosApi from '../../api/axiosAPI';
 import { useAuthStore } from "../../components/auth/useAuthStore";
+import ShowCardSkeleton from "../../components/common/ShowCardSkeleton";
 
 const SERVICE_KEY = import.meta.env.VITE_KCISA_KEY;
 
@@ -154,36 +155,44 @@ export default function ExhibitionList({ search, status }) {
   useEffect(() => {
     if (status !== "all" || !allItems.length) return;
 
-      const fetchPrefer = async () => {
-        try {
-          const savedResp = await axiosApi.get("/myPage/savedList");
-        
-          const likedResp = await axiosApi.get("/myPage/likeList");
-        
-          const savedIds = savedResp.data || [];
-          const likedIds = likedResp.data || [];
-        
-          const savedIdStr = savedIds.map(String);
-          const likedIdStr = likedIds.map(String);
-        
-          setSavedItems(
-            allItems.filter(item => savedIdStr.includes(item.exhibitionId))
-          );
-        
-          setLikedItems(
-            allItems.filter(item => likedIdStr.includes(item.exhibitionId))
-          );
-        
-        } catch (error) {
-          console.error(error);
-        }
-      };
-    
-      fetchPrefer();
-    }, [status, allItems]);
-    
+    const fetchPrefer = async () => {
+      try {
+        const savedResp = await axiosApi.get("/myPage/savedList");
+
+        const likedResp = await axiosApi.get("/myPage/likeList");
+
+        const savedIds = savedResp.data || [];
+        const likedIds = likedResp.data || [];
+
+        const savedIdStr = savedIds.map(String);
+        const likedIdStr = likedIds.map(String);
+
+        setSavedItems(
+          allItems.filter(item => savedIdStr.includes(item.exhibitionId))
+        );
+
+        setLikedItems(
+          allItems.filter(item => likedIdStr.includes(item.exhibitionId))
+        );
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchPrefer();
+  }, [status, allItems]);
+
   if (isLoading) {
-    return <div style={{ padding: 80 }}>전시 불러오는 중...</div>;
+    return (
+      <section className="show-row">
+        <div className="show-grid">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <ShowCardSkeleton key={i} />
+          ))}
+        </div>
+      </section>
+    );
   }
 
   if (isError) {
@@ -317,8 +326,10 @@ export default function ExhibitionList({ search, status }) {
         <div ref={bottomRef} style={{ height: 1 }} />
 
         {isFetchingNextPage && (
-          <div style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}>
-            <Loading />
+          <div className="show-grid" style={{ marginTop: 20 }}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <ShowCardSkeleton key={`next-${i}`} />
+            ))}
           </div>
         )}
       </section>

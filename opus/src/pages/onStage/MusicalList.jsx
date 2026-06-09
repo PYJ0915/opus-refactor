@@ -7,6 +7,7 @@ import Loading from "../../components/common/Loading.jsx";
 import axiosApi from "../../api/axiosAPI";
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import { useContentStore } from "../../store/useContentStore.js";
+import ShowCardSkeleton from "../../components/common/ShowCardSkeleton.jsx";
 
 const SERVICE_KEY = import.meta.env.VITE_KOPIS_KEY;
 
@@ -136,7 +137,17 @@ export default function MusicalList({ status, search }) {
     });
   }, [allItems, status, search]);
 
-  if (isLoading) return <div style={{ padding: 80 }}>뮤지컬 불러오는 중...</div>;
+  if (isLoading) {
+    return (
+      <section className="show-row">
+        <div className="show-grid">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <ShowCardSkeleton key={i} />
+          ))}
+        </div>
+      </section>
+    );
+  }
   if (isError) return <div style={{ padding: 80 }}>오류: {String(error)}</div>;
 
   return (
@@ -225,8 +236,10 @@ export default function MusicalList({ status, search }) {
         <div ref={bottomRef} style={{ height: 1 }} />
 
         {isFetchingNextPage && (
-          <div style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}>
-            <Loading />
+          <div className="show-grid" style={{ marginTop: 20 }}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <ShowCardSkeleton key={`next-${i}`} />
+            ))}
           </div>
         )}
       </section>

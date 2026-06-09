@@ -273,3 +273,29 @@
   flex: 0 0 auto;
 }
 
+/* ===== Show Card Skeleton ===== */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton-thumb {
+  aspect-ratio: 2 / 3;
+  border-radius: 15px;
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+.skeleton-line--long   { width: 80%; }
+.skeleton-line--medium { width: 55%; }
+.skeleton-line--short  { width: 35%; }
