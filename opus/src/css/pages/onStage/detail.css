@@ -1,5 +1,4 @@
 
-.detail-page, .detail-page *{ box-sizing: border-box; }
 .detail-page{ min-height: 100vh; }
 .detail-page a{ color: inherit; text-decoration: none; }
 .detail-page button{ font: inherit; cursor: pointer; background: none; border: 0; }

@@ -288,7 +288,6 @@ export default function ExhibitionDetail() {
                 {avgRating > 0 && (
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
                     <StarRating rating={avgRating} readonly size={16} />
-                    <span style={{ fontSize: 13, color: "#6b7280" }}>평균 {avgRating}점</span>
                   </div>
                 )}
 

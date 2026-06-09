@@ -126,7 +126,7 @@ export default function ReviewItem({
           />
 
           <div className="report-actions">
-            <button className="btn btn--outline btn--sm" onClick={() => setReportOpenId(null)} id='report-cancle-btn'>취소</button>
+            <button className="btn btn--outline btn--sm" onClick={() => setReportOpenId(null)} id='report-cancel-btn'>취소</button>
             <button className="btn btn--danger btn--sm" id='report-action-btn' onClick={() => onSubmitReport(review)}>신고</button>
           </div>
         </div>
