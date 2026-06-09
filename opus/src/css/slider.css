@@ -3,6 +3,10 @@
 ========================= */
 
 .mdpick-layout {
+  --card-w: 260px;
+  --card-gap: 24px;
+  --visible: 5;
+
   position: relative;
   margin-top: 24px;
 }
@@ -25,10 +29,10 @@
   min-width: 255px;
 }
 
-/* ✅ 5장 정확히 보이게 고정 */
+/* 5장 정확히 보이게 고정 */
 .slider-viewport {
   overflow: hidden;
-  width: calc((260px * 5) + (24px * 4));
+  width: calc((var(--card-w) * var(--visible)) + (var(--card-gap) * (var(--visible) - 1)));
 }
 
 .slider-track {
@@ -161,4 +165,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .mdpick-layout { --visible: 3; }
 }

@@ -689,25 +689,3 @@
   font-weight: 600;
   cursor: not-allowed;
 }
-
-.soldout-badge {
-  margin-left: 8px;
-  padding: 2px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  background-color: #d32f2f;
-  border-radius: 12px;
-  vertical-align: middle;
-  height: 30px;
-}
-
-.soldout-message {
-  margin-bottom: 12px;
-  padding: 10px 12px;
-  background-color: #fff3f3;
-  color: #d32f2f;
-  font-weight: 600;
-  border-radius: 6px;
-  border: 1px solid #ffcdd2;
-}
