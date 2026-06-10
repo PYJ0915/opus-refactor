@@ -59,17 +59,22 @@ export default function AuctionCard({ item }) {
         className={`card ${isEnded ? "is-ended" : ""}`}
       >
         <div className="card__media">
-          <img className="card__img" src={item.image} alt={item.alt || item.title} />
+          <img
+            className="card__img"
+            src={item.image || "/no-thumbnail.png"}
+            alt={item.alt || item.title}
+            onError={(e) => { e.currentTarget.src = "/no-thumbnail.png"; }}
+          />
           <span className={badgeClass}>{badgeText}</span>
 
           {!isEnded && item.actionText && (
             <div className="card__hover">
               <button className="btn btn-light"
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault(); // Link 이동 방지
-                        e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
-                      }}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault(); // Link 이동 방지
+                  e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
+                }}
               >
                 {item.actionText}
               </button>

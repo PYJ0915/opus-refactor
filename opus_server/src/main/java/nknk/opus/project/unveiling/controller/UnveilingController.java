@@ -13,17 +13,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.bidding.model.dto.BidStateResponse;
 import nknk.opus.project.bidding.model.dto.RecentBidResponse;
 import nknk.opus.project.unveiling.model.dto.Unveiling;
+import nknk.opus.project.unveiling.model.mapper.UnveilingMapper;
 import nknk.opus.project.unveiling.model.service.UnveilingService;
 
 @RestController
 @RequestMapping("/api/unveilings")
+@RequiredArgsConstructor
 public class UnveilingController {
 	
-	@Autowired
-	private UnveilingService unveilingService;
+	private final UnveilingService unveilingService;
+	
+	private final UnveilingMapper mapper;
 	
 	@GetMapping
 	public ResponseEntity<List<Unveiling>> list() {
@@ -79,7 +83,41 @@ public class UnveilingController {
         return ResponseEntity.status(statusCode).body(res);
     }
 	
-	
+    /** 경매 알림 신청 / 취소 토글 */
+    @PostMapping("/{unveilingNo}/alert")
+    public ResponseEntity<Map<String, Object>> toggleAlert(
+            @PathVariable("unveilingNo") int unveilingNo,
+            Authentication authentication) {
+
+        if (authentication == null) return ResponseEntity.status(401).build();
+        int memberNo = Integer.parseInt(authentication.getName());
+
+        int exists = mapper.checkAlert(unveilingNo, memberNo);
+        boolean isSubscribed;
+
+        if (exists > 0) {
+            mapper.deleteAlert(unveilingNo, memberNo);
+            isSubscribed = false;
+        } else {
+            mapper.insertAlert(unveilingNo, memberNo);
+            isSubscribed = true;
+        }
+
+        return ResponseEntity.ok(Map.of("isSubscribed", isSubscribed));
+    }
+
+    /** 내 알림 신청 여부 조회 */
+    @GetMapping("/{unveilingNo}/alert")
+    public ResponseEntity<Map<String, Boolean>> getAlertStatus(
+            @PathVariable("unveilingNo") int unveilingNo,
+            Authentication authentication) {
+
+        if (authentication == null) return ResponseEntity.ok(Map.of("isSubscribed", false));
+        int memberNo = Integer.parseInt(authentication.getName());
+        boolean isSubscribed = mapper.checkAlert(unveilingNo, memberNo) > 0;
+
+        return ResponseEntity.ok(Map.of("isSubscribed", isSubscribed));
+    }
 	
 }
 

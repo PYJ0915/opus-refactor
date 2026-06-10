@@ -3,6 +3,8 @@ package nknk.opus.project.admin.model.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import nknk.opus.project.admin.model.dto.GoodsRegist;
 import nknk.opus.project.reviews.model.dto.Report;
 import nknk.opus.project.selections.model.dto.Goods;
@@ -44,6 +46,9 @@ public interface AdminService {
 
 	List<Unveiling> getUnveilingListForAdmin(); // 관리자 경매 목록 조회
 
-	int registUnveiling(Unveiling unveiling); // 관리자 경매 등록
+	int registUnveiling(Unveiling unveiling, MultipartFile thumbFile); // 관리자 경매 등록
+	
+	int forceUpdateUnveilingStatus(int unveilingNo, String status);
+	
 	
 }

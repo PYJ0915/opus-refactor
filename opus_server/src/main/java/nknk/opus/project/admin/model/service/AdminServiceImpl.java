@@ -1,6 +1,7 @@
 package nknk.opus.project.admin.model.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.admin.model.dto.GoodsRegist;
 import nknk.opus.project.admin.model.mapper.AdminMapper;
@@ -34,21 +36,21 @@ import nknk.opus.project.reviews.model.dto.Reviews;
 @Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
 
-	@Autowired
-	private AdminMapper mapper;
+	private final AdminMapper mapper;
 
-	@Autowired
-	private FileConfig fileConfig;
+	private final FileConfig fileConfig;
 
-	@Autowired
-	private NotificationService notificationService;
+	private final NotificationService notificationService;
 
-	@Autowired
-	private OrderMapper orderMapper;
-	
-	//  낙관적 락 재시도 횟수
+	private final OrderMapper orderMapper;
+
+	@Value("${opus.unveiling.upload-path}")
+	private String fileDir;
+
+	// 낙관적 락 재시도 횟수
 	private static final int MAX_RETRY = 3;
 
 	@Override
@@ -234,82 +236,78 @@ public class AdminServiceImpl implements AdminService {
 		// 옵션 수정
 		if (dto.getOptionsJson() != null && !dto.getOptionsJson().isEmpty()) {
 
-		    ObjectMapper om = new ObjectMapper();
-		    GoodsOption[] options = om.readValue(dto.getOptionsJson(), GoodsOption[].class);
+			ObjectMapper om = new ObjectMapper();
+			GoodsOption[] options = om.readValue(dto.getOptionsJson(), GoodsOption[].class);
 
-		    List<GoodsOption> existingOptions = mapper.selectGoodsOptionsForAdmin(goodsNo);
+			List<GoodsOption> existingOptions = mapper.selectGoodsOptionsForAdmin(goodsNo);
 
-		    Map<String, GoodsOption> existingMap = new HashMap<>();
+			Map<String, GoodsOption> existingMap = new HashMap<>();
 
-		    for (GoodsOption exist : existingOptions) {
-		        String key = buildOptionKey(exist.getGoodsSize(), exist.getGoodsColor());
-		        existingMap.put(key, exist);
-		    }
+			for (GoodsOption exist : existingOptions) {
+				String key = buildOptionKey(exist.getGoodsSize(), exist.getGoodsColor());
+				existingMap.put(key, exist);
+			}
 
-		    Set<String> submittedKeys = new HashSet<>();
+			Set<String> submittedKeys = new HashSet<>();
 
-		    boolean hasRealOption = false;
-		    Integer nullStock = null;
+			boolean hasRealOption = false;
+			Integer nullStock = null;
 
-		    for (GoodsOption option : options) {
+			for (GoodsOption option : options) {
 
-		        boolean hasSize = option.getGoodsSize() != null && !option.getGoodsSize().isBlank();
-		        boolean hasColor = option.getGoodsColor() != null && !option.getGoodsColor().isBlank();
+				boolean hasSize = option.getGoodsSize() != null && !option.getGoodsSize().isBlank();
+				boolean hasColor = option.getGoodsColor() != null && !option.getGoodsColor().isBlank();
 
-		        // NULL NULL 옵션
-		        if (!hasSize && !hasColor) {
-		            nullStock = option.getStock();
-		            submittedKeys.add("NULL_NULL");
-		            continue;
-		        }
+				// NULL NULL 옵션
+				if (!hasSize && !hasColor) {
+					nullStock = option.getStock();
+					submittedKeys.add("NULL_NULL");
+					continue;
+				}
 
-		        hasRealOption = true;
+				hasRealOption = true;
 
-		        option.setGoodsNo(goodsNo);
+				option.setGoodsNo(goodsNo);
 
-		        String key = buildOptionKey(option.getGoodsSize(), option.getGoodsColor());
-		        submittedKeys.add(key);
+				String key = buildOptionKey(option.getGoodsSize(), option.getGoodsColor());
+				submittedKeys.add(key);
 
-		        if (existingMap.containsKey(key)) {
-		            GoodsOption exist = existingMap.get(key);
-		            option.setGoodsOptionNo(exist.getGoodsOptionNo());
-		            mapper.updateGoodsOption(option);
-		        } else {
-		            mapper.insertGoodsOption(option);
-		        }
-		    }
+				if (existingMap.containsKey(key)) {
+					GoodsOption exist = existingMap.get(key);
+					option.setGoodsOptionNo(exist.getGoodsOptionNo());
+					mapper.updateGoodsOption(option);
+				} else {
+					mapper.insertGoodsOption(option);
+				}
+			}
 
-		    // 기존 옵션 중 제출되지 않은 실옵션은 stock 0 처리
-		    for (GoodsOption exist : existingOptions) {
+			// 기존 옵션 중 제출되지 않은 실옵션은 stock 0 처리
+			for (GoodsOption exist : existingOptions) {
 
-		        String key = buildOptionKey(exist.getGoodsSize(), exist.getGoodsColor());
+				String key = buildOptionKey(exist.getGoodsSize(), exist.getGoodsColor());
 
-		        boolean isNullOption = key.equals("NULL_NULL");
+				boolean isNullOption = key.equals("NULL_NULL");
 
-		        if (!submittedKeys.contains(key) && !isNullOption) {
-		            exist.setStock(0);
-		            mapper.updateGoodsOptionStock(exist);
-		        }
-		    }
+				if (!submittedKeys.contains(key) && !isNullOption) {
+					exist.setStock(0);
+					mapper.updateGoodsOptionStock(exist);
+				}
+			}
 
-		    // NULL NULL 옵션 처리
-		    if (!hasRealOption) {
+			// NULL NULL 옵션 처리
+			if (!hasRealOption) {
 
-		        GoodsOption existingNull = existingMap.get("NULL_NULL");
+				GoodsOption existingNull = existingMap.get("NULL_NULL");
 
-		        if (existingNull != null) {
-		            existingNull.setStock(nullStock != null ? nullStock : 0);
-		            mapper.updateGoodsOptionStock(existingNull);
-		        } else {
-		            GoodsOption newNull = GoodsOption.builder()
-		                    .goodsNo(goodsNo)
-		                    .goodsSize(null)
-		                    .goodsColor(null)
-		                    .stock(nullStock != null ? nullStock : 0)
-		                    .build();
-		            mapper.insertGoodsOption(newNull);
-		        }
-		    }
+				if (existingNull != null) {
+					existingNull.setStock(nullStock != null ? nullStock : 0);
+					mapper.updateGoodsOptionStock(existingNull);
+				} else {
+					GoodsOption newNull = GoodsOption.builder().goodsNo(goodsNo).goodsSize(null).goodsColor(null)
+							.stock(nullStock != null ? nullStock : 0).build();
+					mapper.insertGoodsOption(newNull);
+				}
+			}
 		}
 
 		return result;
@@ -358,7 +356,7 @@ public class AdminServiceImpl implements AdminService {
 	public int deleteGoodsImage(int goodsImgNo) {
 		return mapper.deleteGoodsImgByNo(goodsImgNo);
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> getAllOrders(String status) {
 		return mapper.selectAllOrders(status);
@@ -367,120 +365,109 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public int updateOrderStatus(int orderNo, String status) {
 
-	  // 주문 정보 조회
+		// 주문 정보 조회
 		Map<String, Object> orderInfo = mapper.selectOrderInfo(orderNo);
-		
+
 		if (orderInfo == null) {
 			log.error("주문 정보를 찾을 수 없음 - orderNo: {}", orderNo);
 			throw new BusinessException("주문 정보를 찾을 수 없습니다.");
 		}
-		
+
 		String currentStatus = (String) orderInfo.get("ORDER_STATUS");
 		String orderId = (String) orderInfo.get("ORDER_ID");
 		int memberNo = ((Number) orderInfo.get("MEMBER_NO")).intValue();
-		
+
 		// WAITING_FOR_DEPOSIT → PAID 변경 시 재고 차감
 		if ("WAITING_FOR_DEPOSIT".equals(currentStatus) && "PAID".equals(status)) {
-			
+
 			log.info("입금 대기 → 결제 완료 변경 감지, 재고 차감 시작 - orderNo: {}, orderId: {}", orderNo, orderId);
-			
+
 			try {
 				// 주문 상품 목록 조회
 				List<OrderItem> orderItems = orderMapper.selectOrderItems(orderId);
-				
+
 				// 재고 차감 (낙관적 락 + 재시도)
 				deductStockForItems(orderItems, orderId);
-				
+
 				log.info("재고 차감 완료 - orderNo: {}, orderId: {}", orderNo, orderId);
-				
+
 			} catch (Exception e) {
 				log.error("재고 차감 실패 - orderNo: {}, orderId: {}", orderNo, orderId, e);
 				throw new BusinessException("재고 차감에 실패했습니다: " + e.getMessage());
 			}
 		}
-		
+
 		// 주문 상태 업데이트
 		int result = mapper.updateOrderStatus(orderNo, status);
-		
+
 		if (result > 0) {
 			// 상태별 알림 생성
 			String notiTitle = "";
 			String notiContent = "";
-			
+
 			switch (status) {
-				case "PAID":
-					notiTitle = "결제가 완료되었습니다.";
-					notiContent = "주문번호: " + orderId;
-					break;
-				case "PREPARING":
-					notiTitle = "상품 준비 중입니다.";
-					notiContent = "주문번호: " + orderId;
-					break;
-				case "SHIPPING":
-					notiTitle = "배송이 시작되었습니다.";
-					notiContent = "주문번호: " + orderId;
-					break;
-				case "DELIVERED":
-					notiTitle = "배송이 완료되었습니다.";
-					notiContent = "주문번호: " + orderId;
-					break;
-				case "CANCELED":
-					notiTitle = "주문이 취소되었습니다.";
-					notiContent = "주문번호: " + orderId;
-					break;
-				default:
-					return result; // 알림 없이 리턴
+			case "PAID":
+				notiTitle = "결제가 완료되었습니다.";
+				notiContent = "주문번호: " + orderId;
+				break;
+			case "PREPARING":
+				notiTitle = "상품 준비 중입니다.";
+				notiContent = "주문번호: " + orderId;
+				break;
+			case "SHIPPING":
+				notiTitle = "배송이 시작되었습니다.";
+				notiContent = "주문번호: " + orderId;
+				break;
+			case "DELIVERED":
+				notiTitle = "배송이 완료되었습니다.";
+				notiContent = "주문번호: " + orderId;
+				break;
+			case "CANCELED":
+				notiTitle = "주문이 취소되었습니다.";
+				notiContent = "주문번호: " + orderId;
+				break;
+			default:
+				return result; // 알림 없이 리턴
 			}
-			
+
 			// 알림 생성
 			try {
-				notificationService.createNotification(
-					memberNo,
-					"ORDER",
-					notiTitle,
-					notiContent,
-					"/mypage/orders"
-				);
+				notificationService.createNotification(memberNo, "ORDER", notiTitle, notiContent, "/mypage/orders");
 				log.info("주문 상태 변경 알림 생성 - orderNo: {}, status: {}", orderNo, status);
 			} catch (Exception e) {
 				log.error("주문 상태 변경 알림 생성 실패", e);
 			}
 		}
-		
+
 		return result;
 	}
 
 	@Override
 	public int updateTracking(int orderNo, String deliveryCompany, String trackingNumber) {
-		
+
 		int result = mapper.updateTracking(orderNo, deliveryCompany, trackingNumber);
-		
-	    if (result > 0) {
+
+		if (result > 0) {
 			// 자동으로 SHIPPING 상태로 변경 + 알림 생성
 			mapper.updateOrderStatus(orderNo, "SHIPPING");
-			
+
 			// 주문 정보 조회
 			Map<String, Object> orderInfo = mapper.selectOrderInfo(orderNo);
-			
+
 			if (orderInfo != null) {
 				int memberNo = ((Number) orderInfo.get("MEMBER_NO")).intValue();
 				String orderId = (String) orderInfo.get("ORDER_ID");
-				
+
 				try {
-					notificationService.createNotification(
-						memberNo,
-						"ORDER",
-						"배송이 시작되었습니다.",
-						"주문번호: " + orderId + "\n택배사: " + deliveryCompany,
-						"/mypage/orders"
-					);
+					notificationService.createNotification(memberNo, "ORDER", "배송이 시작되었습니다.",
+							"주문번호: " + orderId + "\n택배사: " + deliveryCompany, "/mypage/orders");
 					log.info("배송 시작 알림 생성 - orderNo: {}", orderNo);
 				} catch (Exception e) {
 					log.error("배송 시작 알림 생성 실패", e);
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -491,74 +478,94 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public int registUnveiling(Unveiling unveiling) {
+	public int registUnveiling(Unveiling unveiling, MultipartFile thumbFile) {
 
-		// 1) UNVEILING INSERT (selectKey로 unveilingNo 자동 세팅됨)
-		int result = mapper.insertUnveiling(unveiling);
+		int result = mapper.insertUnveiling(unveiling); // unveilingNo가 selectKey로 세팅됨
 
-		// 2) 이미지 URL이 있으면 UNVEILING_IMG INSERT
-		if (unveiling.getThumbUrl() != null && !unveiling.getThumbUrl().isBlank()) {
-			mapper.insertUnveilingImg(unveiling);
+		if (thumbFile != null && !thumbFile.isEmpty()) {
+			String uploadDir = fileDir.endsWith("/") || fileDir.endsWith("\\") ? fileDir : fileDir + "/";
+			File dir = new File(uploadDir);
+			if (!dir.exists())
+				dir.mkdirs();
+
+			String originalName = thumbFile.getOriginalFilename();
+			String ext = originalName != null && originalName.contains(".")
+					? originalName.substring(originalName.lastIndexOf("."))
+					: ".jpg";
+			String savedName = UUID.randomUUID().toString() + ext;
+
+			try {
+				thumbFile.transferTo(new File(uploadDir + savedName));
+			} catch (IOException e) {
+				throw new RuntimeException("이미지 저장에 실패했습니다.", e);
+			}
+
+			// UNVEILING_IMG 테이블에 INSERT
+			unveiling.setThumbUrl("/images/unveiling/" + savedName);
+			mapper.insertUnveilingImg(unveiling); // unveilingNo + thumbUrl 사용
 		}
 
 		return result;
 	}
 
+	@Override
+	public int forceUpdateUnveilingStatus(int unveilingNo, String status) {
+		return mapper.forceUpdateUnveilingStatus(unveilingNo, status);
+	}
+
 	/**
-	 * 주문 상품 목록 전체에 대해 낙관적 락 재고 차감 수행
-	 * OrderServiceImpl의 로직과 동일
+	 * 주문 상품 목록 전체에 대해 낙관적 락 재고 차감 수행 OrderServiceImpl의 로직과 동일
 	 */
 	private void deductStockForItems(List<OrderItem> orderItems, String orderId) {
-		
+
 		for (OrderItem item : orderItems) {
-			
+
 			if (item.getGoodsOptionNo() <= 0) {
 				log.info("옵션 없는 상품 재고 차감 스킵 - goodsNo: {}", item.getGoodsNo());
 				continue;
 			}
-			
+
 			deductStockWithRetry(item.getGoodsOptionNo(), item.getQty(), orderId);
 		}
 	}
-	
+
 	/**
-	 * 낙관적 락 재고 차감 (재시도 포함)
-	 * OrderServiceImpl의 로직과 동일
+	 * 낙관적 락 재고 차감 (재시도 포함) OrderServiceImpl의 로직과 동일
 	 */
 	private void deductStockWithRetry(int goodsOptionNo, int qty, String orderId) {
-		
+
 		int attempt = 0;
-		
+
 		while (attempt < MAX_RETRY) {
 			attempt++;
-			
+
 			// 최신 version 조회
 			int currentVersion = orderMapper.selectOptionVersion(goodsOptionNo);
-			
+
 			// 낙관적 락 차감 시도
 			int updated = orderMapper.decreaseStock(goodsOptionNo, qty, currentVersion);
-			
+
 			if (updated == 1) {
-				log.info("[관리자 재고 차감] 성공 - orderId: {}, optionNo: {}, qty: {}, version: {} → {}", 
-						orderId, goodsOptionNo, qty, currentVersion, currentVersion + 1);
+				log.info("[관리자 재고 차감] 성공 - orderId: {}, optionNo: {}, qty: {}, version: {} → {}", orderId,
+						goodsOptionNo, qty, currentVersion, currentVersion + 1);
 				return;
 			}
-			
+
 			// 실패 원인 구분
 			int currentStock = orderMapper.selectOptionStock(goodsOptionNo);
-			
+
 			if (currentStock < qty) {
 				// 재고 부족
-				log.warn("[관리자 재고 차감] 재고 부족 - orderId: {}, optionNo: {}, 요청: {}개, 현재: {}개", 
-						orderId, goodsOptionNo, qty, currentStock);
+				log.warn("[관리자 재고 차감] 재고 부족 - orderId: {}, optionNo: {}, 요청: {}개, 현재: {}개", orderId, goodsOptionNo, qty,
+						currentStock);
 				throw new BusinessException("재고가 부족합니다. 현재 재고: " + currentStock + "개 (요청: " + qty + "개)");
 			}
-			
+
 			// 버전 충돌 → 재시도
-			log.info("[관리자 재고 차감] 버전 충돌, 재시도 {}/{} - orderId: {}, optionNo: {}, 현재 재고: {}개", 
-					attempt, MAX_RETRY, orderId, goodsOptionNo, currentStock);
+			log.info("[관리자 재고 차감] 버전 충돌, 재시도 {}/{} - orderId: {}, optionNo: {}, 현재 재고: {}개", attempt, MAX_RETRY,
+					orderId, goodsOptionNo, currentStock);
 		}
-		
+
 		// 최대 재시도 초과
 		log.error("[관리자 재고 차감] 최대 재시도 초과 - orderId: {}, optionNo: {}", orderId, goodsOptionNo);
 		throw new BusinessException("재고 차감 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
@@ -566,10 +573,10 @@ public class AdminServiceImpl implements AdminService {
 
 	private String buildOptionKey(String size, String color) {
 
-	    String s = (size == null || size.isBlank()) ? "NULL" : size.trim();
-	    String c = (color == null || color.isBlank()) ? "NULL" : color.trim();
+		String s = (size == null || size.isBlank()) ? "NULL" : size.trim();
+		String c = (color == null || color.isBlank()) ? "NULL" : color.trim();
 
-	    return s + "_" + c;
+		return s + "_" + c;
 	}
-	
+
 }

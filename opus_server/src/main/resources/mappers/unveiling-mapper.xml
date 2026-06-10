@@ -70,7 +70,10 @@
 		u.PRODUCTION_MATERIAL,
 		u.PRODUCTION_SIZE, u.START_PRICE, u.CURRENT_PRICE,
 		u.FINAL_PRICE,
-		u.BIDDING_COUNT, u.FINISH_DATE, u.PRODUCTION_DETAIL, u.ARTIST_DETAIL,
+		u.BIDDING_COUNT,
+		TO_CHAR(u.START_DATE, 'YYYY-MM-DD"T"HH24:MI:SS') AS START_DATE,
+		TO_CHAR(u.FINISH_DATE, 'YYYY-MM-DD"T"HH24:MI:SS') AS FINISH_DATE,
+		u.PRODUCTION_DETAIL, u.ARTIST_DETAIL,
 		u.UNVEILING_STATUS, u.MEMBER_NO, u.FINALIZED_FL, u.PAYMENT_STATUS,
 		img.UV_IMG_PATH AS THUMB_URL
 		FROM UNVEILING u
@@ -87,8 +90,7 @@
 		)
 		WHERE rn = 1
 		) img
-		ON
-		img.UNVEILING_NO = u.UNVEILING_NO
+		ON img.UNVEILING_NO = u.UNVEILING_NO
 		WHERE u.UNVEILING_NO = #{unveilingNo}
 	</select>
 
@@ -109,7 +111,8 @@
 
 	<update id="updateFinishDate" parameterType="Unveiling">
 		UPDATE UNVEILING
-		SET FINISH_DATE = #{finishDate}
+		SET
+		FINISH_DATE = #{finishDate}
 		WHERE UNVEILING_NO = #{unveilingNo}
 	</update>
 
@@ -216,6 +219,77 @@
 		ALERT_SENT_FL = 1
 		WHERE UNVEILING_NO = #{unveilingNo}
 	</update>
+
+	<insert id="insertAlert">
+		INSERT INTO UNVEILING_ALERT (ALERT_NO, UNVEILING_NO,
+		MEMBER_NO)
+		VALUES (UNVEILING_ALERT_SEQ.NEXTVAL, #{unveilingNo},
+		#{memberNo})
+	</insert>
+
+	<delete id="deleteAlert">
+		DELETE FROM UNVEILING_ALERT
+		WHERE UNVEILING_NO =
+		#{unveilingNo} AND MEMBER_NO = #{memberNo}
+	</delete>
+
+	<select id="checkAlert" resultType="int">
+		SELECT COUNT(*) FROM
+		UNVEILING_ALERT
+		WHERE UNVEILING_NO = #{unveilingNo} AND MEMBER_NO =
+		#{memberNo}
+	</select>
+
+	<select id="selectAlertMemberNos" resultType="int">
+		SELECT MEMBER_NO
+		FROM UNVEILING_ALERT
+		WHERE UNVEILING_NO = #{unveilingNo}
+	</select>
+
+	<!-- LIVE로 전환되었지만 아직 알림 미발송인 경매 조회 -->
+	<select id="selectNewlyLiveUnveilings" resultType="Unveiling">
+		SELECT * FROM
+		UNVEILING
+		WHERE UNVEILING_STATUS = 'LIVE'
+		AND LIVE_ALERT_SENT_FL = 0
+		AND
+		START_DATE IS NOT NULL
+		AND SYSDATE >= START_DATE
+	</select>
+
+	<!-- START_DATE 도달한 UPCOMING 경매 조회 (자동 LIVE 전환용) -->
+	<select id="selectUnveilingsToActivate" resultType="Unveiling">
+		SELECT
+		UNVEILING_NO AS unveilingNo,
+		UNVEILING_TITLE AS unveilingTitle,
+		PRODUCTION_ARTIST AS productionArtist,
+		UNVEILING_STATUS AS
+		unveilingStatus
+		FROM UNVEILING
+		WHERE UNVEILING_STATUS = 'UPCOMING'
+		AND
+		START_DATE IS NOT NULL
+		AND START_DATE &lt;= SYSDATE
+	</select>
+
+	<!-- UPCOMING → LIVE 상태 변경 -->
+	<update id="updateStatusLive">
+		UPDATE UNVEILING
+		SET UNVEILING_STATUS = 'LIVE',
+		CURRENT_PRICE = START_PRICE
+		WHERE UNVEILING_NO = #{unveilingNo}
+		AND
+		UNVEILING_STATUS = 'UPCOMING'
+	</update>
+
+	<!-- LIVE 전환 알림 발송 완료 처리 -->
+	<update id="markLiveAlertSent">
+		UPDATE UNVEILING
+		SET LIVE_ALERT_SENT_FL = 1
+		WHERE
+		UNVEILING_NO = #{unveilingNo}
+	</update>
+
 
 
 </mapper>

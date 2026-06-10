@@ -30,10 +30,39 @@ function getRemaining(endAt) {
   return { done: false, days: pad2(days), hours: pad2(hours), minutes: pad2(minutes), seconds: pad2(seconds) };
 }
 
+function getUntilStart(startAt) {
+  const start = startAt ? new Date(startAt) : null;
+  if (!start || Number.isNaN(start.getTime())) {
+    return { done: false, days: "00", hours: "00", minutes: "00", seconds: "00" };
+  }
+
+  const now = new Date();
+  const diff = start - now;
+
+  if (diff <= 0) {
+    return { done: true, days: "00", hours: "00", minutes: "00", seconds: "00" };
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  return { done: false, days: pad2(days), hours: pad2(hours), minutes: pad2(minutes), seconds: pad2(seconds) };
+}
+
 const STATUS = {
   LIVE: { text: "진행중", key: "live" },
   UPCOMING: { text: "예정", key: "soon" },
   ENDED: { text: "종료", key: "ended" },
+};
+
+const BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+
+const resolveImg = (url) => {
+  if (!url) return "/no-thumbnail.png";
+  if (url.startsWith("http")) return url;   // GCS 등 외부 URL은 그대로
+  return BASE + url;                         // /images/unveiling/xxx.png → http://localhost/images/...
 };
 
 function normalizeFromApi(data, fallbackUnveilingNo, fallbackDetail) {
@@ -58,7 +87,7 @@ function normalizeFromApi(data, fallbackUnveilingNo, fallbackDetail) {
 
   return {
     unveilingNo: data?.unveilingNo ?? fallbackUnveilingNo,
-    image: serverImg ?? fallbackDetail?.image ?? "",
+    image: resolveImg(serverImg ?? fallbackDetail?.image ?? ""),
     alt: fallbackDetail?.alt ?? "auction item image",
     status: data?.unveilingStatus ?? fallbackDetail?.status ?? "LIVE",
     title: data?.unveilingTitle ?? fallbackDetail?.title ?? "무제 (Untitled)",
@@ -88,6 +117,7 @@ function normalizeFromApi(data, fallbackUnveilingNo, fallbackDetail) {
     artistBio: data?.artistDetail ?? fallbackDetail?.artistBio ?? "",
     exhibitions: fallbackDetail?.exhibitions ?? "",
     awards: fallbackDetail?.awards ?? "",
+    startAt: toISODateTime(data?.startDate ?? null),
   };
 }
 
@@ -112,6 +142,9 @@ export default function UnveilingDetail() {
   const [payModal, setPayModal] = useState(false);
   const [payLoading, setPayLoading] = useState(false);
   const [isUrgent, setIsUrgent] = useState(false);
+
+  // 알림 신청 상태
+  const [isAlertSubscribed, setIsAlertSubscribed] = useState(false);
 
   // 라우트 이동 시 리셋
   useEffect(() => {
@@ -187,6 +220,8 @@ export default function UnveilingDetail() {
     getRemaining(detail?.endAt)
   );
 
+  const [remainStart, setRemainStart] = useState(() => getUntilStart(detail?.startAt));
+
   useEffect(() => {
     const tick = () => setRemain(getRemaining(detail?.endAt));
 
@@ -196,6 +231,14 @@ export default function UnveilingDetail() {
 
     return () => clearInterval(t);
   }, [detail?.endAt]);
+
+  useEffect(() => {
+    const tick = () => setRemainStart(getUntilStart(detail?.startAt));
+    tick();
+    const t = setInterval(tick, 1000);
+    return () => clearInterval(t);
+  }, [detail?.startAt]);
+
 
   // ===== 상태 판단 =====
   const serverStatus = bidState?.unveilingStatus || detail?.status;
@@ -323,6 +366,29 @@ export default function UnveilingDetail() {
     }
   }, [unveilingNo, fetchBidState]);
 
+  // 알림 신청 여부 조회 (컴포넌트 마운트 시)
+  useEffect(() => {
+    if (!isLoggedIn || !unveilingNo) return;
+    axiosApi.get(`/api/unveilings/${unveilingNo}/alert`)
+      .then(res => setIsAlertSubscribed(res.data.isSubscribed))
+      .catch(() => { });
+  }, [unveilingNo, isLoggedIn]);
+
+  // 알림 신청/취소 핸들러
+  const handleAlertToggle = async () => {
+    if (!isLoggedIn) {
+      toast.error("로그인 후 이용해주세요.");
+      return;
+    }
+    try {
+      const res = await axiosApi.post(`/api/unveilings/${unveilingNo}/alert`);
+      setIsAlertSubscribed(res.data.isSubscribed);
+      toast.success(res.data.isSubscribed ? "알림이 신청되었습니다." : "알림이 취소되었습니다.");
+    } catch {
+      toast.error("처리에 실패했습니다.");
+    }
+  };
+
   // ===== 잘못된 id 처리 =====
   if (!Number.isFinite(unveilingNo) || unveilingNo <= 0) {
     return (
@@ -360,11 +426,12 @@ export default function UnveilingDetail() {
         <section id="auction-detail-section" className="detail">
           <div id="image-section" className="image">
             <div className="image__main">
-              {detail.image ? (
-                <img id="mainImage" src={detail.image} alt={detail.alt} />
-              ) : (
-                <div style={{ width: "100%", aspectRatio: "4/3" }} />
-              )}
+              <img
+                id="mainImage"
+                src={detail.image || "/no-thumbnail.png"}
+                alt={detail.alt}
+                onError={(e) => { e.currentTarget.src = "/no-thumbnail.png"; }}
+              />
             </div>
           </div>
 
@@ -414,27 +481,36 @@ export default function UnveilingDetail() {
 
             <div className={timerClass}>
               <div className="timer__row">
-                <span className="timer__label">마감까지</span>
+                <span className="timer__label">
+                  {serverStatus === "UPCOMING" ? "시작까지" : "마감까지"}
+                </span>
                 <div className="countdown" aria-label="countdown">
-                  <div className="countdown__unit">
-                    <span>{remain.days}</span>
-                    <span className="countdown__txt">일</span>
-                  </div>
-                  <span className="countdown__sep">:</span>
-                  <div className="countdown__unit">
-                    <span>{remain.hours}</span>
-                    <span className="countdown__txt">시간</span>
-                  </div>
-                  <span className="countdown__sep">:</span>
-                  <div className="countdown__unit">
-                    <span>{remain.minutes}</span>
-                    <span className="countdown__txt">분</span>
-                  </div>
-                  <span className="countdown__sep">:</span>
-                  <div className="countdown__unit">
-                    <span>{remain.seconds}</span>
-                    <span className="countdown__txt">초</span>
-                  </div>
+                  {(() => {
+                    const r = serverStatus === "UPCOMING" ? remainStart : remain;
+                    return (
+                      <>
+                        <div className="countdown__unit">
+                          <span>{r.days}</span>
+                          <span className="countdown__txt">일</span>
+                        </div>
+                        <span className="countdown__sep">:</span>
+                        <div className="countdown__unit">
+                          <span>{r.hours}</span>
+                          <span className="countdown__txt">시간</span>
+                        </div>
+                        <span className="countdown__sep">:</span>
+                        <div className="countdown__unit">
+                          <span>{r.minutes}</span>
+                          <span className="countdown__txt">분</span>
+                        </div>
+                        <span className="countdown__sep">:</span>
+                        <div className="countdown__unit">
+                          <span>{r.seconds}</span>
+                          <span className="countdown__txt">초</span>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
               <p className="timer__hint">{detail.endAtLabel}</p>
@@ -452,6 +528,21 @@ export default function UnveilingDetail() {
                 ? (isTopBidder ? "본인 최고가" : (bidState?.reason || "마감됨"))
                 : "응찰하기"}
             </button>
+
+            {serverStatus === "UPCOMING" && (
+              <button
+                type="button"
+                className="bid-btn"
+                onClick={handleAlertToggle}
+                style={{
+                  background: isAlertSubscribed ? "#ef4444" : "#111827",
+                }}
+              >
+                {isAlertSubscribed
+                  ? "알림 신청됨 (취소하기)"
+                  : "경매 시작 알림 신청"}
+              </button>
+            )}
 
             {/* 낙찰 후 결제 UI */}
             {bidState?.finalizedFl === 1 && (
