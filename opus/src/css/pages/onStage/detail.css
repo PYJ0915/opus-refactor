@@ -386,3 +386,103 @@
   font-weight: 900;
   color: #78350f;
 }
+
+/* ===== 공유 모달 ===== */
+.share-modal-container {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.share-modal-content {
+  background: var(--white, #fff);
+  border-radius: 16px;
+  padding: 24px;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.share-modal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.share-modal-empty {
+  width: 24px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.share-modal-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #000;
+}
+
+.share-modal-close-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--gray-500);
+  cursor: pointer;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.share-modal-close-btn:hover {
+  color: #000;
+  background: var(--gray-100);
+}
+
+.share-modal-icon-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.share-modal-copy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--gray-100, #f3f4f6);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--gray-600, #4b5563);
+  overflow: hidden;
+}
+
+.share-modal-copy-row > div:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.share-modal-copy-btn {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #000;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.share-modal-copy-btn:hover {
+  background: var(--gray-200, #e5e7eb);
+}

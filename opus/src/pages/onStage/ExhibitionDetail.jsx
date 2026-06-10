@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import StarRating from '../../components/common/StarRating';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { saveStageCache, loadStageCache } from "../../api/stageCache";
+import MetaTags from "../../components/common/MetaTags";
 
 export default function ExhibitionDetail() {
   const { exhibitionId } = useParams();
@@ -191,226 +192,238 @@ export default function ExhibitionDetail() {
   if (!displayItem) return <div>잘못된 접근입니다.</div>;
 
   return (
-    <main className="detail-page">
-      <div className="container" id="main-content">
-        <div className='detail-grid'>
-          <section className="left-col">
-            <div className="poster-sticky" id="poster-section">
-              <div className="poster-box">
-                <img
-                  className="poster-img"
-                  src={displayItem.image || "/no-thumbnail.png"}
-                  alt={`${displayItem.title} 포스터`}
-                  onError={(e) => {
-                    e.currentTarget.src = "/no-thumbnail.png";
-                    e.currentTarget.onerror = null;
-                  }}
-                />
-              </div>
+    <>
+      <MetaTags
+        title={`${displayItem.title} - OPUS`}
+        description={
+          displayItem.desc
+            ? displayItem.desc.replace(/<[^>]+>/g, "").slice(0, 120)
+            : displayItem.title
+        }
+        image={displayItem.image}
+        url={window.location.href}
+      />
+      <main className="detail-page">
+        <div className="container" id="main-content">
+          <div className='detail-grid'>
+            <section className="left-col">
+              <div className="poster-sticky" id="poster-section">
+                <div className="poster-box">
+                  <img
+                    className="poster-img"
+                    src={displayItem.image || "/no-thumbnail.png"}
+                    alt={`${displayItem.title} 포스터`}
+                    onError={(e) => {
+                      e.currentTarget.src = "/no-thumbnail.png";
+                      e.currentTarget.onerror = null;
+                    }}
+                  />
+                </div>
 
-              <div className="poster-actions">
-                {!isFromCache && (
-                  <button className='btn btn-primary' id='book-btn' type='button'
-                    onClick={() => {
-                      if (!displayItem.url) {
-                        toast.error("상세 보기 기능이 없는 전시입니다.");
-                        return;
-                      }
-                      window.open(displayItem.url, "_blank", "noopener,noreferrer");
-                    }}>
-                    상세 보기
+                <div className="poster-actions">
+                  {!isFromCache && (
+                    <button className='btn btn-primary' id='book-btn' type='button'
+                      onClick={() => {
+                        if (!displayItem.url) {
+                          toast.error("상세 보기 기능이 없는 전시입니다.");
+                          return;
+                        }
+                        window.open(displayItem.url, "_blank", "noopener,noreferrer");
+                      }}>
+                      상세 보기
+                    </button>
+                  )}
+
+                  <div className="actions-row">
+                    <button className="btn btn-outline" type="button" onClick={toggleLike}>
+                      <i className={`fa-solid fa-heart ${like ? "active" : ""}`}></i>
+                      <span>Like</span>
+                    </button>
+                    <button className="btn btn-outline" type="button" onClick={toggleDislike}>
+                      <i className={`fa-solid fa-heart-crack ${dislike ? "active" : ""}`}></i>
+                      <span>Dislike</span>
+                    </button>
+                    <button className="btn btn-outline" type="button" onClick={savePerform}>
+                      <i className={`fa-solid fa-list ${save ? "active" : ""}`}></i>
+                      <span>Save</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="right-col">
+              <div className="info" id="info-section">
+                <div className='info-badge-row'>
+                  <span className='info-badge' id='badge-name'>전시</span>
+                  <button className='info-badge' id='share-row' onClick={() => setShareModalOpen(true)}>
+                    <i className="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                    <span>공유</span>
                   </button>
+                </div>
+
+                {shareModalOpen &&
+                  <div className={'share-modal-container'} ref={modalBackground} onClick={e => {
+                    if (e.target === modalBackground.current) {
+                      setShareModalOpen(false);
+                    }
+                  }}>
+                    <div className='share-modal-content'>
+                      <div className='share-modal-row'>
+                        <div className='share-modal-empty'>&times;</div>
+                        <div className='share-modal-title'>공유하기</div>
+                        <div className='share-modal-close-btn' onClick={() => setShareModalOpen(false)}>&times;</div>
+                      </div>
+                      <div className='share-modal-icon-row'>
+                        <EmailShareButton url={currentURL}>
+                          <EmailIcon size={50} round={true} />
+                        </EmailShareButton>
+                        <FacebookShareButton url={currentURL}>
+                          <FacebookIcon size={50} round={true} />
+                        </FacebookShareButton>
+                        <LineShareButton url={currentURL}>
+                          <LineIcon size={50} round={true} />
+                        </LineShareButton>
+                        <ThreadsShareButton url={currentURL}>
+                          <ThreadsIcon size={50} round={true} />
+                        </ThreadsShareButton>
+                        <TwitterShareButton url={currentURL}>
+                          <XIcon size={50} round={true} />
+                        </TwitterShareButton>
+                      </div>
+                      <div className='share-modal-copy-row'>
+                        <div>{currentURL}</div>
+                        <div className='share-modal-copy-btn' onClick={copyURL}>복사</div>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                {isFromCache && (
+                  <div className="cache-notice">
+                    <i className="fa-solid fa-circle-info" />
+                    <span>
+                      현재 전시가 종료되어 저장된 정보를 표시하고 있습니다.
+                      작성하신 <strong>리뷰와 별점</strong>은 아래에서 정상적으로 확인하실 수 있어요.
+                    </span>
+                  </div>
                 )}
 
-                <div className="actions-row">
-                  <button className="btn btn-outline" type="button" onClick={toggleLike}>
-                    <i className={`fa-solid fa-heart ${like ? "active" : ""}`}></i>
-                    <span>Like</span>
-                  </button>
-                  <button className="btn btn-outline" type="button" onClick={toggleDislike}>
-                    <i className={`fa-solid fa-heart-crack ${dislike ? "active" : ""}`}></i>
-                    <span>Dislike</span>
-                  </button>
-                  <button className="btn btn-outline" type="button" onClick={savePerform}>
-                    <i className={`fa-solid fa-list ${save ? "active" : ""}`}></i>
-                    <span>Save</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
+                <h1 className="title">{displayItem.title || "(제목 없음)"}</h1>
 
-          <section className="right-col">
-            <div className="info" id="info-section">
-              <div className='info-badge-row'>
-                <span className='info-badge' id='badge-name'>전시</span>
-                <button className='info-badge' id='share-row' onClick={() => setShareModalOpen(true)}>
-                  <i className="fa-solid fa-share-nodes" aria-hidden="true"></i>
-                  <span>공유</span>
-                </button>
-              </div>
-
-              {shareModalOpen &&
-                <div className={'share-modal-container'} ref={modalBackground} onClick={e => {
-                  if (e.target === modalBackground.current) {
-                    setShareModalOpen(false);
-                  }
-                }}>
-                  <div className='share-modal-content'>
-                    <div className='share-modal-row'>
-                      <div className='share-modal-empty'>&times;</div>
-                      <div className='share-modal-title'>공유하기</div>
-                      <div className='share-modal-close-btn' onClick={() => setShareModalOpen(false)}>&times;</div>
-                    </div>
-                    <div className='share-modal-icon-row'>
-                      <EmailShareButton url={currentURL}>
-                        <EmailIcon size={50} round={true} />
-                      </EmailShareButton>
-                      <FacebookShareButton url={currentURL}>
-                        <FacebookIcon size={50} round={true} />
-                      </FacebookShareButton>
-                      <LineShareButton url={currentURL}>
-                        <LineIcon size={50} round={true} />
-                      </LineShareButton>
-                      <ThreadsShareButton url={currentURL}>
-                        <ThreadsIcon size={50} round={true} />
-                      </ThreadsShareButton>
-                      <TwitterShareButton url={currentURL}>
-                        <XIcon size={50} round={true} />
-                      </TwitterShareButton>
-                    </div>
-                    <div className='share-modal-copy-row'>
-                      <div>{currentURL}</div>
-                      <div className='share-modal-copy-btn' onClick={copyURL}>복사</div>
+                <div className="meta-box">
+                  {/* 일정·장소는 캐시에도 있으므로 항상 표시 */}
+                  <div className="meta-row">
+                    <div className="meta-label">일정</div>
+                    <div className='meta-value'>
+                      {displayItem.period
+                        ? <span dangerouslySetInnerHTML={{ __html: displayItem.period }} />
+                        : "(알 수 없음)"}
                     </div>
                   </div>
-                </div>
-              }
-
-              {isFromCache && (
-                <div className="cache-notice">
-                  <i className="fa-solid fa-circle-info" />
-                  <span>
-                    현재 전시가 종료되어 저장된 정보를 표시하고 있습니다.
-                    작성하신 <strong>리뷰와 별점</strong>은 아래에서 정상적으로 확인하실 수 있어요.
-                  </span>
-                </div>
-              )}
-
-              <h1 className="title">{displayItem.title || "(제목 없음)"}</h1>
-
-              <div className="meta-box">
-                {/* 일정·장소는 캐시에도 있으므로 항상 표시 */}
-                <div className="meta-row">
-                  <div className="meta-label">일정</div>
-                  <div className='meta-value'>
-                    {displayItem.period
-                      ? <span dangerouslySetInnerHTML={{ __html: displayItem.period }} />
-                      : "(알 수 없음)"}
+                  <div className="meta-row">
+                    <div className="meta-label">장소</div>
+                    <div className='meta-value'>
+                      {displayItem.place
+                        ? <span dangerouslySetInnerHTML={{ __html: displayItem.place }} />
+                        : "(알 수 없음)"}
+                    </div>
                   </div>
-                </div>
-                <div className="meta-row">
-                  <div className="meta-label">장소</div>
-                  <div className='meta-value'>
-                    {displayItem.place
-                      ? <span dangerouslySetInnerHTML={{ __html: displayItem.place }} />
-                      : "(알 수 없음)"}
-                  </div>
+
+                  {/* 캐시 모드일 때는 관람시간·관람등급 행 자체를 숨김 */}
+                  {!isFromCache && (
+                    <>
+                      <div className="meta-row">
+                        <div className="meta-label">관람시간</div>
+                        <div className='meta-value'>
+                          {displayItem.eventPeriod
+                            ? <span dangerouslySetInnerHTML={{ __html: displayItem.eventPeriod }} />
+                            : "(알 수 없음)"}
+                        </div>
+                      </div>
+                      <div className="meta-row">
+                        <div className="meta-label">관람등급</div>
+                        <div className="meta-value">
+                          {displayItem.age
+                            ? <span dangerouslySetInnerHTML={{ __html: displayItem.age }} />
+                            : "(알 수 없음)"}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                {/* 캐시 모드일 때는 관람시간·관람등급 행 자체를 숨김 */}
+                {/* 캐시 모드일 때는 상세 정보·작가 섹션 숨김 */}
                 {!isFromCache && (
                   <>
-                    <div className="meta-row">
-                      <div className="meta-label">관람시간</div>
-                      <div className='meta-value'>
-                        {displayItem.eventPeriod
-                          ? <span dangerouslySetInnerHTML={{ __html: displayItem.eventPeriod }} />
+                    <div className="section">
+                      <h2 className="section-title">상세 정보</h2>
+                      <div className='desc' id='descText'>
+                        {displayItem.desc
+                          ? <span dangerouslySetInnerHTML={{ __html: displayItem.desc }} />
                           : "(알 수 없음)"}
                       </div>
                     </div>
-                    <div className="meta-row">
-                      <div className="meta-label">관람등급</div>
-                      <div className="meta-value">
-                        {displayItem.age
-                          ? <span dangerouslySetInnerHTML={{ __html: displayItem.age }} />
+
+                    <div className="section section-divider" id="cast-section">
+                      <h2 className="section-title">작가</h2>
+                      <div className="desc" id='cast-desc-div'>
+                        {displayItem.author
+                          ? <span dangerouslySetInnerHTML={{ __html: displayItem.author }} />
                           : "(알 수 없음)"}
                       </div>
                     </div>
                   </>
                 )}
-              </div>
 
-              {/* 캐시 모드일 때는 상세 정보·작가 섹션 숨김 */}
-              {!isFromCache && (
-                <>
-                  <div className="section">
-                    <h2 className="section-title">상세 정보</h2>
-                    <div className='desc' id='descText'>
-                      {displayItem.desc
-                        ? <span dangerouslySetInnerHTML={{ __html: displayItem.desc }} />
-                        : "(알 수 없음)"}
-                    </div>
+                <div className="section" id="reviews-section">
+                  <div className="reviews-head">
+                    <h2 className="section-title">관람 후기</h2>
+                    <button className="btn btn-sm btn-outline" id='more-review-btn' type="button"
+                      onClick={() => {
+                        if (!loginMemberNo) {
+                          toast.error("로그인 후 이용해주세요.");
+                          return;
+                        }
+                        navigate(`/onStage/reviews/${displayItem.exhibitionId}`);
+                      }}>후기 더보기</button>
                   </div>
 
-                  <div className="section section-divider" id="cast-section">
-                    <h2 className="section-title">작가</h2>
-                    <div className="desc" id='cast-desc-div'>
-                      {displayItem.author
-                        ? <span dangerouslySetInnerHTML={{ __html: displayItem.author }} />
-                        : "(알 수 없음)"}
-                    </div>
-                  </div>
-                </>
-              )}
-
-              <div className="section" id="reviews-section">
-                <div className="reviews-head">
-                  <h2 className="section-title">관람 후기</h2>
-                  <button className="btn btn-sm btn-outline" id='more-review-btn' type="button"
-                    onClick={() => {
-                      if (!loginMemberNo) {
-                        toast.error("로그인 후 이용해주세요.");
-                        return;
-                      }
-                      navigate(`/onStage/reviews/${displayItem.exhibitionId}`);
-                    }}>후기 더보기</button>
-                </div>
-
-                {avgRating > 0 && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
-                    <StarRating rating={avgRating} readonly size={16} />
-                  </div>
-                )}
-
-                <div className="reviews">
-                  {bestReview ? (
-                    <article className="review">
-                      <div className="review__top">
-                        <div className="review__user">
-                          <div>
-                            <div className="review__name">{bestReview.memberEmail?.replace(/(.{3}).+(@.+)/, "$1***$2")}</div>
-                            <div className="review__date">{bestReview.reviewWriteDate?.substring(0, 10)}</div>
-                          </div>
-                        </div>
-                        <div className="review__like">
-                          <i className="fa-solid fa-thumbs-up" id='review-like-btn'></i>
-                          <span className="like-count">{bestReviewLikeCount ?? 0}</span>
-                        </div>
-                      </div>
-                      <p className="review__text">{bestReview.reviewContent}</p>
-                    </article>
-                  ) : (
-                    <div className="review__text">
-                      등록된 후기가 없습니다.
+                  {avgRating > 0 && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
+                      <StarRating rating={avgRating} readonly size={16} />
                     </div>
                   )}
+
+                  <div className="reviews">
+                    {bestReview ? (
+                      <article className="review">
+                        <div className="review__top">
+                          <div className="review__user">
+                            <div>
+                              <div className="review__name">{bestReview.memberEmail?.replace(/(.{3}).+(@.+)/, "$1***$2")}</div>
+                              <div className="review__date">{bestReview.reviewWriteDate?.substring(0, 10)}</div>
+                            </div>
+                          </div>
+                          <div className="review__like">
+                            <i className="fa-solid fa-thumbs-up" id='review-like-btn'></i>
+                            <span className="like-count">{bestReviewLikeCount ?? 0}</span>
+                          </div>
+                        </div>
+                        <p className="review__text">{bestReview.reviewContent}</p>
+                      </article>
+                    ) : (
+                      <div className="review__text">
+                        등록된 후기가 없습니다.
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
