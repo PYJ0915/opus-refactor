@@ -7,6 +7,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import MetaTags from "../components/common/MetaTags";
+import ShareModal from "../components/common/ShareModal";
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
@@ -146,6 +147,9 @@ export default function UnveilingDetail() {
 
   // 알림 신청 상태
   const [isAlertSubscribed, setIsAlertSubscribed] = useState(false);
+
+  // 공유 모달 열림 여부
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   // 라우트 이동 시 리셋
   useEffect(() => {
@@ -421,6 +425,14 @@ export default function UnveilingDetail() {
         description={`${detail.artist} | 현재가${detail.currentPrice}`}
         image={detail.image}
       />
+      <ShareModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        url={window.location.href}
+        title={detail.title}
+        description={`${detail.artist} | 현재가 ${detail.currentPrice}`}
+        imageUrl={detail.image}
+      />
       <div className="page unveiling-detail">
         <main className="container">
           <div className="back-row">
@@ -445,7 +457,15 @@ export default function UnveilingDetail() {
             <div id="info-section" className="info">
               <div className="info__top">
                 <span className={statusClass}>{status.text}</span>
-                <h1 className="title">{detail.title}</h1>
+
+                <div className="title-share-row">
+                  <h1 className="title">{detail.title}</h1>
+                  <button id="share-row" onClick={() => setShareModalOpen(true)}>
+                    <i className="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                    <span>공유</span>
+                  </button>
+                </div>
+
                 <p className="artist">{detail.artist}</p>
 
                 <div className="spec">

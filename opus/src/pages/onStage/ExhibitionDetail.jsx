@@ -1,6 +1,4 @@
 import '../../css/pages/onStage/detail.css'
-import { EmailShareButton, FacebookShareButton, LineShareButton, ThreadsShareButton, TwitterShareButton } from "react-share";
-import { EmailIcon, FacebookIcon, LineIcon, ThreadsIcon, XIcon } from "react-share";
 import { useEffect, useRef, useState } from 'react';
 import axiosApi from '../../api/axiosAPI';
 import { useQuery } from '@tanstack/react-query';
@@ -12,6 +10,7 @@ import StarRating from '../../components/common/StarRating';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { saveStageCache, loadStageCache } from "../../api/stageCache";
 import MetaTags from "../../components/common/MetaTags";
+import ShareModal from '../../components/common/ShareModal';
 
 export default function ExhibitionDetail() {
   const { exhibitionId } = useParams();
@@ -262,42 +261,14 @@ export default function ExhibitionDetail() {
                   </button>
                 </div>
 
-                {shareModalOpen &&
-                  <div className={'share-modal-container'} ref={modalBackground} onClick={e => {
-                    if (e.target === modalBackground.current) {
-                      setShareModalOpen(false);
-                    }
-                  }}>
-                    <div className='share-modal-content'>
-                      <div className='share-modal-row'>
-                        <div className='share-modal-empty'>&times;</div>
-                        <div className='share-modal-title'>공유하기</div>
-                        <div className='share-modal-close-btn' onClick={() => setShareModalOpen(false)}>&times;</div>
-                      </div>
-                      <div className='share-modal-icon-row'>
-                        <EmailShareButton url={currentURL}>
-                          <EmailIcon size={50} round={true} />
-                        </EmailShareButton>
-                        <FacebookShareButton url={currentURL}>
-                          <FacebookIcon size={50} round={true} />
-                        </FacebookShareButton>
-                        <LineShareButton url={currentURL}>
-                          <LineIcon size={50} round={true} />
-                        </LineShareButton>
-                        <ThreadsShareButton url={currentURL}>
-                          <ThreadsIcon size={50} round={true} />
-                        </ThreadsShareButton>
-                        <TwitterShareButton url={currentURL}>
-                          <XIcon size={50} round={true} />
-                        </TwitterShareButton>
-                      </div>
-                      <div className='share-modal-copy-row'>
-                        <div>{currentURL}</div>
-                        <div className='share-modal-copy-btn' onClick={copyURL}>복사</div>
-                      </div>
-                    </div>
-                  </div>
-                }
+                <ShareModal
+                  isOpen={shareModalOpen}
+                  onClose={() => setShareModalOpen(false)}
+                  url={window.location.href}
+                  title={displayItem.title}
+                  description={displayItem.desc ? displayItem.desc.replace(/<[^>]+>/g, "").slice(0, 120) : displayItem.title}
+                  imageUrl={displayItem.image}
+                />
 
                 {isFromCache && (
                   <div className="cache-notice">

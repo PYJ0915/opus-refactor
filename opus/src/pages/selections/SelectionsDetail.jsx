@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { addRecentlyViewed } from "../../utils/recentlyViewed";
 import RecentlyViewed from "../../components/selections/RecentlyViewed";
 import MetaTags from "../../components/common/MetaTags";
+import ShareModal from "../../components/common/ShareModal";
 
 
 const SelectionsDetail = () => {
@@ -47,6 +48,9 @@ const SelectionsDetail = () => {
 
   // 장바구니 모달 열림 여부
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+
+  // 공유 모달 열림 여부
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   // 페이지 이동 훅
   const navigate = useNavigate();
@@ -405,6 +409,14 @@ const SelectionsDetail = () => {
           description={`${Number(goodsDetail.goodsPrice).toLocaleString()}원`}
           image={`${import.meta.env.VITE_API_URL}${goodsDetail.goodsThumbnail}`}
         />
+        <ShareModal
+          isOpen={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          url={window.location.href}
+          title={goodsDetail.goodsName}
+          description={`${Number(goodsDetail.goodsPrice).toLocaleString()}원`}
+          imageUrl={`${import.meta.env.VITE_API_URL}${goodsDetail.goodsThumbnail}`}
+        />
         <main className="container">
           <section className="top-grid">
             <div id="product-images" className="gallery">
@@ -421,6 +433,10 @@ const SelectionsDetail = () => {
             <div id="product-info" className="goods_info">
               <div className="info__head">
                 <h1 className="title">{goodsDetail.goodsName}</h1>
+                <button id="share-row" onClick={() => setShareModalOpen(true)}>
+                  <i className="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                  <span>공유</span>
+                </button>
               </div>
 
               <div className="price-box">
