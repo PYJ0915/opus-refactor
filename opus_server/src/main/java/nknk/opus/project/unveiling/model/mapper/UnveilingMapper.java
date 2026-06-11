@@ -56,5 +56,7 @@ public interface UnveilingMapper {
 	int updateStatusLive(int unveilingNo);         // UPCOMING → LIVE
 	
 	int markLiveAlertSent(int unveilingNo);        // LIVE 알림 발송 완료
+
+	List<Unveiling> searchUnveilings(@Param("query") String query, @Param("limit") int limit);
 	
 }

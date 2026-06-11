@@ -16,5 +16,7 @@ public interface StageService {
 	
 	void upsertStageCache(StageCache stageCache);
 	
-    StageCache getStageCache(String stageNo);  
+    StageCache getStageCache(String stageNo);
+
+	Object searchStageCache(String query, String string);  
 }

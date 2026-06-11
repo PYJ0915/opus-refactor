@@ -2,13 +2,22 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, Link, NavLink, useNavigate } from "react-router-dom";
 import "../../css/common/Header.css";
 import { useNotificationStore } from "../../store/useNotificationStore";
+import axiosApi from "../../api/axiosAPI";
+import { resolveImage } from "../../utils/unveilingImage";
 
 function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [preview, setPreview] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const searchRef = useRef(null);
+  const inputRef = useRef(null);
+  const navigate = useNavigate();
 
   // === 알림 기능용 상태 및 훅 추가 ===
-  const navigate = useNavigate();
   const panelRef = useRef(null);
 
   const {
@@ -60,6 +69,40 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
+  // 검색창 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setSearchOpen(false);
+        setPreview(null);
+        setSearchQuery("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // 검색창 열릴 때 input focus
+  useEffect(() => {
+    if (searchOpen) inputRef.current?.focus();
+  }, [searchOpen]);
+
+  // debounce 미리보기
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300); // 300ms 후에 검색
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (!debouncedQuery.trim()) { setPreview(null); return; }
+    axiosApi.get(`/search?q=${encodeURIComponent(debouncedQuery)}`)
+      .then(res => setPreview(res.data))
+      .catch(() => setPreview(null));
+  }, [debouncedQuery]);
+
   // 알림 클릭 → 읽음 처리 + 링크 이동
   const handleNotiClick = async (noti) => {
     // 먼저 링크로 이동
@@ -86,6 +129,23 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
       default: return "fa-solid fa-bell";
     }
   };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    setSearchOpen(false);
+    setPreview(null);
+    setSearchQuery("");
+  };
+
+  const hasPreview = preview && (
+    preview.goods?.length > 0 ||
+    preview.auctions?.length > 0 ||
+    preview.boards?.length > 0 ||
+    preview.exhibitions?.length > 0 ||
+    preview.musicals?.length > 0
+  );
 
   // ==================================
 
@@ -153,8 +213,209 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
           </nav>
         </div>
 
-
         <div className="header__right">
+
+          <div className="header-search" ref={searchRef}>
+            <div className={`header-search__bar ${searchOpen ? "is-open" : ""}`}>
+              <form onSubmit={handleSearch} className="header-search__form">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="검색어를 입력하세요"
+                  className="header-search__input"
+                />
+              </form>
+            </div>
+
+            <button
+              type="button"
+              className="icon-btn"
+              aria-label="검색"
+              onClick={() => {
+                if (searchOpen && searchQuery.trim()) {
+                  navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                  setSearchOpen(false);
+                  setPreview(null);
+                  setSearchQuery("");
+                } else {
+                  setSearchOpen(prev => !prev);
+                }
+              }}
+            >
+              <i className="fa-solid fa-search" />
+            </button>
+
+            {/* 드롭다운 미리보기 */}
+            {searchOpen && (
+              <div className={`search-preview ${hasPreview || searchLoading ? "is-visible" : ""}`}>
+                {searchLoading && (
+                  <p className="search-preview__loading">검색 중...</p>
+                )}
+
+                {!searchLoading && hasPreview && (
+                  <>
+                    {preview.goods?.length > 0 && (
+                      <div className="search-preview__section">
+                        <p className="search-preview__label">Selections</p>
+                        {preview.goods.map(g => (
+                          <div
+                            key={g.goodsNo}
+                            className="search-preview__item"
+                            onClick={() => {
+                              navigate(`/selections/${g.goodsNo}`);
+                              setSearchOpen(false);
+                              setPreview(null);
+                              setSearchQuery("");
+                            }}
+                          >
+                            <img
+                              src={`${import.meta.env.VITE_API_URL}${g.goodsThumbnail}`}
+                              alt={g.goodsName}
+                              className="search-preview__thumb"
+                            />
+                            <div>
+                              <p className="search-preview__name">{g.goodsName}</p>
+                              <p className="search-preview__sub">{Number(g.goodsPrice).toLocaleString()}원</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {preview.auctions?.length > 0 && (
+                      <div className="search-preview__section">
+                        <p className="search-preview__label">Unveiling</p>
+                        {preview.auctions.map(u => (
+                          <div
+                            key={u.unveilingNo}
+                            className="search-preview__item"
+                            onClick={() => {
+                              navigate(`/unveiling/${u.unveilingNo}`);
+                              setSearchOpen(false);
+                              setPreview(null);
+                              setSearchQuery("");
+                            }}
+                          >
+                            <img
+                              src={resolveImage(u.thumbUrl)}
+                              alt={u.unveilingTitle}
+                              className="search-preview__thumb"
+                              onError={(e) => {
+                                e.currentTarget.src = "/no-thumbnail.png";
+                                e.currentTarget.onerror = null;
+                              }}
+                            />
+                            <div>
+                              <p className="search-preview__name">{u.unveilingTitle}</p>
+                              <p className="search-preview__sub">{u.productionArtist}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {preview.boards?.length > 0 && (
+                      <div className="search-preview__section">
+                        <p className="search-preview__label">Proposals</p>
+                        {preview.boards.map(b => (
+                          <div
+                            key={b.boardNo}
+                            className="search-preview__item"
+                            onClick={() => {
+                              navigate(`/proposals/detail/${b.boardNo}`);
+                              setSearchOpen(false);
+                              setPreview(null);
+                              setSearchQuery("");
+                            }}
+                          >
+                            <div className="search-preview__icon-wrap">
+                              <i className="fa-solid fa-file-lines" />
+                            </div>
+                            <div>
+                              <p className="search-preview__name">{b.boardTitle}</p>
+                              <p className="search-preview__sub">{b.boardWriteDate?.substring(0, 10)}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {preview.exhibitions?.length > 0 && (
+                      <div className="search-preview__section">
+                        <p className="search-preview__label">On-Stage (전시)</p>
+                        {preview.exhibitions.map(e => (
+                          <div
+                            key={e.stageNo}
+                            className="search-preview__item"
+                            onClick={() => {
+                              navigate(`/onStage/exhibition/${e.stageNo}`);
+                              setSearchOpen(false);
+                              setPreview(null);
+                              setSearchQuery("");
+                            }}
+                          >
+                            <img
+                              src={e.stageThumbnail?.replace("http://", "https://")}
+                              alt={e.stageTitle}
+                              className="search-preview__thumb"
+                              onError={(el) => { el.currentTarget.src = "/no-thumbnail.png"; el.currentTarget.onerror = null; }}
+                            />
+                            <div>
+                              <p className="search-preview__name">{e.stageTitle}</p>
+                              <p className="search-preview__sub">{e.stagePlace}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {preview.musicals?.length > 0 && (
+                      <div className="search-preview__section">
+                        <p className="search-preview__label">On-Stage (뮤지컬)</p>
+                        {preview.musicals.map(e => (
+                          <div
+                            key={e.stageNo}
+                            className="search-preview__item"
+                            onClick={() => {
+                              navigate(`/onStage/musical/${e.stageNo}`);
+                              setSearchOpen(false);
+                              setPreview(null);
+                              setSearchQuery("");
+                            }}
+                          >
+                            <img
+                              src={e.stageThumbnail?.replace("http://", "https://")}
+                              alt={e.stageTitle}
+                              className="search-preview__thumb"
+                              onError={(el) => { el.currentTarget.src = "/no-thumbnail.png"; el.currentTarget.onerror = null; }}
+                            />
+                            <div>
+                              <p className="search-preview__name">{e.stageTitle}</p>
+                              <p className="search-preview__sub">{e.stagePlace}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div
+                      className="search-preview__footer"
+                      onClick={handleSearch}
+                    >
+                      <span>"{searchQuery}" 전체 결과 보기</span>
+                      <i className="fa-solid fa-arrow-right" />
+                    </div>
+                  </>
+                )}
+
+                {!searchLoading && searchQuery.trim() && !hasPreview && (
+                  <p className="search-preview__empty">검색 결과가 없습니다.</p>
+                )}
+              </div>
+            )}
+          </div>
 
           {isLoggedIn && (
             <div className="noti-wrap" ref={panelRef}>

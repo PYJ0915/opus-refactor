@@ -73,20 +73,25 @@
 
 	<!-- 캐시 UPSERT (Oracle MERGE 사용) -->
 	<update id="upsertStageCache" parameterType="StageCache">
-		MERGE INTO STAGE_CACHE sc
+		MERGE INTO
+		STAGE_CACHE sc
 		USING DUAL
 		ON (sc.STAGE_NO = #{stageNo})
 		WHEN MATCHED THEN
 		UPDATE SET
 		STAGE_TITLE = #{stageTitle},
-		STAGE_THUMBNAIL = #{stageThumbnail},
+		STAGE_THUMBNAIL =
+		#{stageThumbnail},
 		STAGE_PERIOD = #{stagePeriod},
-		STAGE_PLACE = #{stagePlace},
+		STAGE_PLACE =
+		#{stagePlace},
 		CACHED_AT = SYSDATE
 		WHEN NOT MATCHED THEN
-		INSERT (STAGE_NO, STAGE_TYPE, STAGE_TITLE, STAGE_THUMBNAIL, STAGE_PERIOD,
+		INSERT
+		(STAGE_NO, STAGE_TYPE, STAGE_TITLE, STAGE_THUMBNAIL, STAGE_PERIOD,
 		STAGE_PLACE)
-		VALUES (#{stageNo}, #{stageType}, #{stageTitle}, #{stageThumbnail},
+		VALUES (#{stageNo}, #{stageType}, #{stageTitle},
+		#{stageThumbnail},
 		#{stagePeriod}, #{stagePlace})
 	</update>
 
@@ -102,6 +107,25 @@
 		STAGE_PLACE AS stagePlace,
 		TO_CHAR(CACHED_AT, 'YYYY-MM-DD') AS cachedAt
 		FROM STAGE_CACHE
-		WHERE STAGE_NO = #{stageNo}
+		WHERE
+		STAGE_NO = #{stageNo}
 	</select>
+
+	<select id="searchStageCache" resultType="StageCache">
+		SELECT
+		STAGE_NO AS stageNo,
+		STAGE_TYPE AS stageType,
+		STAGE_TITLE AS stageTitle,
+		STAGE_THUMBNAIL AS stageThumbnail,
+		STAGE_PERIOD AS stagePeriod,
+		STAGE_PLACE AS stagePlace
+		FROM STAGE_CACHE
+		WHERE STAGE_TITLE LIKE '%' || #{query} || '%'
+		<if test="stageType != null and stageType != ''">
+			AND STAGE_TYPE = #{stageType}
+		</if>
+		ORDER BY CACHED_AT DESC
+		FETCH FIRST 5 ROWS ONLY
+	</select>
+
 </mapper>

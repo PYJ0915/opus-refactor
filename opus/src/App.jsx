@@ -39,6 +39,7 @@ import AdminProtectedRoute from "./components/auth/AdminProtectedRoute";
 import MyPageLayout from "./layouts/MyPageLayout";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import Search from "./pages/Search";
 
 export default function App() {
 
@@ -107,7 +108,7 @@ export default function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/about" element={<About />} />
           <Route path="/admin" element={<AdminProtectedRoute><Admin /></AdminProtectedRoute>} />
-
+          <Route path="/search" element={<Search />} />
         </Route>
       </Routes>
 

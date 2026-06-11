@@ -3,6 +3,7 @@ package nknk.opus.project.selections.model.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import nknk.opus.project.selections.model.dto.Goods;
 import nknk.opus.project.selections.model.dto.GoodsImg;
@@ -20,5 +21,7 @@ public interface SelectionsMapper {
 	List<GoodsImg> selectGoodsImgList(int goodsNo);
 
 	List<String> selectDbImageList();
+
+	List<Goods> searchGoods(@Param("query") String query, @Param("limit") int limit);
 
 }

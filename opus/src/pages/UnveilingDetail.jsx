@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import MetaTags from "../components/common/MetaTags";
 import ShareModal from "../components/common/ShareModal";
+import { resolveImage } from "../utils/unveilingImage";
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
@@ -59,14 +60,6 @@ const STATUS = {
   ENDED: { text: "종료", key: "ended" },
 };
 
-const BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
-
-const resolveImg = (url) => {
-  if (!url) return "/no-thumbnail.png";
-  if (url.startsWith("http")) return url;   // GCS 등 외부 URL은 그대로
-  return BASE + url;                         // /images/unveiling/xxx.png → http://localhost/images/...
-};
-
 function normalizeFromApi(data, fallbackUnveilingNo, fallbackDetail) {
   const formatKRW = (n) => `₩${Number(n).toLocaleString("ko-KR")}`;
 
@@ -89,7 +82,7 @@ function normalizeFromApi(data, fallbackUnveilingNo, fallbackDetail) {
 
   return {
     unveilingNo: data?.unveilingNo ?? fallbackUnveilingNo,
-    image: resolveImg(serverImg ?? fallbackDetail?.image ?? ""),
+    image: resolveImage(serverImg ?? fallbackDetail?.image ?? ""),
     alt: fallbackDetail?.alt ?? "auction item image",
     status: data?.unveilingStatus ?? fallbackDetail?.status ?? "LIVE",
     title: data?.unveilingTitle ?? fallbackDetail?.title ?? "무제 (Untitled)",

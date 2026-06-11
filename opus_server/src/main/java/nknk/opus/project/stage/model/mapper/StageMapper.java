@@ -1,6 +1,9 @@
 package nknk.opus.project.stage.model.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import nknk.opus.project.reviews.model.dto.Reviews;
 import nknk.opus.project.stage.model.dto.StageCache;
@@ -36,4 +39,6 @@ public interface StageMapper {
 
     // 캐시 조회
     StageCache selectStageCache(String stageNo);
+
+	List<StageCache> searchStageCache(@Param("query") String query, @Param("stageType") String stageType);
 }
