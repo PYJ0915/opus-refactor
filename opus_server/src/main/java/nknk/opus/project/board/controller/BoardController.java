@@ -1,8 +1,11 @@
 package nknk.opus.project.board.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -138,5 +141,41 @@ public class BoardController {
 		}
 
 		return service.selectMyBoards(memberNo);
+	}
+
+	/** 기업 회원 대시보드 — 내 게시글 통계 */
+	@GetMapping("/dashboard")
+	public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication) {
+		String role = getRole(authentication);
+		if (!Role.COMPANY.getKey().equals(role)) {
+			return ResponseEntity.status(403).build();
+		}
+
+		int memberNo = getMemberNo(authentication);
+		List<Board> myBoards = service.selectMyBoards(memberNo);
+
+		// 집계
+		int totalPosts = myBoards.size();
+		int totalViews = myBoards.stream().mapToInt(Board::getBoardViewCount).sum();
+		int maxViews = myBoards.stream().mapToInt(Board::getBoardViewCount).max().orElse(0);
+
+		// 카테고리별 게시글 수
+		Map<String, Long> byCategory = myBoards.stream()
+				.collect(java.util.stream.Collectors.groupingBy(
+						b -> b.getBoardCategory() != null ? b.getBoardCategory() : "기타",
+						java.util.stream.Collectors.counting()));
+
+		// 최근 5개
+		List<Board> recent = myBoards.stream().sorted((a, b) -> b.getBoardWriteDate().compareTo(a.getBoardWriteDate()))
+				.limit(5).toList();
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("totalPosts", totalPosts);
+		result.put("totalViews", totalViews);
+		result.put("maxViews", maxViews);
+		result.put("byCategory", byCategory);
+		result.put("recentPosts", recent);
+
+		return ResponseEntity.ok(result);
 	}
 }

@@ -18,7 +18,7 @@ export default function MyPageSidebar() {
         ...(!isSocialUser
           ? [{ id: "password-change", icon: "fa-solid fa-lock", label: "비밀번호 변경" }]
           : []),
-        ...(role !== "ADMIN" && isMyPage 
+        ...(role !== "ADMIN" && isMyPage
           ? [{ id: "withdrawal", icon: "fa-solid fa-user-slash", label: "회원 탈퇴" }]
           : []),
       ],
@@ -27,7 +27,10 @@ export default function MyPageSidebar() {
       title: "활동 내역",
       items: [
         ...(role === "COMPANY"
-          ? [{ id: "myPosts", icon: "fa-regular fa-pen-to-square", label: "등록 컨텐츠" }]
+          ? [
+            { id: "dashboard", icon: "fa-solid fa-chart-bar", label: "대시보드" },
+            { id: "myPosts", icon: "fa-regular fa-pen-to-square", label: "등록 컨텐츠" }
+          ]
           : []),
         { id: "wishlist", icon: "fa-regular fa-heart", label: "찜한 리스트" },
         { id: "reviews", icon: "fa-regular fa-comment", label: "작성 후기" },
@@ -57,6 +60,11 @@ export default function MyPageSidebar() {
     if (id === "withdrawal") {
       // withdrawal 클릭은 MyPage에서 처리해야 하므로 이벤트 발행
       window.dispatchEvent(new CustomEvent("mypage:withdrawal"));
+      return;
+    }
+
+    if (id === "dashboard") {
+      navigate("/mypage/dashboard");
       return;
     }
 

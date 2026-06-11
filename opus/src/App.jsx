@@ -40,6 +40,7 @@ import MyPageLayout from "./layouts/MyPageLayout";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import Search from "./pages/Search";
+import CompanyDashboard from "./pages/mypage/CompanyDashboard";
 
 export default function App() {
 
@@ -109,6 +110,8 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/admin" element={<AdminProtectedRoute><Admin /></AdminProtectedRoute>} />
           <Route path="/search" element={<Search />} />
+          <Route path="/mypage/dashboard"
+            element={<ProtectedRoute><CompanyDashboard /></ProtectedRoute>} />
         </Route>
       </Routes>
 
