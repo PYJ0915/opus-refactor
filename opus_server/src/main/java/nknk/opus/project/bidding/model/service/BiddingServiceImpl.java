@@ -5,9 +5,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.bidding.model.dto.BidResponse;
 import nknk.opus.project.bidding.model.dto.Bidding;
 import nknk.opus.project.bidding.model.mapper.BiddingMapper;
@@ -17,14 +19,14 @@ import nknk.opus.project.unveiling.model.mapper.UnveilingMapper;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class BiddingServiceImpl implements BiddingService {
 
-	@Autowired
-	private UnveilingMapper unveilingMapper;
+	private final UnveilingMapper unveilingMapper;
 
-	@Autowired
-	private BiddingMapper biddingMapper;
+	private final BiddingMapper biddingMapper;
+
+	private final SimpMessagingTemplate messagingTemplate;
 
 	@Override
 	public BidResponse placeBid(Bidding bidding) {
@@ -114,9 +116,13 @@ public class BiddingServiceImpl implements BiddingService {
 		} catch (Exception ignored) {
 		}
 
-		// 7) 새로운 현재가 반환
-		return BidResponse.builder().unveilingNo(unveilingNo).currentPrice(nextPrice).biddingCount(u.getBiddingCount())
-				.unveilingStatus(u.getUnveilingStatus()).build();
+		BidResponse result = BidResponse.builder().unveilingNo(unveilingNo).currentPrice(nextPrice)
+				.biddingCount(u.getBiddingCount()).unveilingStatus(u.getUnveilingStatus()).build();
+
+		// WebSocket으로 해당 경매 구독자 전체에게 브로드캐스트
+		messagingTemplate.convertAndSend("/topic/auction/" + unveilingNo, result);
+
+		return result;
 	}
 
 }

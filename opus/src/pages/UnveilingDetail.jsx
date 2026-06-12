@@ -9,6 +9,7 @@ import LoadingSpinner from "../components/common/LoadingSpinner";
 import MetaTags from "../components/common/MetaTags";
 import ShareModal from "../components/common/ShareModal";
 import { resolveImage } from "../utils/unveilingImage";
+import useAuctionSocket from "../hooks/useAuctionSocket";
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
@@ -212,6 +213,16 @@ export default function UnveilingDetail() {
     const interval = setInterval(fetchBidState, 10000);
     return () => clearInterval(interval);
   }, [fetchBidState, unveilingNo, bidState?.unveilingStatus]);
+
+  const { connected } = useAuctionSocket(unveilingNo, (data) => {
+    setDetail(prev => ({
+      ...prev,
+      currentPrice: `₩${Number(data.currentPrice).toLocaleString("ko-KR")}`,
+      bidCount: data.biddingCount,
+      status: data.unveilingStatus,
+    }));
+    fetchBidState();
+  });
 
   // 카운트다운 (1초 간격)
   const [remain, setRemain] = useState(() =>
@@ -449,7 +460,9 @@ export default function UnveilingDetail() {
 
             <div id="info-section" className="info">
               <div className="info__top">
-                <span className={statusClass}>{status.text}</span>
+                <div className="status-row">
+                  <span className={statusClass}>{status.text}</span>
+                </div>
 
                 <div className="title-share-row">
                   <h1 className="title">{detail.title}</h1>
@@ -489,7 +502,12 @@ export default function UnveilingDetail() {
                 <div className="pricebox__block pricebox__divider">
                   <p className="pricebox__label">현재가</p>
                   <p className="pricebox__value pricebox__value--xl">{detail.currentPrice}</p>
-                  <p className="pricebox__hint">응찰 {detail.bidCount}회</p>
+                  <div className="pricebox__meta-row">
+                    <p className="pricebox__hint">응찰 {detail.bidCount}회</p>
+                    {connected && (
+                      <span className="realtime-badge">● 실시간</span>
+                    )}
+                  </div>
                   {bidState && bidState.bidAllowedFl && typeof bidState.nextBidPrice === "number" && (
                     <p className="pricebox__hint">
                       다음 자동 입찰가: ₩{Number(bidState.nextBidPrice).toLocaleString("ko-KR")}

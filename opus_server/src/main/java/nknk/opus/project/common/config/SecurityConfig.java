@@ -79,6 +79,7 @@ public class SecurityConfig {
 							    "/stage/cache/**")
 						.permitAll()
 						.requestMatchers("/search/**").permitAll()
+						.requestMatchers("/ws/**").permitAll()
 
 						// 게시판: GET만 공개, 나머지 인증 필요
 						.requestMatchers(HttpMethod.GET, "/api/board/**").permitAll().requestMatchers("/api/board/**")
