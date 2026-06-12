@@ -37,14 +37,18 @@ import Admin from "./pages/admin/Admin";
 import MyPosts from "./pages/mypage/MyPosts";
 import AdminProtectedRoute from "./components/auth/AdminProtectedRoute";
 import MyPageLayout from "./layouts/MyPageLayout";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Search from "./pages/Search";
 import CompanyDashboard from "./pages/mypage/CompanyDashboard";
+import RecommendPanel from "./components/RecommendPanel";
 
 export default function App() {
 
   const navigate = useNavigate();
+
+  const [chatbotOpen, setChatbotOpen] = useState(false);
+  const [recommendOpen, setRecommendOpen] = useState(false);
 
   useEffect(() => {
     const handleAuthExpired = (e) => {
@@ -115,7 +119,24 @@ export default function App() {
         </Route>
       </Routes>
 
-      <Chatbot />
+      <RecommendPanel
+        isOpen={recommendOpen}
+        onToggle={() => {
+          setRecommendOpen((v) => !v);
+          if (chatbotOpen) setChatbotOpen(false);
+        }}
+        onClose={() => setRecommendOpen(false)}
+        hidden={chatbotOpen}
+      />
+      <Chatbot
+        isOpen={chatbotOpen}
+        onToggle={() => {
+          setChatbotOpen((v) => !v);
+          if (recommendOpen) setRecommendOpen(false);
+        }}
+        onClose={() => setChatbotOpen(false)}
+        hidden={recommendOpen}
+      />
       <ScrollToTop />
     </>
   );

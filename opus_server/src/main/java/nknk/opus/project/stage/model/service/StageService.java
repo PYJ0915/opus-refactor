@@ -1,5 +1,7 @@
 package nknk.opus.project.stage.model.service;
 
+import java.util.List;
+
 import nknk.opus.project.reviews.model.dto.Reviews;
 import nknk.opus.project.stage.model.dto.StageCache;
 import nknk.opus.project.stage.model.dto.StagePrefer;
@@ -18,5 +20,7 @@ public interface StageService {
 	
     StageCache getStageCache(String stageNo);
 
-	Object searchStageCache(String query, String string);  
+	Object searchStageCache(String query, String string);
+
+	List<StageCache> getStageCacheList(String stageType, int limit);  
 }

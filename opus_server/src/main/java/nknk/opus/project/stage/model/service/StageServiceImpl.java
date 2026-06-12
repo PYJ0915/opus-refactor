@@ -80,4 +80,9 @@ public class StageServiceImpl implements StageService {
 	public List<StageCache> searchStageCache(String query, String stageType) {
 	    return mapper.searchStageCache(query, stageType);
 	}
+	
+	@Override
+	public List<StageCache> getStageCacheList(String stageType, int limit) {
+	    return mapper.selectStageCacheList(stageType, limit);
+	}
 }

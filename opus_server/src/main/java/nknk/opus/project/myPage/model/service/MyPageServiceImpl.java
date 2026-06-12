@@ -1,6 +1,7 @@
 package nknk.opus.project.myPage.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,11 @@ public class MyPageServiceImpl implements MyPageService {
 	@Override
 	public List<String> getLikeList(int memberNo) {
 		return mapper.getLikeList(memberNo);
+	}
+	
+	@Override
+	public List<Map<String, Object>> getRatedStages(int memberNo) {
+		return mapper.getRatedStages(memberNo);
 	}
 
 }

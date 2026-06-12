@@ -41,4 +41,6 @@ public interface StageMapper {
     StageCache selectStageCache(String stageNo);
 
 	List<StageCache> searchStageCache(@Param("query") String query, @Param("stageType") String stageType);
+
+	List<StageCache> selectStageCacheList(@Param("stageType") String stageType, @Param("limit") int limit);
 }

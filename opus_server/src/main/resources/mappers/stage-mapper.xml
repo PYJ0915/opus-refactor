@@ -128,4 +128,22 @@
 		FETCH FIRST 5 ROWS ONLY
 	</select>
 
+	<!-- 추천 패널용 전체 캐시 목록 조회 -->
+<select id="selectStageCacheList" resultType="StageCache">
+    SELECT STAGE_NO       AS stageNo,
+           STAGE_TYPE     AS stageType,
+           STAGE_TITLE    AS stageTitle,
+           STAGE_THUMBNAIL AS stageThumbnail,
+           STAGE_PERIOD   AS stagePeriod,
+           STAGE_PLACE    AS stagePlace
+    FROM STAGE_CACHE
+    <where>
+        <if test="stageType != null and stageType != ''">
+            STAGE_TYPE = #{stageType}
+        </if>
+    </where>
+    ORDER BY CACHED_AT DESC
+    FETCH FIRST #{limit} ROWS ONLY
+</select>
+
 </mapper>
