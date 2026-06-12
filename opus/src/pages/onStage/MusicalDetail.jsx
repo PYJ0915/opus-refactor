@@ -70,6 +70,23 @@ export default function MusicalDetail() {
     });
   }, [isPending, data, mt20id]);
 
+  useEffect(() => {
+    if (!loginMemberNo) return;
+    const fetchStatus = async () => {
+      try {
+        const [likedRes, savedRes] = await Promise.all([
+          axiosApi.get("/myPage/likeList"),
+          axiosApi.get("/myPage/savedList"),
+        ]);
+        setLike(likedRes.data?.includes(mt20id) ?? false);
+        setSave(savedRes.data?.includes(mt20id) ?? false);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchStatus();
+  }, [loginMemberNo, mt20id]);
+
   const { data: bestReview } = useQuery({
     queryKey: ["bestReview", mt20id],
     queryFn: async () => {
@@ -167,13 +184,8 @@ export default function MusicalDetail() {
         memberNo: loginMemberNo,
         stageNo: mt20id
       });
-      if (res.status === 200) {
-        setSave(true);
-        toast.success("찜에 추가되었습니다.");
-      } else if (res.data === 1) {
-        setSave(false);
-        toast.success("찜이 취소되었습니다.");
-      }
+      toast.success(res.data);
+      setSave(prev => !prev); 
     } catch (error) {
       console.log(error);
     }
@@ -241,7 +253,7 @@ export default function MusicalDetail() {
                       <span>Dislike</span>
                     </button>
                     <button className="btn btn-outline" type="button" onClick={savePerform}>
-                      <i className="fa-solid fa-list"></i>
+                      <i className={`fa-solid fa-list ${save ? "active" : ""}`}></i>
                       <span>Save</span>
                     </button>
                   </div>

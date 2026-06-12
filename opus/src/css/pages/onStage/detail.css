@@ -369,3 +369,48 @@
   font-weight: 900;
   color: #78350f;
 }
+
+/* 공통 — 비활성 기본 스타일 */
+.detail-page .actions-row .btn-outline {
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.detail-page .actions-row .btn-outline:hover {
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+/* Like 활성 */
+.detail-page .actions-row .btn-outline .fa-heart.active {
+  color: #ef4444;
+}
+
+.detail-page .actions-row .btn-outline:has(.fa-heart.active) {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: #fff1f2;
+}
+
+/* Dislike 활성 */
+.detail-page .actions-row .btn-outline .fa-heart-crack.active {
+  color: #6b7280;
+}
+
+.detail-page .actions-row .btn-outline:has(.fa-heart-crack.active) {
+  border-color: #6b7280;
+  color: #6b7280;
+  background: #f9fafb;
+}
+
+/* Save 활성 */
+.detail-page .actions-row .btn-outline .fa-list.active {
+  color: #3b82f6;
+}
+
+.detail-page .actions-row .btn-outline:has(.fa-list.active) {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #eff6ff;
+}

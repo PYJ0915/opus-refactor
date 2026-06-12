@@ -74,6 +74,23 @@ export default function ExhibitionDetail() {
     });
   }, [isLoading, item, exhibitionId]);
 
+  useEffect(() => {
+    if (!loginMemberNo) return;
+    const fetchStatus = async () => {
+      try {
+        const [likedRes, savedRes] = await Promise.all([
+          axiosApi.get("/myPage/likeList"),
+          axiosApi.get("/myPage/savedList"),
+        ]);
+        setLike(likedRes.data?.includes(exhibitionId) ?? false);
+        setSave(savedRes.data?.includes(exhibitionId) ?? false);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchStatus();
+  }, [loginMemberNo, exhibitionId]);
+
   const { data: avgRating } = useQuery({
     queryKey: ["avgRating", exhibitionId],
     queryFn: async () => {

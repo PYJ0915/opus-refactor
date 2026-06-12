@@ -22,6 +22,8 @@ export default function MusicalList({ status, search }) {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [likedItems, setLikedItems] = useState([]);
   const [savedItems, setSavedItems] = useState([]);
+  const [likedOverflow, setLikedOverflow] = useState(false);
+  const [savedOverflow, setSavedOverflow] = useState(false);
 
   const {
     data,
@@ -125,6 +127,24 @@ export default function MusicalList({ status, search }) {
     fetchPrefer();
   }, [status, allItems]);
 
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (likedScrollRef.current) {
+        setLikedOverflow(
+          likedScrollRef.current.scrollWidth > likedScrollRef.current.clientWidth
+        );
+      }
+      if (savedScrollRef.current) {
+        setSavedOverflow(
+          savedScrollRef.current.scrollWidth > savedScrollRef.current.clientWidth
+        );
+      }
+    };
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
+  }, [likedItems, savedItems]);
+
   const filteredItems = useMemo(() => {
     return allItems.filter((item) => {
       const matchStatus =
@@ -173,8 +193,10 @@ export default function MusicalList({ status, search }) {
           {likedItems.length === 0 ? (
             <p className="empty-text">좋아요를 누른 공연이 없습니다.</p>
           ) : (
-            <div style={{ position: "relative" }}>
-              <button onClick={() => scrollLeft(likedScrollRef)} style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}>‹</button>
+            <div className="scroll-rail">
+              {likedOverflow && (
+                <button className="scroll-arrow scroll-arrow--left" onClick={() => scrollLeft(likedScrollRef)}>‹</button>
+              )}
               <div ref={likedScrollRef} className="show-grid show-grid--row">
                 {likedItems.map((item) => (
                   <article key={item.mt20id} className="show-card">
@@ -190,7 +212,9 @@ export default function MusicalList({ status, search }) {
                   </article>
                 ))}
               </div>
-              <button onClick={() => scrollRight(likedScrollRef)} style={{ position: "absolute", right: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}>›</button>
+              {likedOverflow && (
+                <button className="scroll-arrow scroll-arrow--right" onClick={() => scrollRight(likedScrollRef)}>›</button>
+              )}
             </div>
           )}
         </section>
@@ -202,8 +226,10 @@ export default function MusicalList({ status, search }) {
           {savedItems.length === 0 ? (
             <p className="empty-text">저장한 공연이 없습니다.</p>
           ) : (
-            <div style={{ position: "relative" }}>
-              <button onClick={() => scrollLeft(savedScrollRef)} style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}>‹</button>
+            <div className="scroll-rail">
+              {savedOverflow && (
+                <button className="scroll-arrow scroll-arrow--left" onClick={() => scrollLeft(savedScrollRef)}>‹</button>
+              )}
               <div ref={savedScrollRef} className="show-grid show-grid--row">
                 {savedItems.map((item) => (
                   <article key={item.mt20id} className="show-card">
@@ -219,7 +245,9 @@ export default function MusicalList({ status, search }) {
                   </article>
                 ))}
               </div>
-              <button onClick={() => scrollRight(savedScrollRef)} style={{ position: "absolute", right: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}>›</button>
+              {savedOverflow && (
+                <button className="scroll-arrow scroll-arrow--right" onClick={() => scrollRight(savedScrollRef)}>›</button>
+              )}
             </div>
           )}
         </section>

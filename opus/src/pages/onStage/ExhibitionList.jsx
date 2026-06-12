@@ -63,6 +63,8 @@ export default function ExhibitionList({ search, status }) {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [likedItems, setLikedItems] = useState([]);
   const [savedItems, setSavedItems] = useState([]);
+  const [likedOverflow, setLikedOverflow] = useState(false);
+  const [savedOverflow, setSavedOverflow] = useState(false);
   const likedScrollRef = useRef(null);
   const savedScrollRef = useRef(null);
 
@@ -194,6 +196,24 @@ export default function ExhibitionList({ search, status }) {
     fetchPrefer();
   }, [status, allItems]);
 
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (likedScrollRef.current) {
+        setLikedOverflow(
+          likedScrollRef.current.scrollWidth > likedScrollRef.current.clientWidth
+        );
+      }
+      if (savedScrollRef.current) {
+        setSavedOverflow(
+          savedScrollRef.current.scrollWidth > savedScrollRef.current.clientWidth
+        );
+      }
+    };
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
+  }, [likedItems, savedItems]);
+
   if (isLoading) {
     return (
       <section className="show-row">
@@ -223,14 +243,10 @@ export default function ExhibitionList({ search, status }) {
           {likedItems.length === 0 ? (
             <p className="empty-text">좋아요를 누른 전시가 없습니다.</p>
           ) : (
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={() => scrollLeft(likedScrollRef)}
-                style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
-              >
-                ‹
-              </button>
-
+            <div className="scroll-rail">
+              {likedOverflow && (
+                <button className="scroll-arrow scroll-arrow--left" onClick={() => scrollLeft(likedScrollRef)}>‹</button>
+              )}
               <div ref={likedScrollRef} className="show-grid show-grid--row">
                 {likedItems.map(item => (
                   <article key={item.exhibitionId} className="show-card">
@@ -245,13 +261,9 @@ export default function ExhibitionList({ search, status }) {
                   </article>
                 ))}
               </div>
-
-              <button
-                onClick={() => scrollRight(likedScrollRef)}
-                style={{ position: "absolute", right: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
-              >
-                ›
-              </button>
+              {likedOverflow && (
+                <button className="scroll-arrow scroll-arrow--right" onClick={() => scrollRight(likedScrollRef)}>›</button>
+              )}
             </div>
           )}
         </section>
@@ -264,14 +276,10 @@ export default function ExhibitionList({ search, status }) {
           {savedItems.length === 0 ? (
             <p className="empty-text">저장된 전시가 없습니다.</p>
           ) : (
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={() => scrollLeft(savedScrollRef)}
-                style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
-              >
-                ‹
-              </button>
-
+            <div className="scroll-rail">
+              {savedOverflow && (
+                <button className="scroll-arrow scroll-arrow--left" onClick={() => scrollLeft(savedScrollRef)}>‹</button>
+              )}
               <div ref={savedScrollRef} className="show-grid show-grid--row">
                 {savedItems.map(item => (
                   <article key={item.exhibitionId} className="show-card">
@@ -286,13 +294,9 @@ export default function ExhibitionList({ search, status }) {
                   </article>
                 ))}
               </div>
-
-              <button
-                onClick={() => scrollRight(savedScrollRef)}
-                style={{ position: "absolute", right: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, border: "none", background: "#111", color: "#fff", width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
-              >
-                ›
-              </button>
+              {savedOverflow && (
+                <button className="scroll-arrow scroll-arrow--right" onClick={() => scrollRight(savedScrollRef)}>›</button>
+              )}
             </div>
           )}
         </section>
