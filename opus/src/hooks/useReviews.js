@@ -126,6 +126,11 @@ export function useReviews(stageNo, { onLoaded } = {}) {
     }
   };
 
+  const handleSetSortType = (type) => {
+    setSortType(type);
+    setVisibleCount(5);
+  };
+
   const deleteReview = async (reviewNo) => {
     showConfirm(
       "후기를 삭제하시겠습니까?",
@@ -149,7 +154,7 @@ export function useReviews(stageNo, { onLoaded } = {}) {
 
   return {
     reviews, reviewsCount, visibleCount, setVisibleCount,
-    sortType, setSortType,
+    sortType, setSortType: handleSetSortType,
     isFormOpen, openForm, closeForm,
     writeReview, setWriteReview,
     writeRating, setWriteRating,

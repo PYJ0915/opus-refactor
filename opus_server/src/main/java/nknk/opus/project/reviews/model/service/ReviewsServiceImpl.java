@@ -1,6 +1,7 @@
 package nknk.opus.project.reviews.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,11 @@ public class ReviewsServiceImpl implements ReviewsService {
 	@Override
 	public double getAverageRating(String stageNo) {
 	    return mapper.getAverageRating(stageNo);
+	}
+	
+	@Override
+	public List<Map<String, Object>> getRatingDistribution(String stageNo) {
+	    return mapper.getRatingDistribution(stageNo);
 	}
 	
 }

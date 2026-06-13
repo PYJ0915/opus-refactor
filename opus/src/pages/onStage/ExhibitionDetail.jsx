@@ -6,7 +6,7 @@ import { useAuthStore } from '../../components/auth/useAuthStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getAllExhibitions } from '../../api/kcisaAPI';
 import { toast } from 'react-toastify';
-import StarRating from '../../components/common/StarRating';
+import StarRating from '../../components/reviews/StarRating';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { saveStageCache, loadStageCache } from "../../api/stageCache";
 import MetaTags from "../../components/common/MetaTags";

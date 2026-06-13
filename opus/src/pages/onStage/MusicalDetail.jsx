@@ -7,7 +7,7 @@ import axiosApi from '../../api/axiosAPI';
 import { useAuthStore } from '../../components/auth/useAuthStore';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import StarRating from '../../components/common/StarRating';
+import StarRating from '../../components/reviews/StarRating';
 import { saveStageCache, loadStageCache } from "../../api/stageCache";
 import MetaTags from '../../components/common/MetaTags';
 import ShareModal from '../../components/common/ShareModal';

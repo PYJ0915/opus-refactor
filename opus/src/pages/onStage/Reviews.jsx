@@ -1,4 +1,6 @@
 import { useParams } from 'react-router-dom';
+import { useRef, useEffect, useCallback, useState } from 'react';
+import axiosApi from '../../api/axiosAPI';
 import '../../css/pages/onStage/reviews.css';
 import { useAuthStore } from "../../components/auth/useAuthStore";
 
@@ -8,7 +10,8 @@ import { useLike } from '../../hooks/useLike';
 import { useReport } from '../../hooks/useReport';
 
 import ReviewItem from '../../components/reviews/ReviewItem';
-import StarRating from "../../components/common/StarRating";
+import RatingDistribution from '../../components/reviews/RatingDistribution';
+import StarRating from "../../components/reviews/StarRating";
 
 export default function Reviews() {
   const { stageNo } = useParams();
@@ -17,6 +20,14 @@ export default function Reviews() {
   if (!stageNo) {
     return <div style={{ padding: 80 }}>잘못된 접근입니다.</div>;
   }
+
+  const [averageRating, setAverageRating] = useState(0);
+
+  useEffect(() => {
+    axiosApi.get("/reviews/averageRating", { params: { stageNo } })
+      .then(resp => { if (resp.status === 200) setAverageRating(resp.data); })
+      .catch(console.error);
+  }, [stageNo]);
 
   const { getLikeCount, ...likeHook } = useLike();
   const { getCommentCount, ...commentsHook } = useComments();
@@ -52,17 +63,45 @@ export default function Reviews() {
     return 0;
   });
 
+  const sentinelRef = useRef(null);
+
+  const loadMore = useCallback(() => {
+    if (visibleCount < sortedReviews.length) {
+      setVisibleCount(prev => prev + 5);
+    }
+  }, [visibleCount, sortedReviews.length]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMore();
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadMore]);
+
   return (
     <main className="reviews-page">
 
       {/* 헤더 + 작성 폼 */}
       <section id="review-header" className="section section--mb-lg">
-        <div className="row row--between row--gap-lg section__head">
+        <div className="review-header__inner">
           <div>
             <h1 className="h1">작품 후기</h1>
             <p className="sub">관람하신 작품에 대한 솔직한 후기를 남겨주세요</p>
           </div>
-          <button id="write-review-btn" className="btn btn--dark" type="button" onClick={openForm}>
+          <button
+            id="write-review-btn"
+            className="btn btn--dark"
+            type="button"
+            onClick={openForm}
+          >
             {isFormOpen ? "입력창 접기" : "후기 작성하기"}
           </button>
         </div>
@@ -73,8 +112,8 @@ export default function Reviews() {
           aria-hidden={isFormOpen ? "false" : "true"}
         >
           <div className="form">
-            <div className="field" style={{ marginBottom: 12 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>별점</p>
+            <div className="review-rating-field">
+              <p className="review-rating-field__label">별점</p>
               <StarRating rating={writeRating} onChange={setWriteRating} size={28} />
             </div>
             <div className="field">
@@ -86,12 +125,39 @@ export default function Reviews() {
               />
             </div>
             <div className="form__actions">
-              <button className="btn btn--outline" type="button" id="cancel-review-btn" onClick={closeForm}>취소</button>
-              <button className="btn btn--dark" type="button" id="submit-review-btn" onClick={submitReview}>등록하기</button>
+              <button className="btn btn--outline" type="button" id="cancel-review-btn" onClick={closeForm}>
+                취소
+              </button>
+              <button className="btn btn--dark" type="button" id="submit-review-btn" onClick={submitReview}>
+                등록하기
+              </button>
             </div>
           </div>
         </div>
       </section>
+
+      {/* 별점 평균 + 분포 — 하나의 카드로 통합 */}
+      {reviewsCount > 0 && (
+        <section className="section section--mb-md">
+          <div className="avg-rating-summary">
+
+            {/* 왼쪽: 숫자 + 별 + 개수 */}
+            <div className="avg-rating-summary__left">
+              <div className="avg-rating-summary__score">
+                {averageRating.toFixed(1)}
+              </div>
+              <StarRating rating={(averageRating)} readonly size={16} />
+              <p className="avg-rating-summary__label">전체 {reviewsCount}개 후기</p>
+            </div>
+
+            {/* 오른쪽: 분포 바 */}
+            <div className="avg-rating-summary__right">
+              <RatingDistribution stageNo={stageNo} totalCount={reviewsCount} />
+            </div>
+
+          </div>
+        </section>
+      )}
 
       {/* 정렬 + 총 개수 */}
       <section id="review-controls" className="section section--mb-md">
@@ -101,15 +167,19 @@ export default function Reviews() {
           </div>
           <div className="seg">
             <button
-              className={`seg-sort-btn ${sortType === "latest" ? "is-active" : ""}`}
+              className={`seg-sort-btn${sortType === "latest" ? " is-active" : ""}`}
               type="button"
               onClick={() => setSortType("latest")}
-            >최신순</button>
+            >
+              최신순
+            </button>
             <button
-              className={`seg-sort-btn ${sortType === "popular" ? "is-active" : ""}`}
+              className={`seg-sort-btn${sortType === "popular" ? " is-active" : ""}`}
               type="button"
               onClick={() => setSortType("popular")}
-            >인기순</button>
+            >
+              인기순
+            </button>
           </div>
         </div>
       </section>
@@ -117,14 +187,21 @@ export default function Reviews() {
       {/* 후기 목록 */}
       <section id="reviews-list" className="list">
         {reviews.length === 0 ? (
-          <div>등록된 후기가 없습니다.</div>
+          <div className="empty-state">
+            <div className="empty-state__icon">
+              <i className="far fa-comment-dots" aria-hidden="true" />
+            </div>
+            <p className="empty-state__title">아직 작성된 후기가 없습니다</p>
+            <p className="empty-state__desc">
+              이 작품을 관람하셨나요?<br />첫 번째 후기를 남겨보세요.
+            </p>
+          </div>
         ) : (
           sortedReviews.slice(0, visibleCount).map((review) => (
             <ReviewItem
               key={review.reviewNo}
               review={review}
               loginMemberNo={loginMemberNo}
-              // 수정/삭제
               editId={editId}
               editReview={editReview}
               setEditReview={setEditReview}
@@ -132,11 +209,9 @@ export default function Reviews() {
               onCancelEdit={clickEditCancelBtn}
               onSaveEdit={saveEdit}
               onDelete={deleteReview}
-              // 좋아요
               likeCount={likeHook.likeCount}
               likedMap={likeHook.likedMap}
               onToggleLike={likeHook.toggleLike}
-              // 댓글
               comment={commentsHook.comment}
               commentCount={commentsHook.commentCount}
               openCommentId={commentsHook.openCommentId}
@@ -151,7 +226,6 @@ export default function Reviews() {
               onClickEditComment={commentsHook.clickEditCommentBtn}
               onCancelEditComment={commentsHook.cancelEditComment}
               onSaveEditComment={commentsHook.saveEditComment}
-              // 신고
               reportOpenId={reportHook.reportOpenId}
               reportReasonType={reportHook.reportReasonType}
               setReportReasonType={reportHook.setReportReasonType}
@@ -165,17 +239,13 @@ export default function Reviews() {
         )}
       </section>
 
-      {sortedReviews.length > visibleCount && (
-        <div className="more">
-          <button
-            className="btn btn--outline btn--lg"
-            type="button"
-            onClick={() => setVisibleCount(prev => prev + 5)}
-          >
-            더보기
-          </button>
+      {/* 무한스크롤 sentinel */}
+      {visibleCount < sortedReviews.length && (
+        <div ref={sentinelRef} className="scroll-sentinel">
+          <span className="scroll-sentinel__text">불러오는 중...</span>
         </div>
       )}
+
     </main>
   );
 }

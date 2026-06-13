@@ -1,6 +1,7 @@
 package nknk.opus.project.reviews.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -118,5 +119,11 @@ public class ReviewsController {
     public ResponseEntity<Double> getAverageRating(@RequestParam("stageNo") String stageNo) {
         double avg = service.getAverageRating(stageNo);
         return ResponseEntity.ok(avg);
+    }
+    
+    @GetMapping("/ratingDistribution")
+    public ResponseEntity<List<Map<String, Object>>> getRatingDistribution(
+            @RequestParam("stageNo") String stageNo) {
+        return ResponseEntity.ok(service.getRatingDistribution(stageNo));
     }
 }

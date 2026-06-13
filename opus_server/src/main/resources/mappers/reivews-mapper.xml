@@ -4,29 +4,37 @@
 <mapper
 	namespace="nknk.opus.project.reviews.model.mapper.ReviewsMapper">
 	<insert id="addReview">
-		INSERT INTO REVIEWS (REVIEW_NO, MEMBER_NO, STAGE_NO, REVIEW_CONTENT,
+		INSERT INTO REVIEWS (REVIEW_NO, MEMBER_NO, STAGE_NO,
+		REVIEW_CONTENT,
 		REVIEW_RATING)
-		VALUES (SEQ_REVIEWS_NO.NEXTVAL, #{memberNo}, #{stageNo}, #{reviewContent},
+		VALUES (SEQ_REVIEWS_NO.NEXTVAL,
+		#{memberNo}, #{stageNo}, #{reviewContent},
 		#{reviewRating})
 	</insert>
 
 	<select id="getReviews" resultType="Reviews">
-    SELECT R.REVIEW_NO, R.MEMBER_NO, M.MEMBER_EMAIL, R.STAGE_NO,
-           R.REVIEW_CONTENT, R.REVIEW_RATING,
-           TO_CHAR(R.REVIEW_WRITE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS REVIEW_WRITE_DATE
-    FROM REVIEWS R
-    JOIN MEMBER M ON R.MEMBER_NO = M.MEMBER_NO
-    WHERE R.STAGE_NO = #{stageNo}
-      AND R.REVIEW_DEL_FL = 'N'
-    ORDER BY R.REVIEW_WRITE_DATE DESC
+		SELECT R.REVIEW_NO,
+		R.MEMBER_NO, M.MEMBER_EMAIL, R.STAGE_NO,
+		R.REVIEW_CONTENT,
+		R.REVIEW_RATING,
+		TO_CHAR(R.REVIEW_WRITE_DATE, 'YYYY-MM-DD HH24:MI:SS')
+		AS REVIEW_WRITE_DATE
+		FROM REVIEWS R
+		JOIN MEMBER M ON R.MEMBER_NO =
+		M.MEMBER_NO
+		WHERE R.STAGE_NO = #{stageNo}
+		AND R.REVIEW_DEL_FL = 'N'
+		ORDER BY R.REVIEW_WRITE_DATE DESC
 	</select>
-	
+
 	<select id="getAverageRating" resultType="double">
-    SELECT NVL(ROUND(AVG(REVIEW_RATING), 1), 0)
-    FROM REVIEWS
-    WHERE STAGE_NO = #{stageNo}
-      AND REVIEW_DEL_FL = 'N'
-      AND REVIEW_RATING > 0
+		SELECT
+		NVL(ROUND(AVG(REVIEW_RATING), 1), 0)
+		FROM REVIEWS
+		WHERE STAGE_NO =
+		#{stageNo}
+		AND REVIEW_DEL_FL = 'N'
+		AND REVIEW_RATING > 0
 	</select>
 
 	<select id="getReviewsCount">
@@ -66,4 +74,15 @@
 		#{reportDetail}, SYSDATE, 'PENDING', #{reporterNo}, #{reportedNo},
 		#{reviewNo})
 	</insert>
+
+	<select id="getRatingDistribution" resultType="map">
+		SELECT REVIEW_RATING AS "rating", COUNT(*) AS "cnt"
+		FROM REVIEWS
+		WHERE STAGE_NO = #{stageNo}
+		AND REVIEW_DEL_FL = 'N'
+		AND REVIEW_RATING > 0
+		GROUP BY REVIEW_RATING
+		ORDER BY REVIEW_RATING DESC
+	</select>
+
 </mapper>

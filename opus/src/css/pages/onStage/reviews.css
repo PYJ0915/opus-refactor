@@ -4,9 +4,10 @@
 }
 
 .reviews-page {
-  max-width: 1024px;
+  max-width: 960px;
   margin: 0 auto;
-  padding-top: calc(var(--header-h) + 10px);
+  padding-top: calc(var(--header-h) + 40px);
+  padding-bottom: 80px;
 }
 
 /* index.css의 section padding 덮어쓰기 */
@@ -15,11 +16,11 @@
 }
 
 .reviews-page .section--mb-lg {
-  margin-bottom: 48px;
+  margin-bottom: 56px;
 }
 
 .reviews-page .section--mb-md {
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 }
 
 /* ===== COMMON ===== */
@@ -40,50 +41,77 @@
   gap: 16px;
 }
 
-.h1 {
-  margin: 0 0 8px;
-  font-size: 32px;
-  line-height: 1.2;
-  font-weight: 800;
+/* ===== PAGE HEADER ===== */
+#review-header {
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--line);
 }
 
-.h3 {
-  margin: 0 0 24px;
-  font-size: 20px;
-  font-weight: 700;
+/* 제목 + 버튼 행 */
+.review-header__inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .sub {
   margin: 0;
+  font-size: 14px;
   color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+.h3 {
+  margin: 0 0 20px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 /* ===== CARD ===== */
 .card {
   background: var(--card);
-  box-shadow: var(--shadow);
 }
 
 .card--p-lg {
-  padding: 32px;
+  padding: 36px;
 }
 
 .review-item {
   border: 1px solid var(--line) !important;
-  border-radius: 2px;
+  border-radius: 0;
+  transition: border-color 0.2s ease;
+}
+
+.review-item:hover {
+  border-color: #a3a3a3 !important;
 }
 
 /* ===== BUTTONS ===== */
-/* 기준 선언 — border-radius 명시로 원형 버그 방지 */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   border: 1px solid transparent;
   border-radius: 2px;
-  padding: 12px 24px;
-  transition: background .15s ease, border-color .15s ease, color .15s ease;
+  padding: 10px 22px;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .btn--dark {
@@ -98,15 +126,15 @@
 }
 
 .btn--outline {
-  background: #fff;
+  background: transparent;
   border-color: #d4d4d4;
   color: #404040;
-  /* margin-bottom 제거 — 이전 코드의 48px이 모든 outline 버튼에 공백 만들던 버그 */
 }
 
 .btn--outline:hover {
-  border-color: #a3a3a3;
-  background: #fafafa;
+  border-color: var(--dark);
+  color: var(--dark);
+  background: transparent;
 }
 
 .btn--danger {
@@ -116,105 +144,69 @@
 }
 
 .btn--lg {
-  padding: 12px 32px;
+  padding: 11px 28px;
+  font-size: 13px;
 }
 
 .btn--sm {
-  padding: 8px 16px;
-  font-size: 13px;
-  border-radius: 4px;
-  min-width: 64px;
+  padding: 7px 14px;
+  font-size: 12px;
+  border-radius: 2px;
+  min-width: 58px;
 }
 
 /* ID별 개별 오버라이드 */
 #write-review-btn {
   border-radius: 2px;
+  padding: 10px 20px;
+  flex-shrink: 0;
 }
 
 #cancel-review-btn {
-  border: 1px solid #262626;
+  border: 1px solid #d4d4d4;
   border-radius: 2px;
   margin: 0;
-  height: 40px;
+  height: 38px;
 }
 
 #submit-review-btn {
-  height: 40px;
+  height: 38px;
   margin: 0;
   border-radius: 2px;
 }
 
 #submitCommentBtn {
   border-radius: 2px;
-  width: 75px;
-  height: 44px;
-  padding: 10px;
+  width: 72px;
+  height: 42px;
+  padding: 0;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
 #report-cancel-btn,
 #report-action-btn {
-  width: 80px;
-  height: 40px;
-  border-radius: 5px;
+  width: 76px;
+  height: 38px;
+  border-radius: 2px;
 }
 
 .more-icon-btn {
   border-radius: 2px;
 }
 
-/* ===== FORM ===== */
-.form {
+/* ===== CONTROLS (정렬 버튼 + 카운트) ===== */
+.reviews-controls {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin: 0;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #404040;
-}
-
-.input,
-.textarea {
-  width: 100%;
-  border: 1px solid #d4d4d4;
-  padding: 12px 16px;
-  background: #fff;
-}
-
-.input:focus,
-.textarea:focus {
-  border-color: var(--dark);
-}
-
-.textarea {
-  height: 160px;
-  resize: none;
-}
-
-.input--sm {
-  padding: 12px 16px;
-  font-size: 13px;
-}
-
-.form__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 4px;
-}
-
-/* ===== CONTROLS ===== */
 .count {
-  color: #525252;
+  color: #737373;
+  font-size: 13px;
+  letter-spacing: 0.01em;
 }
 
 .count__strong {
@@ -224,22 +216,25 @@
 
 .seg {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .seg-sort-btn {
-  padding: 8px 20px;
-  font-size: 13px;
+  padding: 7px 18px;
+  font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.04em;
   border: 1px solid #d4d4d4;
   border-radius: 2px;
-  color: #404040;
+  color: #737373;
   background: #fff;
-  transition: border-color .15s ease, background .15s ease, color .15s ease;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
 }
 
 .seg-sort-btn:hover {
-  border-color: #a3a3a3;
+  border-color: #737373;
+  color: #404040;
 }
 
 .seg-sort-btn.is-active {
@@ -248,80 +243,129 @@
   color: #fff;
 }
 
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 72px 24px;
+  border: 1px solid var(--line);
+  background: #fafafa;
+  gap: 12px;
+}
+
+.empty-state__icon {
+  font-size: 32px;
+  color: #d4d4d4;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.empty-state__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.empty-state__desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.7;
+}
+
 /* ===== LIST & REVIEW ITEM ===== */
 .list {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 0;
+}
+
+/* 인접한 리뷰 아이템 간 상단 border 중복 방지 */
+.list .review-item+.review-item {
+  border-top: none !important;
+}
+
+.review-item {
+  padding: 28px 32px;
 }
 
 .review__top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .user {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .user__name {
-  font-weight: 800;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.01em;
 }
 
 .user__date {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .avatar {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
   background: #e5e5e5;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .avatar span {
   color: #525252;
   font-weight: 800;
+  font-size: 14px;
 }
 
 .avatar--sm {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
 }
 
 .avatar--sm span {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .tag {
   display: inline-block;
-  padding: 6px 12px;
-  background: var(--line2);
-  color: #404040;
-  font-size: 13px;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: #737373;
+  font-size: 11px;
   font-weight: 700;
-  margin-bottom: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 
 .review__body {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
-/* 본문 텍스트 — margin-top/padding-left 제거 (이전 코드가 텍스트 밀어내던 버그) */
 .text {
   margin: 0;
   color: #404040;
-  line-height: 1.8;
-  font-size: 16px;
+  line-height: 1.85;
+  font-size: 15px;
   white-space: pre-line;
 }
 
@@ -329,8 +373,8 @@
 .review__actions {
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding-top: 16px;
+  gap: 20px;
+  padding-top: 14px;
   border-top: 1px solid var(--line2);
 }
 
@@ -340,9 +384,9 @@
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  color: #525252;
-  transition: color .15s ease;
+  gap: 8px;
+  color: #a3a3a3;
+  transition: color 0.15s ease;
 }
 
 .action-btn:hover {
@@ -350,12 +394,13 @@
 }
 
 .action-btn i {
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .action-btn span {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 /* ===== REVIEW 수정 모드 ===== */
@@ -396,16 +441,16 @@
 }
 
 .meat-container {
-  width: 100px;
+  width: 108px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   position: absolute;
-  top: 100%;
+  top: calc(100% + 4px);
   right: 0;
   z-index: 9999;
   background: #fff;
+  border: 1px solid var(--line);
 }
 
 .meat-container.hidden {
@@ -416,26 +461,47 @@
 .meat-content-delete,
 .meat-content-report {
   width: 100%;
-  height: 40px;
+  height: 38px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  font-size: 13px;
+  color: #404040;
+  transition: background 0.1s ease;
 }
 
 .meat-content-update:hover,
 .meat-content-delete:hover,
 .meat-content-report:hover {
-  background-color: #e5e5e5;
+  background-color: #f5f5f5;
+}
+
+.meat-content-delete {
+  color: #ef4444;
 }
 
 /* ===== 신고 박스 ===== */
 .report-box {
-  margin: 18px 0;
-  padding: 12px;
-  border: 1px solid #f3caca;
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid #fca5a5;
   background: #fff5f5;
-  border-radius: 8px;
+}
+
+.report-reason-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.report-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #404040;
+  cursor: pointer;
 }
 
 .report-textarea {
@@ -443,38 +509,92 @@
   min-height: 80px;
   resize: none;
   border: 1px solid #fca5a5;
-  border-radius: 6px;
-  padding: 8px;
-  font-size: 14px;
-  margin-top: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-top: 10px;
+  border-radius: 0;
 }
 
 .report-actions {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 8px;
-  height: 45px;
+  margin-top: 10px;
   align-items: center;
+}
+
+/* ===== FORM ===== */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #737373;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  border: 1px solid #d4d4d4;
+  padding: 11px 14px;
+  background: #fff;
+  font-size: 14px;
+  transition: border-color 0.15s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: var(--dark);
+  outline: none;
+}
+
+.textarea {
+  height: 160px;
+  resize: none;
+}
+
+.input--sm {
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 6px;
 }
 
 /* ===== COMMENTS ===== */
 .comments-section {
-  margin-top: 24px;
-  padding-top: 24px;
+  margin-top: 20px;
+  padding-top: 20px;
   border-top: 1px solid var(--line);
 }
 
 .comment-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 14px;
+  margin-bottom: 20px;
 }
 
 .comment {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .comment__main {
@@ -490,31 +610,43 @@
 }
 
 .comment__name {
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .comment__date {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--muted2);
 }
 
 .comment__text {
   margin: 0;
   font-size: 13px;
-  color: #404040;
-  line-height: 1.6;
+  color: #525252;
+  line-height: 1.65;
 }
 
 .comment-input {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .comment-delete-btn,
 .comment-edit-btn {
-  font-size: 14px;
+  font-size: 13px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #737373;
+  padding: 2px 6px;
+  transition: color 0.15s ease;
+}
+
+.comment-delete-btn:hover,
+.comment-edit-btn:hover {
+  color: var(--text);
 }
 
 .comment-update-info-box {
@@ -523,32 +655,37 @@
 }
 
 #review_comment_text {
-  font-size: 16px;
+  font-size: 15px;
 }
 
 #update_comment_textarea {
   border: 1px solid #d4d4d4;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background-color: #fff;
   resize: none;
   width: 100%;
-  margin-top: 5px;
+  margin-top: 4px;
+  font-size: 13px;
 }
 
 .update_comment_inner_btn_box {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  gap: 7px;
+  gap: 6px;
+  margin-top: 6px;
 }
 
 .update_comment_inner_btn {
-  background-color: black;
+  background-color: var(--dark);
   color: white;
-  border-radius: 1.5px;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 5px 10px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  letter-spacing: 0.02em;
+  border: none;
+  cursor: pointer;
 }
 
 /* ===== MORE ===== */
@@ -564,11 +701,11 @@
 }
 
 #review-header {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 main {
-  padding-bottom: 30px;
+  padding-bottom: 48px;
 }
 
 .hidden {
@@ -580,66 +717,167 @@ main {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-bottom: 16px;
+  padding-bottom: 18px;
   border-bottom: 1px solid var(--line);
-  margin-bottom: 16px;
+  margin-bottom: 4px;
 }
 
 .review-rating-field__label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  color: var(--text);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #737373;
 }
 
 .review-rating-field__hint {
   font-size: 12px;
   color: var(--muted);
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .review__rating-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
+/* 평균 + 분포 통합 카드 */
 .avg-rating-summary {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 18px;
-  background: var(--soft);
+  gap: 0;
+  padding: 28px 32px;
+  background: #fafafa;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  margin-bottom: 24px;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+/* 왼쪽: 숫자 + 별 + 개수 */
+.avg-rating-summary__left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 110px;
+  padding-right: 32px;
+  border-right: 1px solid var(--line);
+  flex-shrink: 0;
 }
 
 .avg-rating-summary__score {
-  font-size: 32px;
+  font-size: 48px;
   font-weight: 900;
   color: var(--text);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
+  line-height: 1;
 }
 
 .avg-rating-summary__label {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
-  margin-top: 2px;
+  margin: 0;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
-/* ===== RESPONSIVE ===== */
+/* 오른쪽: 분포 바 영역 */
+.avg-rating-summary__right {
+  flex: 1;
+  padding-left: 32px;
+}
+
+/* 분포 바 */
+.rating-dist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.rating-dist__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rating-dist__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.rating-dist__bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.rating-dist__bar {
+  height: 100%;
+  background: #FBBF24;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.rating-dist__pct {
+  font-size: 12px;
+  color: var(--muted);
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 @media (max-width: 900px) {
+
+  /* 기존 내용 유지 */
   .reviews-page {
-    padding: 32px 16px;
+    padding: 24px 16px 48px;
   }
 
   .card--p-lg {
     padding: 20px;
   }
 
-  .row--between {
+  .review-header__inner {
     flex-direction: column;
     align-items: flex-start;
+    gap: 16px;
+  }
+
+  .review-item {
+    padding: 24px 0;
+  }
+
+  /* 별점 카드 모바일 대응 추가 */
+  .avg-rating-summary {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .avg-rating-summary__left {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding-right: 0;
+    padding-bottom: 20px;
+    width: 100%;
+    min-width: unset;
+  }
+
+  .avg-rating-summary__right {
+    padding-left: 0;
+    width: 100%;
   }
 }
