@@ -65,6 +65,8 @@ export default function ExhibitionList({ search, status }) {
   const [savedItems, setSavedItems] = useState([]);
   const [likedOverflow, setLikedOverflow] = useState(false);
   const [savedOverflow, setSavedOverflow] = useState(false);
+  const [viewMode, setViewMode] = useState("grid");
+  const [sortType, setSortType] = useState("default");
   const likedScrollRef = useRef(null);
   const savedScrollRef = useRef(null);
 
@@ -157,6 +159,14 @@ export default function ExhibitionList({ search, status }) {
     }
   }, [allItems, setExhibitions]);
 
+  const parseDate = (dateStr) => {
+    if (!dateStr) return new Date(0);
+
+    const cleaned = dateStr.trim().replaceAll(".", "-");
+
+    return new Date(cleaned);
+  };
+
   const filteredItems = useMemo(() => {
     return allItems.filter(item => {
       const matchStatus = status === "all" || getStatus(item.period) === status;
@@ -168,8 +178,57 @@ export default function ExhibitionList({ search, status }) {
     });
   }, [allItems, status, search]);
 
+  const sortedItems = useMemo(() => {
+    const arr = [...filteredItems];
+    switch (sortType) {
+      case "name":
+        return arr.sort((a, b) => a.title.localeCompare(b.title, "ko"));
+      case "deadline": {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const activeItems = arr.filter(item => {
+          const endDate = parseDate(item.period.split("~")[1]);
+          endDate.setHours(0, 0, 0, 0);
+
+          return endDate >= today;
+        });
+
+        const endedItems = arr.filter(item => {
+          const endDate = parseDate(item.period.split("~")[1]);
+          endDate.setHours(0, 0, 0, 0);
+
+          return endDate < today;
+        });
+
+        return [
+          ...activeItems.sort(
+            (a, b) =>
+              parseDate(a.period.split("~")[1]) -
+              parseDate(b.period.split("~")[1])
+          ),
+          ...endedItems.sort(
+            (a, b) =>
+              parseDate(b.period.split("~")[1]) -
+              parseDate(a.period.split("~")[1])
+          ),
+        ];
+      }
+      case "newest":
+        // 시작일이 최신인 순
+        return arr.sort((a, b) => {
+          const pa = parsePeriod(a.period);
+          const pb = parsePeriod(b.period);
+          if (!pa || !pb) return 0;
+          return pb.startDate.getTime() - pa.startDate.getTime();
+        });
+      default:
+        return arr;
+    }
+  }, [filteredItems, sortType]);
+
   useEffect(() => {
-    if (status !== "all" || !allItems.length) return;
+    if (status !== "all" || !allItems.length || !loginMemberNo) return;
 
     const fetchPrefer = async () => {
       try {
@@ -182,19 +241,15 @@ export default function ExhibitionList({ search, status }) {
         const savedIdStr = savedIds.map(String);
         const likedIdStr = likedIds.map(String);
 
-        setSavedItems(
-          allItems.filter(item => savedIdStr.includes(item.exhibitionId))
-        );
-        setLikedItems(
-          allItems.filter(item => likedIdStr.includes(item.exhibitionId))
-        );
+        setSavedItems(allItems.filter(item => savedIdStr.includes(item.exhibitionId)));
+        setLikedItems(allItems.filter(item => likedIdStr.includes(item.exhibitionId)));
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchPrefer();
-  }, [status, allItems]);
+  }, [status, allItems, loginMemberNo]); //
 
   useEffect(() => {
     const checkOverflow = () => {
@@ -303,13 +358,149 @@ export default function ExhibitionList({ search, status }) {
       )}
 
       <section className="show-row">
-        <h2>전체 전시</h2>
-        <div className="show-grid">
-          {filteredItems.map((item) => (
-            <article key={item.exhibitionId} className="show-card">
-              <Link to={`/onStage/exhibition/${item.exhibitionId}`} state={{ item }}>
-                <div className="show-card__thumb">
-                  <ThumbImg src={item.image} alt={item.title} />
+
+        <div className="onstage-section-head">
+
+          <h2>전체 전시</h2>
+
+          <div className="onstage-controls">
+
+
+            <div className="view-toggle">
+              <button
+                className={`view-toggle__btn ${viewMode === "grid" ? "is-active" : ""
+                  }`}
+                onClick={() => setViewMode("grid")}
+                title="그리드 뷰"
+              >
+                <i className="fa-solid fa-grip" />
+              </button>
+
+              <button
+                className={`view-toggle__btn ${viewMode === "list" ? "is-active" : ""
+                  }`}
+                onClick={() => setViewMode("list")}
+                title="리스트 뷰"
+              >
+                <i className="fa-solid fa-list" />
+              </button>
+            </div>
+
+            <div className="onstage-sort-bar">
+              {[
+                { value: "default", label: "기본순" },
+                { value: "name", label: "가나다순" },
+                { value: "deadline", label: "종료 예정순" },
+                { value: "newest", label: "최신 등록순" },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  className={`sort-btn ${sortType === opt.value ? "is-active" : ""
+                    }`}
+                  onClick={() => setSortType(opt.value)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+        </div>
+
+        <div className={viewMode === "grid" ? "show-grid" : "show-list"}>
+
+          {sortedItems.map((item) =>
+            viewMode === "grid" ? (
+
+              <article
+                key={item.exhibitionId}
+                className="show-card"
+              >
+                <Link
+                  to={`/onStage/exhibition/${item.exhibitionId}`}
+                  state={{ item }}
+                >
+                  <div className="show-card__thumb">
+                    <ThumbImg
+                      src={item.image}
+                      alt={item.title}
+                    />
+
+                    <span className="show-badge show-badge--dark">
+                      {getStatus(item.period) === "01"
+                        ? "전시예정"
+                        : getStatus(item.period) === "02"
+                          ? "전시중"
+                          : "전시완료"}
+                    </span>
+
+                    <div className="show-card__overlay">
+                      <p className="show-card__overlay-title">
+                        {item.title}
+                      </p>
+
+                      <p className="show-card__overlay-meta">
+                        {item.period}
+                      </p>
+
+                      <p className="show-card__overlay-meta">
+                        {item.place}
+                      </p>
+
+                      <span className="show-card__overlay-btn">
+                        자세히 보기 →
+                      </span>
+                    </div>
+                  </div>
+
+                  <h3 className="show-card__title">
+                    {item.title}
+                  </h3>
+
+                  <p className="show-card__meta">
+                    {item.period}
+                  </p>
+
+                  <p className="show-card__meta">
+                    {item.place}
+                  </p>
+
+                </Link>
+              </article>
+
+            ) : (
+
+              <article
+                key={item.exhibitionId}
+                className="show-list-item"
+              >
+                <Link
+                  to={`/onStage/exhibition/${item.exhibitionId}`}
+                  state={{ item }}
+                >
+                  <div className="show-list-item__thumb">
+                    <ThumbImg
+                      src={item.image}
+                      alt={item.title}
+                    />
+                  </div>
+
+                  <div className="show-list-item__info">
+
+                    <h3 className="show-list-item__title">
+                      {item.title}
+                    </h3>
+
+                    <p className="show-list-item__meta">
+                      {item.period}
+                    </p>
+
+                    <p className="show-list-item__meta">
+                      {item.place}
+                    </p>
+
+                  </div>
+
                   <span className="show-badge show-badge--dark">
                     {getStatus(item.period) === "01"
                       ? "전시예정"
@@ -317,13 +508,13 @@ export default function ExhibitionList({ search, status }) {
                         ? "전시중"
                         : "전시완료"}
                   </span>
-                </div>
-                <h3 className="show-card__title">{item.title}</h3>
-                <p className="show-card__meta">{item.period}</p>
-                <p className="show-card__meta">{item.place}</p>
-              </Link>
-            </article>
-          ))}
+
+                </Link>
+              </article>
+
+            )
+          )}
+
         </div>
 
         <div ref={bottomRef} style={{ height: 1 }} />
@@ -335,6 +526,7 @@ export default function ExhibitionList({ search, status }) {
             ))}
           </div>
         )}
+
       </section>
     </>
   );

@@ -493,9 +493,10 @@
 }
 
 .unveiling-detail .artist-box__name {
+  font-size: 18px;
   margin: 0 0 12px;
   font-size: 20px;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .unveiling-detail .artist-box__desc {
@@ -515,8 +516,15 @@
 }
 
 .unveiling-detail .artist-box__meta strong {
+  font-size: 18px;
   font-weight: 500;
+  display: block;
   color: var(--text);
+}
+
+.unveiling-detail .artist-box__meta p {
+  white-space: pre-line;
+  font-size: 14px;
 }
 
 /* Guide (필요 구간만 유지) */

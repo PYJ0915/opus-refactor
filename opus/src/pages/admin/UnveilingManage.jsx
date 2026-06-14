@@ -11,9 +11,9 @@ const STATUS_LABEL = {
 };
 
 const STATUS_BADGE_CLASS = {
-  LIVE:     "um-badge um-badge--live",
+  LIVE: "um-badge um-badge--live",
   UPCOMING: "um-badge um-badge--upcoming",
-  ENDED:    "um-badge um-badge--ended",
+  ENDED: "um-badge um-badge--ended",
 };
 
 const EMPTY_FORM = {
@@ -21,18 +21,20 @@ const EMPTY_FORM = {
   productionMaterial: "", productionSize: "", startPrice: "",
   startDate: "", finishDate: "",
   productionDetail: "", artistDetail: "",
+  artistExhibitions: "",
+  artistAwards: "",
   unveilingStatus: "UPCOMING",
 };
 
 const UnveilingManage = () => {
-  const [view, setView]                   = useState("list");
-  const [items, setItems]                 = useState([]);
-  const [loading, setLoading]             = useState(false);
-  const [form, setForm]                   = useState({ ...EMPTY_FORM });
-  const [thumbFile, setThumbFile]         = useState(null);
-  const [thumbPreview, setThumbPreview]   = useState(null);
+  const [view, setView] = useState("list");
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ ...EMPTY_FORM });
+  const [thumbFile, setThumbFile] = useState(null);
+  const [thumbPreview, setThumbPreview] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const fileInputRef                      = useRef(null);
+  const fileInputRef = useRef(null);
 
   // ── 목록 조회 ──
   const fetchList = async () => {
@@ -84,7 +86,7 @@ const UnveilingManage = () => {
   // ── 등록 제출 ──
   const handleSubmit = async () => {
     if (!form.unveilingTitle || !form.productionArtist ||
-        !form.startPrice || !form.startDate || !form.finishDate) {
+      !form.startPrice || !form.startDate || !form.finishDate) {
       toast.warning("작품명, 작가명, 시작가, 시작일시, 마감일시는 필수입니다.");
       return;
     }
@@ -95,15 +97,26 @@ const UnveilingManage = () => {
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
+      // artistExhibitions, artistAwards는 아래에서 합쳐서 따로 처리
+      if (["artistExhibitions", "artistAwards"].includes(key)) return;
       if (value !== "" && value !== null && value !== undefined) {
         formData.append(key, String(value));
       }
     });
+
+    const combinedArtistDetail = [
+      form.artistDetail || "",
+      "||EXHIBITIONS||",
+      form.artistExhibitions || "",
+      "||AWARDS||",
+      form.artistAwards || "",
+    ].join("");
+    formData.set("artistDetail", combinedArtistDetail);
+
     formData.set("startPrice", String(Number(form.startPrice)));
     if (thumbFile) {
       formData.append("thumbFile", thumbFile);
     }
-
     setSubmitLoading(true);
     try {
       await axiosUpload.post("/admin/unveilings", formData);
@@ -122,8 +135,8 @@ const UnveilingManage = () => {
   // ── 강제 상태 전환 ──
   const handleForceStatus = (unveilingNo, currentStatus) => {
     const nextStatus = currentStatus === "UPCOMING" ? "LIVE"
-                     : currentStatus === "LIVE"     ? "ENDED"
-                     : null;
+      : currentStatus === "LIVE" ? "ENDED"
+        : null;
     if (!nextStatus) { toast.error("이미 종료된 경매입니다."); return; }
 
     const label = nextStatus === "LIVE" ? "LIVE(진행중)" : "ENDED(종료)";
@@ -184,7 +197,7 @@ const UnveilingManage = () => {
               <table className="um-table">
                 <thead>
                   <tr>
-                    {["번호","작품명","작가","상태","시작가","현재가","응찰수","시작일시","마감일시","액션"]
+                    {["번호", "작품명", "작가", "상태", "시작가", "현재가", "응찰수", "시작일시", "마감일시", "액션"]
                       .map(h => <th key={h}>{h}</th>)}
                   </tr>
                 </thead>
@@ -306,6 +319,20 @@ const UnveilingManage = () => {
                 <textarea className="regist-textarea" name="artistDetail"
                   value={form.artistDetail} onChange={handleChange}
                   placeholder="작가에 대한 소개를 입력하세요." rows={4} />
+              </div>
+
+              <div className="regist-field regist-field--wide">
+                <label className="regist-label">주요 전시</label>
+                <textarea className="regist-textarea" name="artistExhibitions"
+                  value={form.artistExhibitions} onChange={handleChange}
+                  placeholder="예: 2023 서울 갤러리 개인전, 2022 부산 아트페어 단체전" rows={3} />
+              </div>
+
+              <div className="regist-field regist-field--wide">
+                <label className="regist-label">수상</label>
+                <textarea className="regist-textarea" name="artistAwards"
+                  value={form.artistAwards} onChange={handleChange}
+                  placeholder="예: 2022 한국미술대전 우수상" rows={3} />
               </div>
 
             </div>

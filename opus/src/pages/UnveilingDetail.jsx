@@ -61,6 +61,25 @@ const STATUS = {
   ENDED: { text: "종료", key: "ended" },
 };
 
+function parseArtistDetail(raw = "") {
+  const exIdx = raw.indexOf("||EXHIBITIONS||");
+  const awIdx = raw.indexOf("||AWARDS||");
+
+  if (exIdx === -1 && awIdx === -1) {
+    // 구분자 없는 기존 데이터는 그대로 bio로 사용 (하위 호환)
+    return { bio: raw, exhibitions: "", awards: "" };
+  }
+
+  const bio = exIdx !== -1 ? raw.slice(0, exIdx) : raw.slice(0, awIdx);
+  const exRaw = exIdx !== -1 ? raw.slice(exIdx + "||EXHIBITIONS||".length) : "";
+  const exhibitions = awIdx !== -1
+    ? exRaw.slice(0, exRaw.indexOf("||AWARDS||"))
+    : exRaw;
+  const awards = awIdx !== -1 ? raw.slice(awIdx + "||AWARDS||".length) : "";
+
+  return { bio: bio.trim(), exhibitions: exhibitions.trim(), awards: awards.trim() };
+}
+
 function normalizeFromApi(data, fallbackUnveilingNo, fallbackDetail) {
   const formatKRW = (n) => `₩${Number(n).toLocaleString("ko-KR")}`;
 
@@ -80,6 +99,9 @@ function normalizeFromApi(data, fallbackUnveilingNo, fallbackDetail) {
     data?.imageUrl ??
     data?.image ??
     null;
+
+  const { bio, exhibitions: parsedExhibitions, awards: parsedAwards } =
+    parseArtistDetail(data?.artistDetail ?? "");
 
   return {
     unveilingNo: data?.unveilingNo ?? fallbackUnveilingNo,
@@ -110,9 +132,9 @@ function normalizeFromApi(data, fallbackUnveilingNo, fallbackDetail) {
     endAtLabel: fallbackDetail?.endAtLabel ?? "",
     description: data?.productionDetail ?? fallbackDetail?.description ?? [],
     artistName: data?.productionArtist ?? fallbackDetail?.artistName ?? "",
-    artistBio: data?.artistDetail ?? fallbackDetail?.artistBio ?? "",
-    exhibitions: fallbackDetail?.exhibitions ?? "",
-    awards: fallbackDetail?.awards ?? "",
+    artistBio: bio || fallbackDetail?.artistBio || "",
+    exhibitions: parsedExhibitions || fallbackDetail?.exhibitions || "",
+    awards: parsedAwards || fallbackDetail?.awards || "",
     startAt: toISODateTime(data?.startDate ?? null),
   };
 }
@@ -644,8 +666,8 @@ export default function UnveilingDetail() {
                 <h3 className="artist-box__name">{detail.artistName}</h3>
                 <p className="artist-box__desc">{detail.artistBio}</p>
                 <div className="artist-box__meta">
-                  <p><strong>주요 전시:</strong> {detail.exhibitions}</p>
-                  <p><strong>수상:</strong> {detail.awards}</p>
+                  <p><strong>주요 전시</strong> {detail.exhibitions}</p>
+                  <p><strong>수상</strong> {detail.awards}</p>
                 </div>
               </div>
             </div>

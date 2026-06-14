@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useAuthStore } from "../components/auth/useAuthStore";
 
+let isHandlingExpired = false;
+
 const axiosApi = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
@@ -30,24 +32,27 @@ axiosApi.interceptors.response.use(
     // 401(Unauthorized) 에러 발생 시
     if (error?.response?.status === 401) {
       const url = error.config?.url || "";
+      const isAuthEndpoint = url.includes("/auth/login")
+        || url.includes("/auth/google")
+        || url.includes("/auth/me")
+        || url.includes("/auth/verify-password");
 
-      // 로그인/구글로그인 중 401은 여기서 가로채지 않음 (로그인 실패는 컴포넌트에서 처리)
-      if (!url.includes("/auth/login") &&
-        !url.includes("/auth/google") &&
-        !url.includes("/auth/verify-password")) {
-        // 1) 클라이언트 인증 정보 초기화
+      if (!isAuthEndpoint) {
+        // 이미 처리 중이면 조용히 무시 (토스트/리다이렉트 중복 방지)
+        if (isHandlingExpired) return new Promise(() => { });
+
+        isHandlingExpired = true;
+
         useAuthStore.getState().logout();
 
-        // 2) 메시지 추출 (문자열/객체 모두 대응) + trim + 빈값 fallback
         const raw = error.response?.data;
-        const extracted =
-          typeof raw === "string" ? raw.trim() : String(raw?.message ?? "").trim();
+        const extracted = typeof raw === "string"
+          ? raw.trim()
+          : String(raw?.message ?? "").trim();
 
-        // '/admin', '/admin/...', 'http://.../admin/...' 전부 커버
         const isAdminReq = /\/admin(\/|$)/.test(url);
-
         const fallbackMsg = isAdminReq
-          ? "관리자 로그인이 필요합니다. 관리자 계정으로 로그인 후 이용해주세요."
+          ? "관리자 로그인이 필요합니다."
           : "세션이 만료되었습니다. 다시 로그인해주세요.";
 
         const serverMsg = extracted || fallbackMsg;
@@ -56,7 +61,9 @@ axiosApi.interceptors.response.use(
           new CustomEvent("auth:expired", { detail: { message: serverMsg } })
         );
 
-        // 이후 컴포넌트 로직이 실행되지 않도록 중단
+        // 3초 후 플래그 초기화 (다음 실제 만료 시 다시 처리 가능하도록)
+        setTimeout(() => { isHandlingExpired = false; }, 3000);
+
         return new Promise(() => { });
       }
     }
