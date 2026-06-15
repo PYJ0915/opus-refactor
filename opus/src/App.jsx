@@ -42,6 +42,7 @@ import { toast } from "react-toastify";
 import Search from "./pages/Search";
 import CompanyDashboard from "./pages/mypage/CompanyDashboard";
 import RecommendPanel from "./components/RecommendPanel";
+import { useAuthStore } from "./components/auth/useAuthStore";
 
 export default function App() {
 
@@ -49,11 +50,17 @@ export default function App() {
 
   const [chatbotOpen, setChatbotOpen] = useState(false);
   const [recommendOpen, setRecommendOpen] = useState(false);
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
 
   useEffect(() => {
     const handleAuthExpired = (e) => {
-      toast.error(e.detail.message, { toastId: "auth-expired" });
-      navigate("/", { replace: true });
+      // confirm 토스트 포함 모든 토스트 닫기
+      toast.dismiss();
+      // 잠깐 딜레이 후 새 토스트 표시 (dismiss 애니메이션 후)
+      setTimeout(() => {
+        toast.error(e.detail.message, { toastId: "auth-expired" });
+        navigate("/", { replace: true });
+      }, 100);
     };
 
     window.addEventListener("auth:expired", handleAuthExpired);
@@ -119,15 +126,17 @@ export default function App() {
         </Route>
       </Routes>
 
-      <RecommendPanel
-        isOpen={recommendOpen}
-        onToggle={() => {
-          setRecommendOpen((v) => !v);
-          if (chatbotOpen) setChatbotOpen(false);
-        }}
-        onClose={() => setRecommendOpen(false)}
-        hidden={chatbotOpen}
-      />
+      {isLoggedIn &&
+        <RecommendPanel
+          isOpen={recommendOpen}
+          onToggle={() => {
+            setRecommendOpen((v) => !v);
+            if (chatbotOpen) setChatbotOpen(false);
+          }}
+          onClose={() => setRecommendOpen(false)}
+          hidden={chatbotOpen}
+        />
+      }
       <Chatbot
         isOpen={chatbotOpen}
         onToggle={() => {

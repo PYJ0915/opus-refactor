@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getAllExhibitions } from "../../api/kcisaAPI";
 import Loading from "../../components/common/Loading.jsx"
 import { Link } from "react-router-dom";
@@ -7,6 +7,7 @@ import { useContentStore } from "../../store/useContentStore.js";
 import axiosApi from '../../api/axiosAPI';
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import ShowCardSkeleton from "../../components/common/ShowCardSkeleton";
+import StarRating from "../../components/reviews/StarRating.jsx";
 
 const SERVICE_KEY = import.meta.env.VITE_KCISA_KEY;
 const INVALID_THUMB_PATTERNS = ["noimage", "no_image", "default", "null"];
@@ -226,6 +227,23 @@ export default function ExhibitionList({ search, status }) {
         return arr;
     }
   }, [filteredItems, sortType]);
+
+  const stageNos = useMemo(
+    () => sortedItems.map(item => String(item.exhibitionId)),
+    [sortedItems]
+  );
+
+  const { data: avgRatings } = useQuery({
+    queryKey: ["avgRatings", "exhibition", stageNos.slice(0, 20).join(",")],
+    queryFn: async () => {
+      if (!stageNos.length) return {};
+      const res = await axiosApi.get("/reviews/averageRatings", {
+        params: { stageNos: stageNos.slice(0, 20) }  // 현재 보이는 것만
+      });
+      return res.data; // { stageNo: avgScore, ... }
+    },
+    enabled: stageNos.length > 0,
+  });
 
   useEffect(() => {
     if (status !== "all" || !allItems.length || !loginMemberNo) return;
@@ -457,6 +475,17 @@ export default function ExhibitionList({ search, status }) {
                     {item.title}
                   </h3>
 
+                  {/* 별점 표시 — 0점이면 숨김 */}
+                  {avgRatings?.[String(item.exhibitionId)] > 0 && (
+                    <div className="show-card__rating">
+                      <StarRating
+                        rating={avgRatings[String(item.exhibitionId)]}
+                        readonly
+                        size={12}
+                      />
+                    </div>
+                  )}
+
                   <p className="show-card__meta">
                     {item.period}
                   </p>
@@ -490,6 +519,16 @@ export default function ExhibitionList({ search, status }) {
                     <h3 className="show-list-item__title">
                       {item.title}
                     </h3>
+
+                    {avgRatings?.[String(item.exhibitionId)] > 0 && (
+                      <div className="show-card__rating">
+                        <StarRating
+                          rating={(avgRatings[String(item.exhibitionId)])}
+                          readonly
+                          size={12}
+                        />
+                      </div>
+                    )}
 
                     <p className="show-list-item__meta">
                       {item.period}

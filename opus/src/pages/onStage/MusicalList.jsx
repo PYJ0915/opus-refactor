@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getAllMusicals, dateRange } from "../../api/kopisAPI";
 import '../../css/pages/onStage/OnStage.css'
 import Loading from "../../components/common/Loading.jsx";
@@ -8,6 +8,7 @@ import axiosApi from "../../api/axiosAPI";
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import { useContentStore } from "../../store/useContentStore.js";
 import ShowCardSkeleton from "../../components/common/ShowCardSkeleton.jsx";
+import StarRating from "../../components/reviews/StarRating.jsx";
 
 export default function MusicalList({ status, search }) {
   const loginMemberNo = useAuthStore(state => state.member?.memberNo);
@@ -208,6 +209,25 @@ export default function MusicalList({ status, search }) {
     }
   }, [filteredItems, sortType]);
 
+  // 컴포넌트 내부 — sortedItems가 확정된 후 stageNo 배열 추출
+  const stageNos = useMemo(
+    () => sortedItems.map(item => String(item.mt20id)),
+    [sortedItems]
+  );
+
+  // 평균 별점 일괄 조회
+  const { data: avgRatings } = useQuery({
+    queryKey: ["avgRatings", "exhibition", stageNos.slice(0, 20).join(",")],
+    queryFn: async () => {
+      if (!stageNos.length) return {};
+      const res = await axiosApi.get("/reviews/averageRatings", {
+        params: { stageNos: stageNos.slice(0, 20) }  // 현재 보이는 것만
+      });
+      return res.data; // { stageNo: avgScore, ... }
+    },
+    enabled: stageNos.length > 0,
+  });
+
   // 공통 카드 이미지 렌더러 — 로드 실패 시 플레이스홀더로 대체
   const PosterImg = ({ src, alt }) => (
     <img
@@ -399,6 +419,16 @@ export default function MusicalList({ status, search }) {
                     {item.prfnm}
                   </h3>
 
+                  {avgRatings?.[String(item.mt20id)] > 0 && (
+                    <div className="show-card__rating">
+                      <StarRating
+                        rating={avgRatings[String(item.mt20id)]}
+                        readonly
+                        size={12}
+                      />
+                    </div>
+                  )}
+
                   <p className="show-card__meta">
                     {item.prfpdfrom} ~ {item.prfpdto}
                   </p>
@@ -430,6 +460,16 @@ export default function MusicalList({ status, search }) {
                     <h3 className="show-list-item__title">
                       {item.prfnm}
                     </h3>
+
+                    {avgRatings?.[String(item.mt20id)] > 0 && (
+                      <div className="show-card__rating">
+                        <StarRating
+                          rating={avgRatings[String(item.mt20id)]}
+                          readonly
+                          size={12}
+                        />
+                      </div>
+                    )}
 
                     <p className="show-list-item__meta">
                       {item.prfpdfrom} ~ {item.prfpdto}

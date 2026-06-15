@@ -21,43 +21,33 @@ export default function ExhibitionDetail() {
   const [like, setLike] = useState(false);
   const [dislike, setDislike] = useState(false);
   const [save, setSave] = useState(false);
-  const [cachedItem, setCachedItem] = useState(null);
   const [isFromCache, setIsFromCache] = useState(false);
-  const [cacheLoading, setCacheLoading] = useState(false);
 
   const { data: item, isLoading } = useQuery({
     queryKey: ["exhibitionDetail", exhibitionId],
     queryFn: async () => {
-      const exhibitions = await getAllExhibitions({
-        serviceKey: import.meta.env.VITE_KCISA_KEY,
-        pageParam: 1
-      });
-      return exhibitions.find(e => String(e.exhibitionId) === exhibitionId) ?? null;
-    },
-    enabled: !!exhibitionId
-  });
+      // 1단계: 외부 API 먼저 시도
+      try {
+        for (let page = 1; page <= 20; page++) {
+          const exhibitions = await getAllExhibitions({
+            serviceKey: import.meta.env.VITE_KCISA_KEY,
+            pageParam: page,
+          });
+          const found = exhibitions.find(
+            (e) => String(e.exhibitionId) === String(exhibitionId)
+          );
+          if (found) return found; // _fromCache 없음 → 정상 모드
+          if (exhibitions.length < 20) break;
+        }
+      } catch (e) {
+        // 외부 API 실패 시 아래 캐시 폴백으로 진행
+      }
 
-  useEffect(() => {
-    if (!item) return;
-    saveStageCache({
-      stageNo: String(item.exhibitionId),
-      stageType: "exhibition",
-      stageTitle: item.title,
-      stageThumbnail: item.image,
-      stagePeriod: item.period,
-      stagePlace: item.place,
-    });
-  }, [item]);
-
-  useEffect(() => {
-    if (isLoading || item) return;
-
-    setCacheLoading(true);
-
-    loadStageCache(exhibitionId).then(cached => {
+      // 2단계: 외부 API 실패 or 항목 없음 → DB 캐시 폴백
+      const cached = await loadStageCache(exhibitionId);
       if (cached) {
-        setCachedItem({
-          exhibitionId: exhibitionId,
+        return {
+          exhibitionId: cached.stageNo,
           title: cached.stageTitle,
           image: cached.stageThumbnail,
           period: cached.stagePeriod,
@@ -67,29 +57,20 @@ export default function ExhibitionDetail() {
           desc: null,
           author: null,
           url: null,
-        });
-        setIsFromCache(true);
+          _fromCache: true,
+        };
       }
-      setCacheLoading(false);
-    });
-  }, [isLoading, item, exhibitionId]);
+
+      return null;
+    },
+    enabled: !!exhibitionId,
+    staleTime: 1000 * 60 * 10,
+  });
 
   useEffect(() => {
-    if (!loginMemberNo) return;
-    const fetchStatus = async () => {
-      try {
-        const [likedRes, savedRes] = await Promise.all([
-          axiosApi.get("/myPage/likeList"),
-          axiosApi.get("/myPage/savedList"),
-        ]);
-        setLike(likedRes.data?.includes(exhibitionId) ?? false);
-        setSave(savedRes.data?.includes(exhibitionId) ?? false);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    fetchStatus();
-  }, [loginMemberNo, exhibitionId]);
+    if (!item) return;
+    setIsFromCache(!!item._fromCache);
+  }, [item]);
 
   const { data: avgRating } = useQuery({
     queryKey: ["avgRating", exhibitionId],
@@ -118,6 +99,15 @@ export default function ExhibitionDetail() {
       return res.data;
     },
     enabled: !!bestReview?.reviewNo
+  });
+
+  const { data: reviewCount } = useQuery({
+    queryKey: ["reviewCount", exhibitionId],
+    queryFn: async () => {
+      const res = await axiosApi.get(`/reviews/count?stageNo=${exhibitionId}`);
+      return res.data;
+    },
+    enabled: !!exhibitionId,
   });
 
   const currentURL = window.location.href;
@@ -196,7 +186,7 @@ export default function ExhibitionDetail() {
     }
   };
 
-  if (isLoading || cacheLoading) return (
+  if (isLoading) return (
     <main className="detail-page">
       <div className="container" style={{ display: 'flex', justifyContent: 'center', paddingTop: 120 }}>
         <LoadingSpinner text="전시 정보를 불러오고 있습니다" />
@@ -204,7 +194,7 @@ export default function ExhibitionDetail() {
     </main>
   );
 
-  const displayItem = item || cachedItem;
+  const displayItem = item;
   if (!displayItem) return <div>잘못된 접근입니다.</div>;
 
   return (
@@ -366,44 +356,77 @@ export default function ExhibitionDetail() {
 
                 <div className="section" id="reviews-section">
                   <div className="reviews-head">
-                    <h2 className="section-title">관람 후기</h2>
-                    <button className="btn btn-sm btn-outline" id='more-review-btn' type="button"
-                      onClick={() => {
-                        if (!loginMemberNo) {
-                          toast.error("로그인 후 이용해주세요.");
-                          return;
-                        }
-                        navigate(`/onStage/reviews/${displayItem.exhibitionId}`);
-                      }}>후기 더보기</button>
+                    <div className="reviews-head__left">
+                      <h2 className="section-title">관람 후기</h2>
+                      {reviewCount > 0 && (
+                        <span className="reviews-count-badge">{reviewCount}개</span>
+                      )}
+                    </div>
                   </div>
 
                   {avgRating > 0 && (
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
+                    <div className="avg-rating-row">
                       <StarRating rating={avgRating} readonly size={16} />
                     </div>
                   )}
 
-                  <div className="reviews">
+                  {/* ── 리뷰 영역 ── */}
+                  <div className="reviews-preview-wrap">
+                    {/* 베스트 리뷰 — 항상 표시 */}
                     {bestReview ? (
                       <article className="review">
                         <div className="review__top">
                           <div className="review__user">
                             <div>
-                              <div className="review__name">{bestReview.memberEmail?.replace(/(.{3}).+(@.+)/, "$1***$2")}</div>
-                              <div className="review__date">{bestReview.reviewWriteDate?.substring(0, 10)}</div>
+                              <div className="review__name">
+                                {bestReview.memberEmail?.replace(/(.{3}).+(@.+)/, "$1***$2")}
+                              </div>
+                              <div className="review__date">
+                                {bestReview.reviewWriteDate?.substring(0, 10)}
+                              </div>
                             </div>
                           </div>
                           <div className="review__like">
-                            <i className="fa-solid fa-thumbs-up" id='review-like-btn'></i>
+                            <i className="fa-solid fa-thumbs-up" id='review-like-btn' />
                             <span className="like-count">{bestReviewLikeCount ?? 0}</span>
                           </div>
                         </div>
                         <p className="review__text">{bestReview.reviewContent}</p>
                       </article>
                     ) : (
-                      <div className="review__text">
-                        등록된 후기가 없습니다.
+                      <div className="review__text">등록된 후기가 없습니다.</div>
+                    )}
+
+                    {/* 비로그인 시 — 블러 오버레이 (리뷰가 1개 초과일 때만) */}
+                    {!loginMemberNo && reviewCount > 1 && (
+                      <div className="reviews-blur-overlay">
+                        <div className="reviews-blur-overlay__card">
+                          <p className="reviews-blur-overlay__text">
+                            더 많은 후기를 보려면 로그인해 주세요.
+                          </p>
+                          {/* HeaderModal의 로그인 버튼을 직접 열거나 navigate 활용 */}
+                          <button
+                            className="reviews-blur-overlay__btn"
+                            onClick={() => {
+                              // useHeaderModal 훅이나 전역 상태로 로그인 모달 열기
+                              // 임시: 홈으로 이동하지 않고 이벤트 발행
+                              window.dispatchEvent(new CustomEvent("open:loginModal"));
+                            }}
+                          >
+                            로그인 하기
+                          </button>
+                        </div>
                       </div>
+                    )}
+
+                    {/* 로그인 시 — 후기 더보기 안내 */}
+                    {loginMemberNo && reviewCount > 1 && (
+                      <button
+                        className="reviews-more-btn"
+                        onClick={() => navigate(`/onStage/reviews/${displayItem.exhibitionId}`)}
+                      >
+                        후기 {reviewCount}개 모두 보기 →
+                      </button>
                     )}
                   </div>
                 </div>

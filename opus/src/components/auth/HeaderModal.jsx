@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../common/Header";
 import LoginModal from "./LoginModal";
@@ -18,6 +18,14 @@ export default function HeaderModal({ variant }) {
   const role = useAuthStore(state => state.member?.role)
 
   const resetNotifications = useNotificationStore((s) => s.reset);
+
+  useEffect(() => {
+    const handleOpenLogin = () => {
+      if (!isLoggedIn) setModalType("login");
+    };
+    window.addEventListener("open:loginModal", handleOpenLogin);
+    return () => window.removeEventListener("open:loginModal", handleOpenLogin);
+  }, [isLoggedIn]);
 
   const handleIconClick = useCallback(() => {
     if (isLoggedIn) {

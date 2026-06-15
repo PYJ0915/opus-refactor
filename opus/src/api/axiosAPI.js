@@ -35,7 +35,9 @@ axiosApi.interceptors.response.use(
       const isAuthEndpoint = url.includes("/auth/login")
         || url.includes("/auth/google")
         || url.includes("/auth/me")
-        || url.includes("/auth/verify-password");
+        || url.includes("/auth/verify-password")
+        || url.includes("/myPage/likeList")
+        || url.includes("/myPage/savedList");
 
       if (!isAuthEndpoint) {
         // 이미 처리 중이면 조용히 무시 (토스트/리다이렉트 중복 방지)
@@ -51,9 +53,13 @@ axiosApi.interceptors.response.use(
           : String(raw?.message ?? "").trim();
 
         const isAdminReq = /\/admin(\/|$)/.test(url);
+        const hasToken = !!useAuthStore.getState().token;
+
         const fallbackMsg = isAdminReq
           ? "관리자 로그인이 필요합니다."
-          : "세션이 만료되었습니다. 다시 로그인해주세요.";
+          : hasToken
+            ? "세션이 만료되었습니다. 다시 로그인해주세요."
+            : "로그인이 필요한 서비스입니다.";
 
         const serverMsg = extracted || fallbackMsg;
 

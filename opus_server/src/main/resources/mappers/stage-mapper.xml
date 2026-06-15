@@ -73,26 +73,22 @@
 
 	<!-- 캐시 UPSERT (Oracle MERGE 사용) -->
 	<update id="upsertStageCache" parameterType="StageCache">
-		MERGE INTO
-		STAGE_CACHE sc
+		MERGE INTO STAGE_CACHE sc
 		USING DUAL
 		ON (sc.STAGE_NO = #{stageNo})
 		WHEN MATCHED THEN
 		UPDATE SET
 		STAGE_TITLE = #{stageTitle},
-		STAGE_THUMBNAIL =
-		#{stageThumbnail},
+		STAGE_THUMBNAIL = #{stageThumbnail},
 		STAGE_PERIOD = #{stagePeriod},
-		STAGE_PLACE =
-		#{stagePlace},
+		STAGE_PLACE = #{stagePlace},
 		CACHED_AT = SYSDATE
+		WHERE sc.CACHED_AT &lt; TRUNC(SYSDATE)
 		WHEN NOT MATCHED THEN
-		INSERT
-		(STAGE_NO, STAGE_TYPE, STAGE_TITLE, STAGE_THUMBNAIL, STAGE_PERIOD,
-		STAGE_PLACE)
-		VALUES (#{stageNo}, #{stageType}, #{stageTitle},
-		#{stageThumbnail},
-		#{stagePeriod}, #{stagePlace})
+		INSERT (STAGE_NO, STAGE_TYPE, STAGE_TITLE, STAGE_THUMBNAIL,
+		STAGE_PERIOD, STAGE_PLACE, CACHED_AT)
+		VALUES (#{stageNo}, #{stageType}, #{stageTitle}, #{stageThumbnail},
+		#{stagePeriod}, #{stagePlace}, SYSDATE)
 	</update>
 
 	<!-- 캐시 단건 조회 -->
@@ -115,12 +111,15 @@
 		SELECT
 		STAGE_NO AS stageNo,
 		STAGE_TYPE AS stageType,
-		STAGE_TITLE AS stageTitle,
+		STAGE_TITLE AS
+		stageTitle,
 		STAGE_THUMBNAIL AS stageThumbnail,
-		STAGE_PERIOD AS stagePeriod,
+		STAGE_PERIOD AS
+		stagePeriod,
 		STAGE_PLACE AS stagePlace
 		FROM STAGE_CACHE
-		WHERE STAGE_TITLE LIKE '%' || #{query} || '%'
+		WHERE STAGE_TITLE
+		LIKE '%' || #{query} || '%'
 		<if test="stageType != null and stageType != ''">
 			AND STAGE_TYPE = #{stageType}
 		</if>
@@ -129,21 +128,21 @@
 	</select>
 
 	<!-- 추천 패널용 전체 캐시 목록 조회 -->
-<select id="selectStageCacheList" resultType="StageCache">
-    SELECT STAGE_NO       AS stageNo,
-           STAGE_TYPE     AS stageType,
-           STAGE_TITLE    AS stageTitle,
-           STAGE_THUMBNAIL AS stageThumbnail,
-           STAGE_PERIOD   AS stagePeriod,
-           STAGE_PLACE    AS stagePlace
-    FROM STAGE_CACHE
-    <where>
-        <if test="stageType != null and stageType != ''">
-            STAGE_TYPE = #{stageType}
-        </if>
-    </where>
-    ORDER BY CACHED_AT DESC
-    FETCH FIRST #{limit} ROWS ONLY
-</select>
+	<select id="selectStageCacheList" resultType="StageCache">
+		SELECT STAGE_NO AS stageNo,
+		STAGE_TYPE AS stageType,
+		STAGE_TITLE AS stageTitle,
+		STAGE_THUMBNAIL AS stageThumbnail,
+		STAGE_PERIOD AS stagePeriod,
+		STAGE_PLACE AS stagePlace
+		FROM STAGE_CACHE
+		<where>
+			<if test="stageType != null and stageType != ''">
+				STAGE_TYPE = #{stageType}
+			</if>
+		</where>
+		ORDER BY CACHED_AT DESC
+		FETCH FIRST #{limit} ROWS ONLY
+	</select>
 
 </mapper>

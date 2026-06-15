@@ -1,5 +1,6 @@
 package nknk.opus.project.reviews.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -125,5 +126,21 @@ public class ReviewsController {
     public ResponseEntity<List<Map<String, Object>>> getRatingDistribution(
             @RequestParam("stageNo") String stageNo) {
         return ResponseEntity.ok(service.getRatingDistribution(stageNo));
+    }
+    
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getReviewCount(@RequestParam("stageNo") String stageNo) {
+        int count = service.getReviewsCount(stageNo);
+        return ResponseEntity.ok(count);
+    }
+    
+    @GetMapping("/averageRatings")
+    public ResponseEntity<Map<String, Double>> getAverageRatings(
+            @RequestParam("stageNos") List<String> stageNos) {
+        Map<String, Double> result = new HashMap<>();
+        for (String stageNo : stageNos) {
+            result.put(stageNo, service.getAverageRating(stageNo));
+        }
+        return ResponseEntity.ok(result);
     }
 }

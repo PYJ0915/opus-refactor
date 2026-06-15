@@ -71,7 +71,7 @@ export default function MusicalDetail() {
   }, [isPending, data, mt20id]);
 
   useEffect(() => {
-    if (!loginMemberNo) return;
+    if (!loginMemberNo || typeof loginMemberNo !== "number") return;
     const fetchStatus = async () => {
       try {
         const [likedRes, savedRes] = await Promise.all([
@@ -80,9 +80,7 @@ export default function MusicalDetail() {
         ]);
         setLike(likedRes.data?.includes(mt20id) ?? false);
         setSave(savedRes.data?.includes(mt20id) ?? false);
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) { }
     };
     fetchStatus();
   }, [loginMemberNo, mt20id]);
@@ -113,6 +111,15 @@ export default function MusicalDetail() {
       return res.data;
     },
     enabled: !!bestReview?.reviewNo
+  });
+
+  const { data: reviewCount } = useQuery({
+    queryKey: ["reviewCount", mt20id],
+    queryFn: async () => {
+      const res = await axiosApi.get(`/reviews/count?stageNo=${mt20id}`);
+      return res.data;
+    },
+    enabled: !!mt20id,
   });
 
   const currentURL = window.location.href;
@@ -185,7 +192,7 @@ export default function MusicalDetail() {
         stageNo: mt20id
       });
       toast.success(res.data);
-      setSave(prev => !prev); 
+      setSave(prev => !prev);
     } catch (error) {
       console.log(error);
     }
@@ -344,44 +351,77 @@ export default function MusicalDetail() {
 
                 <div className="section" id="reviews-section">
                   <div className="reviews-head">
-                    <h2 className="section-title">관람 후기</h2>
-                    <button className="btn btn-sm btn-outline" id='more-review-btn' type="button"
-                      onClick={() => {
-                        if (!loginMemberNo) {
-                          toast.error("로그인 후 이용해주세요.");
-                          return;
-                        }
-                        navigate(`/onStage/reviews/${displayData.mt20id}`);
-                      }}>후기 더보기</button>
+                    <div className="reviews-head__left">
+                      <h2 className="section-title">관람 후기</h2>
+                      {reviewCount > 0 && (
+                        <span className="reviews-count-badge">{reviewCount}개</span>
+                      )}
+                    </div>
                   </div>
 
                   {avgRating > 0 && (
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
+                    <div className="avg-rating-row">
                       <StarRating rating={avgRating} readonly size={16} />
                     </div>
                   )}
 
-                  <div className="reviews">
+                  {/* ── 리뷰 영역 ── */}
+                  <div className="reviews-preview-wrap">
+                    {/* 베스트 리뷰 — 항상 표시 */}
                     {bestReview ? (
                       <article className="review">
                         <div className="review__top">
                           <div className="review__user">
                             <div>
-                              <div className="review__name">{bestReview.memberEmail?.replace(/(.{3}).+(@.+)/, "$1***$2")}</div>
-                              <div className="review__date">{bestReview.reviewWriteDate?.substring(0, 10)}</div>
+                              <div className="review__name">
+                                {bestReview.memberEmail?.replace(/(.{3}).+(@.+)/, "$1***$2")}
+                              </div>
+                              <div className="review__date">
+                                {bestReview.reviewWriteDate?.substring(0, 10)}
+                              </div>
                             </div>
                           </div>
                           <div className="review__like">
-                            <i className="fa-solid fa-thumbs-up" id='review-like-btn'></i>
+                            <i className="fa-solid fa-thumbs-up" id='review-like-btn' />
                             <span className="like-count">{bestReviewLikeCount ?? 0}</span>
                           </div>
                         </div>
                         <p className="review__text">{bestReview.reviewContent}</p>
                       </article>
                     ) : (
-                      <div className="review__text">
-                        등록된 후기가 없습니다.
+                      <div className="review__text">등록된 후기가 없습니다.</div>
+                    )}
+
+                    {/* 비로그인 시 — 블러 오버레이 (리뷰가 1개 초과일 때만) */}
+                    {!loginMemberNo && reviewCount > 1 && (
+                      <div className="reviews-blur-overlay">
+                        <div className="reviews-blur-overlay__card">
+                          <p className="reviews-blur-overlay__text">
+                            더 많은 후기를 보려면 로그인해 주세요.
+                          </p>
+                          {/* HeaderModal의 로그인 버튼을 직접 열거나 navigate 활용 */}
+                          <button
+                            className="reviews-blur-overlay__btn"
+                            onClick={() => {
+                              // useHeaderModal 훅이나 전역 상태로 로그인 모달 열기
+                              // 임시: 홈으로 이동하지 않고 이벤트 발행
+                              window.dispatchEvent(new CustomEvent("open:loginModal"));
+                            }}
+                          >
+                            로그인 하기
+                          </button>
+                        </div>
                       </div>
+                    )}
+
+                    {/* 로그인 시 — 후기 더보기 안내 */}
+                    {loginMemberNo && reviewCount > 1 && (
+                      <button
+                        className="reviews-more-btn"
+                        onClick={() => navigate(`/onStage/reviews/${displayData.mt20id}`)}
+                      >
+                        후기 {reviewCount}개 모두 보기 →
+                      </button>
                     )}
                   </div>
                 </div>
