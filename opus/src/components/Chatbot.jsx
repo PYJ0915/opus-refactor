@@ -3,8 +3,7 @@ import { chatbotApi } from "../api/chatbotAPI";
 import "../css/Chatbot.css";
 import { useContentStore } from "../store/useContentStore";
 
-const Chatbot = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const Chatbot = ({ isOpen, onToggle, onClose, hidden }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +67,8 @@ const Chatbot = () => {
 
   // 챗봇 열기
   const handleOpen = () => {
-    setIsOpen(true);
+
+    onToggle();
 
     // 환영 메시지
     if (messages.length === 0) {
@@ -168,7 +168,7 @@ On-Stage 탭을 먼저 한 번 방문하신 후 질문해 주시면
   return (
     <>
       {/* 챗봇 버튼 */}
-      {!isOpen && (
+      {!isOpen && !hidden && (
         <button
           className="chatbot-button"
           onClick={handleOpen}
@@ -200,7 +200,7 @@ On-Stage 탭을 먼저 한 번 방문하신 후 질문해 주시면
               </button>
               <button
                 className="chatbot-header__close"
-                onClick={() => setIsOpen(false)}
+                onClick={onClose}
                 aria-label="챗봇 닫기"
               >
                 <i className="fa-solid fa-xmark"></i>

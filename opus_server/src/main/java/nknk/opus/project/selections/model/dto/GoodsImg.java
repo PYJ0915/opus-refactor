@@ -16,7 +16,7 @@ public class GoodsImg {
 	private String goodsImgPath;
 	private String goodsImgOg;
 	private String goodsImgRe;
-	private String goodsImgOrder;
+	private int goodsImgOrder;
 	private String goodsImgFullpath;
 	
 }

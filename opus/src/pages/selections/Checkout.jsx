@@ -1,7 +1,7 @@
 /* Checkout.jsx */
 import { useEffect, useRef, useState } from "react";
 import "../../css/Checkout.css";
-import AddressModal from "./AddressModal";
+import AddressModal from "../../components/selections/AddressModal";
 import { useCartStore } from "../../store/useCartStore";
 import { useNavigate } from "react-router-dom";
 import { useDaumPostcodePopup } from 'react-daum-postcode'; // 다음 주소 API
@@ -10,7 +10,7 @@ import { useAddressStore } from "../../store/useAddressStore";
 // 토스페이먼츠 연동
 import { loadTossPayments } from '@tosspayments/payment-sdk';
 import { orderApi } from "../../api/orderAPI";
-import ScrollToTop from "../../components/common/ScrollToTop";
+import { toast } from "react-toastify";
 
 const Checkout = () => {
 
@@ -261,7 +261,7 @@ const Checkout = () => {
         console.log("==== 토스페이먼츠 초기화 완료 ====");
       } catch (error) {
         console.error("토스페이먼츠 초기화 실패:", error);
-        alert("결제 시스템 초기화에 실패했습니다.");
+        toast.error("결제 시스템 초기화에 실패했습니다.");
       }
     }
 
@@ -295,7 +295,7 @@ const Checkout = () => {
       errors.privacy = true;
     }
     if (selectedItems.length === 0) {
-      alert("주문할 상품을 선택해주세요.");
+      toast.warning("주문할 상품을 선택해주세요.");
       return false;
     }
 
@@ -315,7 +315,7 @@ const Checkout = () => {
         }
       }
 
-      alert("필수 입력 정보를 모두 입력해주세요.");
+      toast.warning("필수 입력 정보를 모두 입력해주세요.");
       return false;
     }
 
@@ -375,7 +375,7 @@ const Checkout = () => {
 
     } catch (error) {
       console.error("결제 요청 실패:", error);
-      alert(error.response?.data?.message || "결제 요청에 실패했습니다.");
+      toast.error(error.response?.data?.message || "결제 요청에 실패했습니다.");
     } finally {
       setIsProcessing(false);
     }
@@ -385,7 +385,7 @@ const Checkout = () => {
   // 카드-간편 결제 처리
   const handleCardOrEasyPayment = async (orderId, orderName, amount) => {
     if (!tossPaymentsRef.current) {
-      alert("결제 시스템이 초기화되지 않았습니다.");
+      toast.error("결제 시스템이 초기화되지 않았습니다.");
       return;
     }
 
@@ -404,18 +404,18 @@ const Checkout = () => {
       console.error("결제창 호출 실패:", error);
 
        if (error.code === "USER_CANCEL") {
-        alert("결제가 취소되었습니다.");
+        toast.success("결제가 취소되었습니다.");
         return;
       }
 
-      alert("결제창 호출에 실패했습니다.");
+      toast.error("결제창 호출에 실패했습니다.");
     }
   };
 
   // 가상 계좌 결제 처리
   const handleVirtualAccountPayment = async (orderId, orderName, amount) => {
     if (!tossPaymentsRef.current) {
-      alert("결제 시스템이 초기화되지 않았습니다.");
+      toast.error("결제 시스템이 초기화되지 않았습니다.");
       return;
     }
 
@@ -438,11 +438,11 @@ const Checkout = () => {
       console.error("가상계좌 발급 실패:", error);
 
       if (error.code === "USER_CANCEL") {
-        alert("결제가 취소되었습니다.");
+        toast.success("결제가 취소되었습니다.");
         return;
       }
 
-      alert("가상계좌 발급에 실패했습니다.");
+      toast.error("가상계좌 발급에 실패했습니다.");
     }
   };
 

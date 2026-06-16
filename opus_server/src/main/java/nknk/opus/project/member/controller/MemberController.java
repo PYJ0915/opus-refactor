@@ -57,50 +57,35 @@ public class MemberController {
 
 	/* 일반 로그인 */
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody Member inputMember,
-			@RequestParam(value = "saveId", required = false) String saveId, HttpServletResponse resp) {
-		try {
-			Member loginMember = service.login(inputMember);
+	public ResponseEntity<?> login(@RequestBody Member inputMember) {
+	    try {
+	        Member loginMember = service.login(inputMember);
+	        if (loginMember == null) {
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                    .body("아이디 또는 비밀번호가 일치하지 않습니다.");
+	        }
 
-			if (loginMember == null) {
-				log.warn("[로그인 실패] Email: {}", inputMember.getMemberEmail());
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디 또는 비밀번호가 일치하지 않습니다.");
-			}
+	        String token = jwtUtil.createToken(loginMember.getMemberNo(),
+	                loginMember.getMemberEmail(), loginMember.getMemberRole());
 
-			String token = jwtUtil.createToken(loginMember.getMemberNo(), loginMember.getMemberEmail(),
-					loginMember.getMemberRole());
+	        Map<String, Object> result = new HashMap<>();
+	        result.put("success", true);
+	        result.put("token", token);
 
-			Map<String, Object> result = new HashMap<>();
-			result.put("success", true);
-			result.put("token", token);
+	        Map<String, Object> memberInfo = new HashMap<>();
+	        memberInfo.put("memberNo", loginMember.getMemberNo());
+	        memberInfo.put("memberEmail", loginMember.getMemberEmail());
+	        memberInfo.put("memberTel", loginMember.getMemberTel());
+	        memberInfo.put("role", loginMember.getMemberRole() == null
+	                ? null : loginMember.getMemberRole().name());
+	        memberInfo.put("loginType", loginMember.getLoginType());
+	        result.put("member", memberInfo);
 
-			Map<String, Object> memberInfo = new HashMap<>();
-			memberInfo.put("memberNo", loginMember.getMemberNo());
-			memberInfo.put("memberEmail", loginMember.getMemberEmail());
-			memberInfo.put("memberTel", loginMember.getMemberTel());
-			memberInfo.put("role", loginMember.getMemberRole() == null ? null : loginMember.getMemberRole().name());
-			memberInfo.put("loginType", loginMember.getLoginType());
-			result.put("member", memberInfo);
-
-			// saveId 쿠키 처리(아이디 저장용)
-			Cookie cookie = new Cookie("saveId", loginMember.getMemberEmail());
-			cookie.setPath("/");
-			cookie.setHttpOnly(false);
-
-			if ("true".equals(saveId)) {
-				cookie.setMaxAge(60 * 60 * 24 * 30);
-			} else {
-				cookie.setMaxAge(0);
-			}
-			resp.addCookie(cookie);
-
-			log.info("[로그인 성공] Email: {}", loginMember.getMemberEmail());
-			return ResponseEntity.ok(result);
-
-		} catch (Exception e) {
-			log.error("[로그인 에러] 사유: {}", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
-		}
+	        return ResponseEntity.ok(result);
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("서버 오류가 발생했습니다.");
+	    }
 	}
 
 	/* 구글 소셜 로그인 */
@@ -384,5 +369,27 @@ public class MemberController {
 		} else {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("탈퇴 처리 중 오류가 발생했습니다.");
 		}
+	}
+	
+	/* 비밀번호 재설정 — 인증코드 발송 */
+	@PostMapping("/password-reset/send")
+	public ResponseEntity<String> sendPasswordResetCode(@RequestBody Map<String, String> map) {
+	    try {
+	        service.sendPasswordResetEmail(map.get("email"));
+	        return ResponseEntity.ok("인증번호가 발송되었습니다.");
+	    } catch (Exception e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+	}
+
+	/* 비밀번호 재설정 — 인증코드 확인 + 변경 */
+	@PostMapping("/password-reset/confirm")
+	public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> map) {
+	    try {
+	        service.resetPassword(map.get("email"), map.get("code"), map.get("newPw"));
+	        return ResponseEntity.ok("비밀번호가 변경되었습니다.");
+	    } catch (Exception e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
 	}
 }

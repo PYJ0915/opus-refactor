@@ -3,8 +3,8 @@ package nknk.opus.project.admin.controller;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.admin.model.dto.GoodsRegist;
 import nknk.opus.project.admin.model.service.AdminService;
-import nknk.opus.project.common.exception.ApiExceptionHandler;
 import nknk.opus.project.reviews.model.dto.Report;
 import nknk.opus.project.reviews.model.dto.Reviews;
 import nknk.opus.project.selections.model.dto.Goods;
@@ -30,16 +31,10 @@ import nknk.opus.project.unveiling.model.dto.Unveiling;
 @Slf4j
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
-    private final ApiExceptionHandler apiExceptionHandler;
-
-	@Autowired
-	private AdminService service;
-
-    AdminController(ApiExceptionHandler apiExceptionHandler) {
-        this.apiExceptionHandler = apiExceptionHandler;
-    }
+	private final AdminService service;
 	
 	@GetMapping("/report")
 	public ResponseEntity<List<Report>> getReport() {
@@ -259,17 +254,42 @@ public class AdminController {
 	}
 
 	/** 경매 등록 */
-	@PostMapping("/unveilings")
-	public ResponseEntity<String> registUnveiling(@RequestBody Unveiling unveiling) {
-		
-		try {
-			int result = service.registUnveiling(unveiling);
-			if (result == 0) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("경매 등록에 실패했습니다.");
-			return ResponseEntity.ok("경매가 등록되었습니다.");
-		} catch (Exception e) {
-			log.error("경매 등록 오류", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다: " + e.getMessage());
-		}
+	@PostMapping(value = "/unveilings", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> registUnveiling(
+	        @ModelAttribute Unveiling unveiling,
+	        @RequestParam(value = "thumbFile", required = false) MultipartFile thumbFile) {
+	    try {
+	        int result = service.registUnveiling(unveiling, thumbFile);
+	        if (result == 0) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("경매 등록에 실패했습니다.");
+	        return ResponseEntity.ok("경매가 등록되었습니다.");
+	    } catch (Exception e) {
+	        log.error("경매 등록 오류", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+	    }
+	}
+
+	// ── 관리자 경매 강제 상태 전환 ──
+	@PatchMapping("/unveilings/{unveilingNo}/status")
+	public ResponseEntity<String> forceUpdateUnveilingStatus(
+	        @PathVariable("unveilingNo") int unveilingNo,
+	        @RequestBody Map<String, String> body) {
+	    try {
+	        String status = body.get("status");
+
+	        List<String> allowed = List.of("UPCOMING", "LIVE", "ENDED");
+	        if (!allowed.contains(status)) {
+	            return ResponseEntity.badRequest().body("허용되지 않는 상태값입니다.");
+	        }
+
+	        int result = service.forceUpdateUnveilingStatus(unveilingNo, status);
+	        if (result == 0) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상태 변경에 실패했습니다.");
+
+	        log.info("[관리자] 경매 강제 상태 변경 - unveilingNo: {}, status: {}", unveilingNo, status);
+	        return ResponseEntity.ok("경매 상태가 [" + status + "]으로 변경되었습니다.");
+	    } catch (Exception e) {
+	        log.error("경매 상태 변경 오류", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+	    }
 	}
 
 }

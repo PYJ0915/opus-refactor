@@ -4,6 +4,8 @@ import axiosApi from "../../api/axiosAPI";
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import "../../css/proposals-detail.css";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
+import { toast } from "react-toastify";
+import { showConfirm } from "../../components/toast/ToastUtils";
 
 const ProposalDetail = () => {
   const { boardNo } = useParams();
@@ -37,7 +39,7 @@ const ProposalDetail = () => {
         const detail = response.data;
 
         if (!detail || detail.boardDelFl === "Y") {
-          alert("존재하지 않거나 삭제된 게시글입니다.");
+          toast.error("존재하지 않거나 삭제된 게시글입니다.");
           navigate("/proposals");
           return;
         }
@@ -45,7 +47,7 @@ const ProposalDetail = () => {
         setData(detail);
       } catch (error) {
         console.error("상세 정보 로드 실패:", error);
-        alert("게시글을 불러올 수 없습니다.");
+        toast.error("게시글을 불러올 수 없습니다.");
         navigate("/proposals");
       } finally {
         setIsLoading(false);
@@ -81,18 +83,24 @@ const ProposalDetail = () => {
     setBrokenCount(0);
   }, [boardNo, images.length]);
 
-  const handleDelete = async () => {
-    if (!window.confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
+  const handleDelete = () => {
+  showConfirm(
+    "게시글을 삭제하시겠습니까?",
+    "삭제된 게시글은 복구할 수 없습니다.",
+    async () => {
+      try {
+        await axiosApi.delete(`/api/board/delete/${boardNo}`);
 
-    try {
-      await axiosApi.delete(`/api/board/delete/${boardNo}`);
-      alert("삭제되었습니다.");
-      navigate("/proposals", { state: location.state });
-    } catch (error) {
-      console.error("삭제 실패:", error);
-      alert("삭제에 실패했습니다.");
-    }
-  };
+        toast.success("삭제되었습니다.");
+        navigate("/proposals", { state: location.state });
+      } catch (error) {
+        console.error(error);
+        toast.error("삭제에 실패했습니다.");
+      }
+    },
+    "삭제"
+  );
+};
 
   const formatDate = (iso) => (iso ? iso.split(" ")[0].replaceAll("-", ".") : "");
 

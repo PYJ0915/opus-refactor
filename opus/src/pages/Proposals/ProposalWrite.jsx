@@ -4,6 +4,7 @@ import axiosApi from "../../api/axiosAPI";
 import axiosUpload from "../../api/axiosUpload";
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import "../../css/proposalsWrite.css";
+import { toast } from "react-toastify";
 
 const MAX_IMAGES = 5;
 
@@ -45,7 +46,7 @@ const ProposalWrite = () => {
 
   useEffect(() => {
     if (isLoggedIn === false) {
-      alert("로그인이 필요합니다.");
+      toast.error("로그인이 필요합니다.");
       navigate("/proposals");
       return;
     }
@@ -53,7 +54,7 @@ const ProposalWrite = () => {
 
     if (role === "ADMIN" || role === "COMPANY") return;
 
-    alert("권한이 없습니다.");
+    toast.error("권한이 없습니다.");
     navigate("/proposals");
   }, [isLoggedIn, role, navigate]);
 
@@ -110,12 +111,12 @@ const ProposalWrite = () => {
 
         if (role === "COMPANY") {
           if (Number(data.boardTypeCode) !== 2) {
-            alert("기업회원은 이벤트/홍보글만 수정할 수 있습니다.");
+            toast.error("기업회원은 이벤트/홍보글만 수정할 수 있습니다.");
             navigate("/proposals", { state: location.state });
             return;
           }
           if (!isOwner) {
-            alert("본인 글만 수정할 수 있습니다.");
+            toast.error("본인 글만 수정할 수 있습니다.");
             navigate("/proposals", { state: location.state });
             return;
           }
@@ -148,7 +149,7 @@ const ProposalWrite = () => {
         setDeleteImgNos(new Set());
         setNewImages([]);
       } catch (e) {
-        alert("데이터를 불러올 수 없습니다.");
+        toast.error("데이터를 불러올 수 없습니다.");
         navigate("/proposals", { state: location.state });
       }
     };
@@ -191,7 +192,7 @@ const ProposalWrite = () => {
 
     const remainSlots = MAX_IMAGES - remainExistingCount - newImages.length;
     if (remainSlots <= 0) {
-      alert(`이미지는 최대 ${MAX_IMAGES}장, 10MB까지 가능합니다. (기존 이미지 포함)`);
+      toast.warning(`이미지는 최대 ${MAX_IMAGES}장, 10MB까지 가능합니다. (기존 이미지 포함)`);
       e.target.value = "";
       return;
     }
@@ -199,7 +200,7 @@ const ProposalWrite = () => {
     const next = files.slice(0, remainSlots);
 
     if (files.length > remainSlots) {
-      alert(`이미지는 최대 ${MAX_IMAGES}장, 10MB까지 가능합니다. (추가 가능: ${remainSlots}장)`);
+      toast.warning(`이미지는 최대 ${MAX_IMAGES}장, 10MB까지 가능합니다. (추가 가능: ${remainSlots}장)`);
     }
 
     setNewImages((prev) => [...prev, ...next]);
@@ -214,18 +215,18 @@ const ProposalWrite = () => {
     e.preventDefault();
 
     if (role === "COMPANY" && Number(formData.boardTypeCode) !== 2) {
-      return alert("기업회원은 이벤트/홍보글만 작성/수정 가능합니다.");
+      return toast.error("기업회원은 이벤트/홍보글만 작성/수정 가능합니다.");
     }
 
     if (role === "COMPANY" && !formData.writerCompany.trim()) {
-      return alert("작성자(회사명)를 입력해주세요.");
+      return toast.warning("작성자(회사명)를 입력해주세요.");
     }
-    if (!formData.boardTitle.trim()) return alert("제목을 입력해주세요.");
-    if (!formData.boardContent.trim()) return alert("내용을 입력해주세요.");
+    if (!formData.boardTitle.trim()) return toast.warning("제목을 입력해주세요.");
+    if (!formData.boardContent.trim()) return toast.warning("내용을 입력해주세요.");
 
     const remainExistingCount = existingImages.filter((x) => !deleteImgNos.has(x.boardImgNo)).length;
     if (remainExistingCount + newImages.length > MAX_IMAGES) {
-      return alert(
+      return toast.warning(
         `이미지는 최대 ${MAX_IMAGES}장까지 가능합니다. (현재: ${
           remainExistingCount + newImages.length
         }장)`
@@ -247,7 +248,7 @@ const ProposalWrite = () => {
         // 텍스트만 수정
         if (!hasDelete && !hasNew) {
           await axiosApi.put(`/api/board/update/${boardNo}`, boardPayload);
-          alert("수정되었습니다.");
+          toast.success("수정되었습니다.");
         } else {
           // 부분 이미지 수정 + (텍스트도 함께)
           const fd = new FormData();
@@ -263,7 +264,7 @@ const ProposalWrite = () => {
           newImages.forEach((file) => fd.append("images", file));
 
           await axiosUpload.put(`/api/board/update-images/${boardNo}`, fd);
-          alert("수정되었습니다.");
+          toast.success("수정되었습니다.");
         }
       } else {
         const fd = new FormData();
@@ -271,7 +272,7 @@ const ProposalWrite = () => {
         newImages.forEach((file) => fd.append("images", file));
 
         await axiosUpload.post("/api/board/insert", fd);
-        alert("등록되었습니다.");
+        toast.success("등록되었습니다.");
       }
 
       const targetTab =
@@ -285,7 +286,7 @@ const ProposalWrite = () => {
     } catch (error) {
       console.error("저장 실패 상세:", error.response?.data);
       const errorMsg = error.response?.data?.message || "서버 오류가 발생했습니다.";
-      alert(`저장 실패: ${errorMsg}`);
+      toast.error(`저장 실패: ${errorMsg}`);
     }
   };
 

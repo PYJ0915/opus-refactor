@@ -1,0 +1,66 @@
+:root {
+  /* ── 색상 ── */
+  --text:   #111827;   /* gray-900 */
+  --muted:  #6b7280;   /* gray-500 */
+  --muted2: #9ca3af;   /* gray-400 */
+  --line:   #e5e7eb;   /* gray-200 */
+  --line2:  #d1d5db;   /* gray-300 */
+  --soft:   #f9fafb;   /* gray-50  */
+  --soft2:  #f3f4f6;   /* gray-100 */
+  --bg:     #ffffff;
+  --dark:   #111827;
+  --dark2:  #1f2937;   /* gray-800 */
+  --black:  #111111;
+
+  /* ── 브랜드/테마 ── */
+  --primary: #111827;   /* index.css, proposals.css (--text와 동일) */
+  --card:    #ffffff;   /* reviews.css, write.css, myPage.css 카드 배경 */
+
+  /* ── gray 스케일 (onStage/detail.css 에서 직접 참조) ── */
+  --gray-50:  #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-900: #111827;
+
+  /* ── 의미론적 색상 ── */
+  --danger:        #dc2626;
+  --info:          #2563eb;
+  --success:       #10b981;
+  --warning:       #f59e0b;
+  --success-light: #d1fae5;   /* Payment.css 성공 아이콘 배경 */
+  --error:         #dc2626;   /* Payment.css 오류 텍스트 (= --danger) */
+  --error-light:   #fee2e2;   /* Payment.css 오류 배경 */
+
+  --amber-bg:   #fffbeb;
+  --amber-line: #fde68a;
+  --amber-text: #b45309;
+
+  /* ── 레이아웃 ── */
+  --wrap:      1440px;
+  --max:       1440px;   /* Unveiling.css (= --wrap) */
+  --max-wrap:  1440px;   /* myPage.css (React) */
+  --container: 1440px;   /* goods-detail.css */
+  --pad:       48px;
+  --header-h:  72px;
+  --sidebar:   240px;    /* myPage.css 사이드바 너비 */
+
+  /* ── 공통 UI ── */
+  --radius:      12px;
+  --radius-sm:   2px;
+  --radius-soft: 8px;      /* Unveiling.css searchbox */
+  --radius-pill: 999px;
+  --shadow:      0 10px 30px rgba(0, 0, 0, 0.06);
+
+  /* ── bg- 접두사 (Unveiling.css filters/info 배경) ── */
+  --bg-soft: #f9fafb;
+}
+
+:root { --pad: 48px; }
+
+@media (max-width: 1200px) { :root { --pad: 28px; } }
+@media (max-width: 560px)  { :root { --pad: 16px; } }

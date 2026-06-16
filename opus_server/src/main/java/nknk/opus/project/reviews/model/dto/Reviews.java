@@ -19,4 +19,5 @@ public class Reviews {
 	private String reviewUpdateDate;
 	private char reviewDelFl;
 	private int reviewCount;
+	private int reviewRating;
 }

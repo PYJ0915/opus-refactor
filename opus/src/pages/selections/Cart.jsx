@@ -3,6 +3,7 @@ import { useCartStore } from "../../store/useCartStore";
 import { useNavigate } from "react-router-dom";
 import "../../css/Cart.css"
 import { useAuthStore } from "../../components/auth/useAuthStore";
+import { toast } from "react-toastify";
 
 const Cart = () => {
 
@@ -106,7 +107,7 @@ const Cart = () => {
     if (checkedKeys.length === 0) return; // 선택 없으면 무시
 
     if (!isLoggedIn) {
-      alert("상품 구매는 로그인 후 이용 가능힙니다.")
+      toast.error("상품 구매는 로그인 후 이용 가능힙니다.")
       return;
     }
 

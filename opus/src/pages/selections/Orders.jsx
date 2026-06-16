@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { orderApi } from "../../api/orderAPI";
 import Loading from "../../components/common/Loading";
 import "../../css/Orders.css";
-import ScrollToTop from "../../components/common/ScrollToTop";
+import { toast } from "react-toastify";
 
 const Orders = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const Orders = () => {
         setOrders(data);
       } catch (error) {
         console.error("주문 목록 조회 실패:", error);
-        alert("주문 목록을 불러오는데 실패했습니다.");
+        toast.error("주문 목록을 불러오는데 실패했습니다.");
       } finally {
         setIsLoading(false);
       }

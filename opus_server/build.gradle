@@ -47,6 +47,12 @@ dependencies {
 	
 	// JSON 처리
     implementation 'com.google.code.gson:gson:2.10.1'
+    
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    
+    // WebSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {

@@ -1,0 +1,197 @@
+/* ── 페이지 헤더 ── */
+.um-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.um-header__title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #111827;
+  margin: 0;
+}
+
+.um-header__actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── 목록 탭 ── */
+.um-table-wrap {
+  overflow-x: auto;
+}
+
+.um-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.um-table thead tr {
+  border-bottom: 2px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.um-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 700;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.um-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.15s;
+}
+
+.um-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.um-table td {
+  padding: 12px 16px;
+  color: #374151;
+}
+
+.um-table td.um-td--no {
+  color: #6b7280;
+}
+
+.um-table td.um-td--title {
+  font-weight: 700;
+  color: #111827;
+}
+
+.um-table td.um-td--price {
+  font-weight: 700;
+  color: #111827;
+}
+
+.um-table td.um-td--nowrap {
+  white-space: nowrap;
+}
+
+/* 상태 뱃지 */
+.um-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  min-width: 52px;
+  text-align: center;
+}
+
+.um-badge--live {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.um-badge--upcoming {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.um-badge--ended {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* 액션 셀 */
+.um-table td.um-td--action {
+  white-space: nowrap;
+}
+
+/* 강제 전환 버튼 */
+.um-btn-start {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #dc2626;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.um-btn-start:hover {
+  background: #b91c1c;
+}
+
+.um-btn-stop {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #374151;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.um-btn-stop:hover {
+  background: #111827;
+}
+
+.um-ended-label {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* ── 이미지 업로드 미리보기 ── */
+.um-preview-wrap {
+  position: relative;
+  width: 200px;
+}
+
+.um-preview-img {
+  width: 200px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  display: block;
+}
+
+.um-preview-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.um-preview-remove:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.um-preview-filename {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+/* ── 반응형 ── */
+@media (max-width: 768px) {
+  .um-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

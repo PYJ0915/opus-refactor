@@ -24,57 +24,69 @@
 
 
 	<!-- ResultMap: snake_case 컬럼 → camelCase 필드 매핑 -->
-    <resultMap id="unveilingHistoryMap" type="nknk.opus.project.myPage.model.dto.UnveilingHistoryResponse">
-        <result property="unveilingNo"       column="UNVEILING_NO"/>
-        <result property="unveilingTitle"    column="UNVEILING_TITLE"/>
-        <result property="productionArtist"  column="PRODUCTION_ARTIST"/>
-        <result property="thumbUrl"          column="THUMB_URL"/>
-        <result property="myMaxBidPrice"     column="MY_MAX_BID_PRICE"/>
-        <result property="bidDate"           column="BID_DATE"/>
-        <result property="unveilingStatus"   column="UNVEILING_STATUS"/>
-        <result property="finalizedFl"       column="FINALIZED_FL"/>
-        <result property="winnerMemberNo"    column="MEMBER_NO"/>
-        <result property="finalPrice"        column="FINAL_PRICE"/>
-        <result property="paymentStatus"     column="PAYMENT_STATUS"/>
-    </resultMap>
-    
-	<!-- 경매 응찰 내역 조회
-		같은 경매(UNVEILING_NO)에 여러 번 응찰한 경우
-		→ 내 최고 응찰가 1건만 대표 표시 -->
-    <select id="getUnveilingHistory" parameterType="int" resultMap="unveilingHistoryMap">
-        SELECT
-            u.UNVEILING_NO,
-            u.UNVEILING_TITLE,
-            u.PRODUCTION_ARTIST,
-            img.UV_IMG_PATH  AS THUMB_URL,
-            b.MY_MAX_BID_PRICE,
-            b.BID_DATE,
-            u.UNVEILING_STATUS,
-            u.FINALIZED_FL,
-            u.MEMBER_NO,
-            u.FINAL_PRICE,
-            u.PAYMENT_STATUS
-        FROM UNVEILING u
-        JOIN (
-            SELECT
-                UNVEILING_NO,
-                MAX(BID_PRICE)                                           AS MY_MAX_BID_PRICE,
-                MAX(BID_DATE) KEEP (DENSE_RANK LAST ORDER BY BID_PRICE) AS BID_DATE
-            FROM BIDDING
-            WHERE MEMBER_NO = #{memberNo}
-            GROUP BY UNVEILING_NO
-        ) b ON u.UNVEILING_NO = b.UNVEILING_NO
-        LEFT JOIN UNVEILING_IMG img
-            ON  img.UNVEILING_NO = u.UNVEILING_NO
-            AND img.UV_IMG_ORDER = 1
-        ORDER BY b.BID_DATE DESC
-    </select>
-    
-	
+	<resultMap id="unveilingHistoryMap"
+		type="nknk.opus.project.myPage.model.dto.UnveilingHistoryResponse">
+		<result property="unveilingNo" column="UNVEILING_NO" />
+		<result property="unveilingTitle" column="UNVEILING_TITLE" />
+		<result property="productionArtist" column="PRODUCTION_ARTIST" />
+		<result property="thumbUrl" column="THUMB_URL" />
+		<result property="myMaxBidPrice" column="MY_MAX_BID_PRICE" />
+		<result property="bidDate" column="BID_DATE" />
+		<result property="unveilingStatus" column="UNVEILING_STATUS" />
+		<result property="finalizedFl" column="FINALIZED_FL" />
+		<result property="winnerMemberNo" column="MEMBER_NO" />
+		<result property="finalPrice" column="FINAL_PRICE" />
+		<result property="paymentStatus" column="PAYMENT_STATUS" />
+	</resultMap>
+
+	<!-- 경매 응찰 내역 조회 같은 경매(UNVEILING_NO)에 여러 번 응찰한 경우 → 내 최고 응찰가 1건만 대표 표시 -->
+	<select id="getUnveilingHistory" parameterType="int"
+		resultMap="unveilingHistoryMap">
+		SELECT
+		u.UNVEILING_NO,
+		u.UNVEILING_TITLE,
+		u.PRODUCTION_ARTIST,
+		img.UV_IMG_PATH AS THUMB_URL,
+		b.MY_MAX_BID_PRICE,
+		b.BID_DATE,
+		u.UNVEILING_STATUS,
+		u.FINALIZED_FL,
+		u.MEMBER_NO,
+		u.FINAL_PRICE,
+		u.PAYMENT_STATUS
+		FROM UNVEILING u
+		JOIN (
+		SELECT
+		UNVEILING_NO,
+		MAX(BID_PRICE) AS MY_MAX_BID_PRICE,
+		MAX(BID_DATE) KEEP (DENSE_RANK LAST ORDER BY BID_PRICE) AS BID_DATE
+		FROM BIDDING
+		WHERE MEMBER_NO = #{memberNo}
+		GROUP BY UNVEILING_NO
+		) b ON u.UNVEILING_NO = b.UNVEILING_NO
+		LEFT JOIN UNVEILING_IMG img
+		ON img.UNVEILING_NO = u.UNVEILING_NO
+		AND img.UV_IMG_ORDER = 1
+		ORDER BY b.BID_DATE DESC
+	</select>
+
+
 	<select id="getLikeList">
 		SELECT STAGE_NO
 		FROM STAGE_PREFER
-		WHERE MEMBER_NO = #{memberNo}
+		WHERE MEMBER_NO =
+		#{memberNo}
 		AND PREFER_TYPE = 'LIKE'
 	</select>
+
+	<select id="getRatedStages" parameterType="int" resultType="map">
+		SELECT STAGE_NO AS stageNo,
+		REVIEW_RATING AS rating
+		FROM REVIEWS
+		WHERE MEMBER_NO = #{memberNo}
+		AND REVIEW_DEL_FL = 'N'
+		AND REVIEW_RATING >= 3
+		ORDER BY REVIEW_RATING DESC
+	</select>
+
 </mapper>

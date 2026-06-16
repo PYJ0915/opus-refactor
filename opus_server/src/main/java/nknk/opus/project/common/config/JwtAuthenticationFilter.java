@@ -3,7 +3,6 @@ package nknk.opus.project.common.config;
 import java.io.IOException;
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,13 +13,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.common.util.JwtUtil;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     private void write401(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

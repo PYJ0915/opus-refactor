@@ -70,6 +70,8 @@
 }
 
 .checkout_card__link {
+  background-color: transparent;
+  border: none;
   font-size: 12px;
   color: #374151;
   font-weight: 800;
@@ -165,7 +167,7 @@
 .checkout_select {
   width: 100%;
   font-size: 14px;
-  border: 1px solid var(--line2);
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 12px 12px;
   outline: none;
@@ -259,22 +261,36 @@
 .checkout_radio {
   display: flex;
   align-items: center;
-  gap: 10px;
-  border: 1px solid var(--line2);
+  justify-content: center;
+  gap: 12px;
+
+  width: 150px;
+  height: 52px;
+
+  border: 1px solid #d1d5db;
   border-radius: 999px;
-  padding: 10px 10px;
-  font-size: 13px;
-  font-weight: 800;
-  color: #374151;
+
   background: #fff;
-  text-align: center;
-  width: 140px;
+  color: #1f2937;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+
 .checkout_radio input {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
   accent-color: #111827;
+}
+
+.checkout_radio:hover {
+  border-color: #9ca3af;
+  background: #fafafa;
 }
 
 .checkout_pay__box {
@@ -506,43 +522,10 @@ details[open] .checkout_policy__summary::after {
 
 .checkout_secure__item i { color: #6b7280; }
 
-/* ===== Ghost Button (공통) ===== */
-.ghost-btn {
-  height: 40px;
-  padding: 0 16px;
-  border: 1px solid var(--line2);
-  border-radius: var(--radius-sm);
-  background: #fff;
-  color: #374151;
-  font-size: 13px;
-  font-weight: 900;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background .15s ease, border-color .15s ease, color .15s ease, transform .12s ease;
-}
-
 .checkout_card__head .ghost-btn { margin-left: auto; }
-
-.ghost-btn:hover {
-  background: var(--soft2);
-  border-color: #9ca3af;
-  color: #111827;
-  transform: translateY(-1px);
-}
-
-.ghost-btn:active { transform: translateY(0); }
-
-.ghost-btn:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
 
 /* RESPONSIVE */
 @media (max-width: 1200px) {
-  :root { --pad: 28px; }
   .checkout_wrap { grid-template-columns: 1fr 340px; }
 }
 
@@ -551,168 +534,6 @@ details[open] .checkout_policy__summary::after {
   .checkout_right { position: static; top: auto; }
   .checkout_grid { grid-template-columns: 1fr; }
   .checkout_policy__cols { grid-template-columns: 1fr; }
-}
-
-/* ===== Modal (OPUS tone) - Checkout 전용 ===== */
-.checkout_modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(17, 24, 39, .55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  z-index: 200;
-}
-
-.checkout_popup-hidden { display: none; }
-
-.checkout_modal {
-  width: min(760px, 100%);
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid #111827;
-  overflow: hidden;
-}
-
-.checkout_modal__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 18px;
-  border-bottom: 1px solid var(--line);
-}
-
-.checkout_modal__title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 900;
-}
-
-.checkout_modal__close {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  border: 1px solid var(--line2);
-  background: #fff;
-  color: #6b7280;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.checkout_modal__close:hover {
-  background: var(--soft2);
-  color: #111827;
-  border-color: #9ca3af;
-}
-
-.checkout_modal__body { padding: 16px 18px 18px; }
-
-.checkout_modal__tools {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.checkout_modal__search { flex: 1; }
-
-.checkout_addr-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 360px;
-  overflow: auto;
-  padding-right: 4px;
-}
-
-.checkout_addr-item {
-  position: relative;
-  display: block;
-  cursor: pointer;
-}
-
-.checkout_addr-item input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.checkout__addr-item__box {
-  border: 1px solid var(--line2);
-  border-radius: var(--radius-sm);
-  background: #fff;
-  padding: 14px 14px;
-  transition: background .15s ease, border-color .15s ease, transform .15s ease;
-}
-
-.checkout_addr-item:hover .checkout__addr-item__box {
-  background: var(--soft2);
-  border-color: #9ca3af;
-}
-
-.checkout_addr-item:has(input:checked) .checkout__addr-item__box {
-  border-color: #111827;
-  box-shadow: 0 0 0 1px #111827 inset;
-  background: #f9fafb;
-}
-
-.checkout_addr-item__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.checkout_addr-item__badges {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.checkout_addr-item__name {
-  font-size: 12px;
-  font-weight: 900;
-  color: #374151;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  border-radius: 999px;
-  padding: 6px 10px;
-}
-
-.checkout_badge {
-  font-size: 11px;
-  font-weight: 900;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  color: #374151;
-}
-
-.checkout_badge--dark {
-  border-color: #111827;
-  background: #111827;
-  color: #fff;
-}
-
-.checkout_addr-item__who {
-  margin: 0 0 6px;
-  font-size: 13px;
-  font-weight: 900;
-  color: #111827;
-}
-
-.checkout_addr-item__addr {
-  margin: 0;
-  font-size: 12px;
-  color: #374151;
-  font-weight: 700;
-  line-height: 1.6;
 }
 
 /* 에러 상태 스타일 */
@@ -739,21 +560,4 @@ details[open] .checkout_policy__summary::after {
   outline: 2px solid #fecaca;
   outline-offset: 2px;
   border-radius: 2px;
-}
-
-.checkout_modal__footer {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  padding: 16px 18px;
-  border-top: 1px solid var(--line);
-  background: #fafafa;
-}
-
-@media (max-width: 520px) {
-  .checkout_modal__tools {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .checkout_modal__footer { flex-direction: column; }
 }

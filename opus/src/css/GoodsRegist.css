@@ -74,7 +74,7 @@
 }
 
 .regist-textarea { 
-  resize: vertical; 
+  resize: none; 
 }
 
 .regist-upload-area {

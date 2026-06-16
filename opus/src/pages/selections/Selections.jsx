@@ -3,7 +3,6 @@ import Loading from "../../components/common/Loading"
 import "../../css/Selections.css";
 import { NavLink } from "react-router-dom";
 import { fetchGoodsList } from "../../api/selectionsAPI";
-import ScrollToTop from "../../components/common/ScrollToTop";
 import { useContentStore } from "../../store/useContentStore";
 
 const Selections = () => {
@@ -24,6 +23,7 @@ const Selections = () => {
     try {
 
       console.log("==== 상품 목록 조회 시작 ====")
+      
       const resp = await fetchGoodsList();
 
       if (resp.status == 200) {
@@ -178,8 +178,6 @@ const Selections = () => {
           </div>
         </section>
       )}
-
-      <ScrollToTop />
 
     </main>
   )

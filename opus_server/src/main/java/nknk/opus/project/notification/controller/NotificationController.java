@@ -3,7 +3,6 @@ package nknk.opus.project.notification.controller;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,15 +12,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.notification.model.dto.Notification;
 import nknk.opus.project.notification.model.service.NotificationService;
 
 @RestController
 @RequestMapping("notifications")
+@RequiredArgsConstructor
 public class NotificationController {
 	
-	@Autowired
-    private NotificationService service;
+    private final NotificationService service;
 	
 	// 알림 목록 조회
     @GetMapping

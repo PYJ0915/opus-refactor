@@ -4,18 +4,19 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.selections.model.service.SelectionsService;
 
 @Component
 @Slf4j
 @PropertySource("classpath:/config.properties")
+@RequiredArgsConstructor
 public class ImageScheduling {
 	
 	@Value("${opus.board.folder-path}")
@@ -24,8 +25,7 @@ public class ImageScheduling {
 	@Value("${opus.goods.folder-path}")
 	private String goodsFolderPath;
 
-	@Autowired
-	private SelectionsService service;
+	private final SelectionsService service;
 
 	@Scheduled(cron = "0 5 0 * * *")
 	public void imageDeleteScheduling() {

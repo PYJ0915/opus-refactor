@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { adminApi } from "../../api/adminAPI"
 import "../../css/GoodsRegist.css";
+import { toast } from "react-toastify";
+import { showConfirm } from "../../components/toast/ToastUtils";
 
 const EMPTY_OPTION = { goodsSize: "", goodsColor: "", stock: 0 };
 
@@ -62,8 +64,8 @@ const GoodsForm = ({ editTarget, onSuccess, onCancel }) => {
         // 기존 상세 이미지 (order != 0)
         if (detail.images) {
           const detailImgList = detail.images
-            .filter((img) => img.goodsImgOrder !== "0")
-            .sort((a, b) => Number(a.goodsImgOrder) - Number(b.goodsImgOrder))
+            .filter((img) => img.goodsImgOrder !== 0)
+            .sort((a, b) => a.goodsImgOrder - b.goodsImgOrder)
             .map((img) => ({
               goodsImgNo: img.goodsImgNo,
               url: `${import.meta.env.VITE_API_URL}${img.goodsImgPath}${img.goodsImgRe}`,
@@ -84,7 +86,7 @@ const GoodsForm = ({ editTarget, onSuccess, onCancel }) => {
         }
       } catch (e) {
         console.error("상품 상세 조회 실패", e);
-        alert("상품 상세 정보를 불러오는데 실패했습니다.");
+        toast.error("상품 상세 정보를 불러오는데 실패했습니다.");
       } finally {
         setIsDetailLoading(false);
       }
@@ -119,7 +121,7 @@ const GoodsForm = ({ editTarget, onSuccess, onCancel }) => {
       await adminApi.deleteGoodsImage(goodsImgNo);
       setExistingDetailImgs((prev) => prev.filter((_, i) => i !== idx));
     } catch (e) {
-      alert("이미지 삭제에 실패했습니다.");
+      toast.error("이미지 삭제에 실패했습니다.");
     }
   };
 
@@ -138,8 +140,8 @@ const GoodsForm = ({ editTarget, onSuccess, onCancel }) => {
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
-    if (!form.goodsName) { alert("상품명은 필수입니다."); return; }
-    if (!isEdit && !thumbnail) { alert("썸네일 이미지는 필수입니다."); return; }
+    if (!form.goodsName) { toast.warning("상품명은 필수입니다."); return; }
+    if (!isEdit && !thumbnail) { toast.warning("썸네일 이미지는 필수입니다."); return; }
 
     try {
       setIsSubmitting(true);
@@ -152,15 +154,15 @@ const GoodsForm = ({ editTarget, onSuccess, onCancel }) => {
 
       if (isEdit) {
         await adminApi.updateGoods(editTarget.goodsNo, formData);
-        alert("상품이 수정되었습니다.");
+        toast.success("상품이 수정되었습니다.");
       } else {
         await adminApi.registGoods(formData);
-        alert("상품이 등록되었습니다.");
+        toast.success("상품이 등록되었습니다.");
       }
       onSuccess();
     } catch (error) {
       console.error(error);
-      alert(isEdit ? "상품 수정에 실패했습니다." : "상품 등록에 실패했습니다.");
+      toast.error(isEdit ? "상품 수정에 실패했습니다." : "상품 등록에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
     }
@@ -413,7 +415,7 @@ const GoodsManage = () => {
       setGoodsList(data);
     } catch (e) {
       console.error(e);
-      alert("상품 목록 조회에 실패했습니다.");
+      toast.error("상품 목록 조회에 실패했습니다.");
     } finally {
       setIsLoading(false);
     }
@@ -423,36 +425,42 @@ const GoodsManage = () => {
     fetchGoods();
   }, []);
 
-  const handleDelete = async (goodsNo, goodsName) => {
-    if (!window.confirm(`"${goodsName}" 상품을 삭제하시겠습니까?\n삭제된 상품은 사용자 화면에서 숨겨집니다.`))
-      return;
-    try {
-      await adminApi.deleteGoods(goodsNo);
-      alert("상품이 삭제되었습니다.");
-      fetchGoods();
-    } catch (e) {
-      alert("삭제에 실패했습니다.");
-    }
-  };
+  const handleDelete = (goodsNo, goodsName) => {
+  showConfirm(
+    `"${goodsName}" 상품을 삭제하시겠습니까?`,
+    "삭제된 상품은 사용자 화면에서 숨겨집니다.",
+    async () => {
+      try {
+        await adminApi.deleteGoods(goodsNo);
+
+        toast.success("상품이 삭제되었습니다.");
+        fetchGoods();
+      } catch (e) {
+        toast.error("삭제에 실패했습니다.");
+      }
+    },
+    "삭제"
+  );
+};
 
   // 삭제된 상품 복구
-  const handleRestore = async (goodsNo, goodsName) => {
-    if (!window.confirm(`"${goodsName}" 상품을 복구하시겠습니까?\n복구 후 사용자 화면에 다시 표시됩니다.`))
-      return;
-    try {
-      await adminApi.restoreGoods(goodsNo);
-      alert("상품이 복구되었습니다.");
-      fetchGoods();
-    } catch (e) {
-      alert("복구에 실패했습니다.");
-    }
-  };
+  const handleRestore = (goodsNo, goodsName) => {
+  showConfirm(
+    `"${goodsName}" 상품을 복구하시겠습니까?`,
+    "복구 후 사용자 화면에 다시 표시됩니다.",
+    async () => {
+      try {
+        await adminApi.restoreGoods(goodsNo);
 
-  const handleFormSuccess = () => {
-    setView("list");
-    setEditTarget(null);
-    fetchGoods();
-  };
+        toast.success("상품이 복구되었습니다.");
+        fetchGoods();
+      } catch (e) {
+        toast.error("복구에 실패했습니다.");
+      }
+    },
+    "복구"
+  );
+};
 
   // ── 폼 화면 ──
   if (view === "form") {

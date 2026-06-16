@@ -5,7 +5,6 @@ import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -16,15 +15,17 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @PropertySource("classpath:/config.properties")
+@RequiredArgsConstructor
 public class DBConfig {
 
 	// 필드
 
 	// import org.springframework.context.ApplicationContext
-	@Autowired // (DI, 의존성 주입)
-	private ApplicationContext applicationContext; // application scope 객체 : 즉, 현재 프로젝트
+	private final ApplicationContext applicationContext; // application scope 객체 : 즉, 현재 프로젝트
 	// -> 스프링이 관리하고있는 ApplicationContext 객체를 의존성 주입 받는다
 	// -> 현재 프로젝트의 전반적인 설정과 Bean 관리에 접근할 수 있도록 해줌.
 

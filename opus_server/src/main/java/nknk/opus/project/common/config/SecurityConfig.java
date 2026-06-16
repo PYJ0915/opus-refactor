@@ -63,12 +63,16 @@ public class SecurityConfig {
 						.requestMatchers("/auth/**", "/common/**").permitAll()
 						.requestMatchers("/selections/**", "/images/**").permitAll().requestMatchers("/unveiling/**")
 						.permitAll().requestMatchers("/login/oauth2/**", "/oauth2/**").permitAll()
-						.requestMatchers("/chatbot/**").permitAll()
-						.requestMatchers("/onStage/**").permitAll()
+						.requestMatchers("/chatbot/**").permitAll().requestMatchers("/onStage/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/unveilings/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/bids/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/stage/bestReview").permitAll()
-						.requestMatchers(HttpMethod.GET, "/reviews/likeCount").permitAll()
+						.requestMatchers("/reviews/getReviews", "/reviews/getReviewsCount", "/reviews/count",
+								"/reviews/averageRating", "/reviews/likeCount", "/reviews/averageRatings").permitAll()
+						.requestMatchers("/auth/**", "/stage/like", "/stage/dislike", "/stage/save",
+								"/stage/bestReview", "/stage/cache", "/stage/cache/**").permitAll()
+						.requestMatchers("/search/**").permitAll()
+						.requestMatchers("/ws/**").permitAll()
 
 						// 게시판: GET만 공개, 나머지 인증 필요
 						.requestMatchers(HttpMethod.GET, "/api/board/**").permitAll().requestMatchers("/api/board/**")
@@ -80,7 +84,6 @@ public class SecurityConfig {
 						.requestMatchers("/onStage/reviews/**").authenticated().requestMatchers("/stage/like")
 						.authenticated().requestMatchers("/stage/dislike").authenticated()
 						.requestMatchers("/stage/save").authenticated()
-						
 
 						// 그 외 전부 로그인 필요
 						.anyRequest().authenticated())

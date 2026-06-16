@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { adminApi } from "../../api/adminAPI";
+import { toast } from "react-toastify";
+import { showConfirm } from "../../components/toast/ToastUtils";
 
 const STATUS_OPTIONS = [
   { value: "ALL", label: "전체" },
@@ -47,7 +49,7 @@ const DeliveryManage = () => {
       setOrders(data);
     } catch (e) {
       console.error(e);
-      alert("주문 목록 조회에 실패했습니다.");
+      toast.error("주문 목록 조회에 실패했습니다.");
     }
   };
 
@@ -55,22 +57,30 @@ const DeliveryManage = () => {
     fetchOrders();
   }, [filterStatus]);
 
-  const handleStatusChange = async (orderNo, newStatus) => {
-    if (!window.confirm(`주문 상태를 [${STATUS_LABEL[newStatus]}]으로 변경하시겠습니까?`)) 
-      return;
-    
-    try {
-      alert(`주문 상태를 [${STATUS_LABEL[newStatus]}]으로 변경했습니다.`)
-      await adminApi.updateOrderStatus(orderNo, newStatus);
-      fetchOrders();
-    } catch (e) {
-      alert("상태 변경에 실패했습니다.");
-    }
-  };
+  const handleStatusChange = (orderNo, newStatus) => {
+  showConfirm(
+    "주문 상태를 변경하시겠습니까?",
+    `[${STATUS_LABEL[newStatus]}] 상태로 변경됩니다.`,
+    async () => {
+      try {
+        await adminApi.updateOrderStatus(orderNo, newStatus);
+
+        toast.success(
+          `주문 상태를 [${STATUS_LABEL[newStatus]}]으로 변경했습니다.`
+        );
+
+        fetchOrders();
+      } catch (e) {
+        toast.error("상태 변경에 실패했습니다.");
+      }
+    },
+    "변경"
+  );
+};
 
   const handleTrackingSubmit = async () => {
     if (!trackingForm.deliveryCompany || !trackingForm.trackingNumber) {
-      alert("택배사와 송장번호를 모두 입력하세요.");
+      toast.warning("택배사와 송장번호를 모두 입력하세요.");
       return;
     }
     
@@ -80,12 +90,12 @@ const DeliveryManage = () => {
         trackingForm.deliveryCompany,
         trackingForm.trackingNumber
       );
-      alert("송장번호가 등록되었습니다.");
+      toast.success("송장번호가 등록되었습니다.");
       setTrackingModal(null);
       setTrackingForm({ deliveryCompany: "", trackingNumber: "" });
       fetchOrders();
     } catch (e) {
-      alert("송장 등록에 실패했습니다.");
+      toast.error("송장 등록에 실패했습니다.");
     }
   };
 

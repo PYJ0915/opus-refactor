@@ -1,6 +1,5 @@
 package nknk.opus.project.bidding.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,16 +8,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.bidding.model.dto.BidResponse;
 import nknk.opus.project.bidding.model.dto.Bidding;
 import nknk.opus.project.bidding.model.service.BiddingService;
 
 @RestController
 @RequestMapping("/api/bids")
+@RequiredArgsConstructor
 public class BiddingController {
 
-	@Autowired
-	private BiddingService biddingService;
+	private final BiddingService biddingService;
 	
 	@PostMapping("/{unveilingNo}")
 	public ResponseEntity<BidResponse> placeBid(@PathVariable("unveilingNo") int unveilingNo,

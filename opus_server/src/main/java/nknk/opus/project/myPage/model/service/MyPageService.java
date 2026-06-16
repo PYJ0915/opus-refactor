@@ -1,6 +1,7 @@
 package nknk.opus.project.myPage.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import nknk.opus.project.myPage.model.dto.UnveilingHistoryResponse;
 import nknk.opus.project.reviews.model.dto.Reviews;
@@ -15,5 +16,7 @@ public interface MyPageService {
 	List<UnveilingHistoryResponse> getUnveilingHistory(int memberNo);
 
 	List<String> getLikeList(int memberNo);
+	
+	List<Map<String, Object>> getRatedStages(int memberNo);
 
 }

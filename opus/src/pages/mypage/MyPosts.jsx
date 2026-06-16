@@ -76,8 +76,7 @@ export default function MyPosts() {
   };
 
   return (
-    <main className="proposals-page my-posts-page">
-      <div className="my-posts-container">
+    <div className="my-posts-container">
       <header className="proposals-header">
         <h2>등록한 컨텐츠</h2>
         <p>내가 작성한 게시글을 확인/수정/삭제할 수 있습니다.</p>
@@ -141,7 +140,6 @@ export default function MyPosts() {
           ))}
         </div>
       )}
-      </div>
-    </main>
+    </div>
   );
 }

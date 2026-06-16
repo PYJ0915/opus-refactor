@@ -2,10 +2,10 @@ package nknk.opus.project.cart.model.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.cart.model.dto.Cart;
 import nknk.opus.project.cart.model.mapper.CartMapper;
@@ -15,10 +15,10 @@ import nknk.opus.project.common.exception.ResourceNotFoundException;
 @Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
-	@Autowired
-	private CartMapper mapper;
+	private final CartMapper mapper;
 
 	@Override
 	public List<Cart> selectCartItems(int memberNo) {

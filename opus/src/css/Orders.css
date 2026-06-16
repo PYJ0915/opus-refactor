@@ -1,7 +1,7 @@
 .orders-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 120px 24px 80px;
+  padding: 48px 24px 80px;
 }
 
 /* 헤더 */
@@ -249,7 +249,7 @@
 /* 반응형 */
 @media (max-width: 768px) {
   .orders-page {
-    padding: 100px 16px 60px;
+    padding: 32px 16px 60px;
   }
 
   .orders-title {
@@ -311,3 +311,40 @@
 .uvh-badge--lost    { border-color: #d1d5db; color: #9ca3af; background: transparent; }
 .uvh-badge--ended   { border-color: #d1d5db; color: #9ca3af; background: transparent; }
 .uvh-badge--expired { border-color: #d1d5db; color: #9ca3af; background: transparent; }
+
+/* ===== Skeleton ===== */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.skeleton-image,
+.skeleton-line,
+.skeleton-btn {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 8px;
+}
+
+.skeleton-image {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+.skeleton-line {
+  height: 14px;
+  margin-bottom: 10px;
+}
+
+.skeleton-line--short  { width: 80px; }
+.skeleton-line--medium { width: 160px; }
+.skeleton-line--long   { width: 240px; }
+
+.skeleton-btn {
+  width: 80px;
+  height: 34px;
+  border-radius: 8px;
+}

@@ -1,64 +1,3 @@
-:root {
-  --bg: #ffffff;
-  --text: #111827;
-  /* gray-900 */
-  --muted: #6b7280;
-  /* gray-500/600 */
-  --line: #e5e7eb;
-  /* gray-200 */
-  --line2: #d1d5db;
-  /* gray-300 */
-  --soft: #f9fafb;
-  /* gray-50 */
-  --soft2: #f3f4f6;
-  /* gray-100 */
-  --dark: #111827;
-  /* gray-900 */
-  --dark2: #1f2937;
-  /* gray-800 */
-  --radius: 12px;
-  --radius2: 16px;
-  --container: 1280px;
-  /* max-w-7xl */
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
-
-::-webkit-scrollbar {
-  display: none;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-input,
-select {
-  font: inherit;
-}
-
-button {
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
-
 .page {
   min-height: 100vh;
 }
@@ -390,6 +329,9 @@ button {
 }
 
 .goods_tab {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
   padding: 16px 4px;
   font-size: 13px;
   color: #4b5563;
@@ -746,26 +688,4 @@ button {
   color: white;
   font-weight: 600;
   cursor: not-allowed;
-}
-
-.soldout-badge {
-  margin-left: 8px;
-  padding: 2px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  background-color: #d32f2f;
-  border-radius: 12px;
-  vertical-align: middle;
-  height: 30px;
-}
-
-.soldout-message {
-  margin-bottom: 12px;
-  padding: 10px 12px;
-  background-color: #fff3f3;
-  color: #d32f2f;
-  font-weight: 600;
-  border-radius: 6px;
-  border: 1px solid #ffcdd2;
 }

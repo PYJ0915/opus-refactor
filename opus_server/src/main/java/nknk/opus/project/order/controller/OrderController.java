@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.order.model.dto.CancelRequest;
 import nknk.opus.project.order.model.dto.Order;
@@ -38,13 +38,12 @@ import nknk.opus.project.order.model.service.TossPaymentService;
 @Slf4j
 @RestController
 @RequestMapping("orders")
+@RequiredArgsConstructor
 public class OrderController {
 
-	@Autowired
-	private OrderService orderService;
+	private final OrderService orderService;
 
-	@Autowired
-	private TossPaymentService tossPaymentService;
+	private final TossPaymentService tossPaymentService;
 
 	/**
 	 * 주문 생성
@@ -196,9 +195,15 @@ public class OrderController {
 	 * 배송 완료 처리 (관리자)
 	 */
 	@PutMapping("{orderNo}/complete")
-	public ResponseEntity<Void> completeDelivery(@PathVariable("orderNo") int orderNo) {
-
-		// TODO: 관리자 권한 확인
+	public ResponseEntity<Void> completeDelivery(@PathVariable("orderNo") int orderNo, 
+			Authentication authentication) {
+		
+		// ROLE_ADMIN인지 확인
+	    boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+	    
+	    if (!isAdmin) {
+	        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+	    }
 
 		orderService.completeDelivery(orderNo);
 

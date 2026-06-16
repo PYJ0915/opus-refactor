@@ -1,0 +1,181 @@
+.search-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 120px 32px 80px;
+}
+
+.search-page__header {
+  margin-bottom: 56px;
+  border-bottom: 2px solid #111;
+  padding-bottom: 24px;
+}
+
+.search-page__title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin: 0 0 10px;
+}
+
+.search-page__keyword {
+  font-size: 36px;
+  font-weight: 800;
+  color: #111;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.search-page__keyword em {
+  font-style: normal;
+}
+
+.search-section {
+  margin-bottom: 56px;
+}
+
+.search-section__title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin: 0 0 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.search-list-item__thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: #f3f4f6;
+}
+
+/* ===== Goods ===== */
+.search-goods-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.search-goods-card {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.search-goods-card__image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  background: #f3f4f6;
+  transition: opacity 0.15s ease;
+}
+
+.search-goods-card:hover .search-goods-card__image {
+  opacity: 0.85;
+}
+
+.search-goods-card__name {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #111;
+}
+
+.search-goods-card__price {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ===== List (Auction / Board) ===== */
+.search-list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #f3f4f6;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s ease;
+}
+
+.search-list-item:hover .search-list-item__title {
+  text-decoration: underline;
+}
+
+.search-list-item__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px;
+}
+
+.search-list-item__sub {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ===== Board ===== */
+.search-board-item {
+  display: block;
+  padding: 16px 0;
+  border-bottom: 1px solid #f3f4f6;
+  text-decoration: none;
+  color: inherit;
+}
+
+.search-board-item:hover .search-board-item__title {
+  text-decoration: underline;
+}
+
+.search-board-item__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px;
+}
+
+.search-board-item__date {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* ===== Empty ===== */
+.search-empty {
+  color: #9ca3af;
+  font-size: 15px;
+  padding: 60px 0;
+  text-align: center;
+  margin: 0;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .search-goods-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .search-page {
+    padding: 90px 20px 48px;
+  }
+
+  .search-page__keyword {
+    font-size: 26px;
+  }
+
+  .search-goods-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

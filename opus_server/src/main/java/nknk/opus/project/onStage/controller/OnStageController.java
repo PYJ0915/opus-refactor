@@ -20,7 +20,7 @@ public class OnStageController {
 
     // 전시 목록 조회
     @GetMapping("/exhibitions")
-    public ResponseEntity<?> getExhibitions(@RequestParam("serviceKey") String serviceKey, @RequestParam(defaultValue = "1") int pageNo) {
+    public ResponseEntity<?> getExhibitions(@RequestParam("serviceKey") String serviceKey, @RequestParam(name="pageNo", defaultValue = "1") int pageNo) {
         try {
             URI uri = UriComponentsBuilder
                     .fromUriString("https://api.kcisa.kr/openapi/API_CCA_145/request")
@@ -61,7 +61,7 @@ public class OnStageController {
     // 뮤지컬 목록 조회
     @GetMapping("/musicals")
     public ResponseEntity<String> getMusicals (@RequestParam("service") String serviceKey, @RequestParam("stdate") String startDate, @RequestParam("eddate") String endDate,
-    		@RequestParam(name="cpage", defaultValue="1") int pageNo, @RequestParam(defaultValue = "100") int rows, @RequestParam(required = false, name="shprfnm") String search) {
+    		@RequestParam(name="pageNo", defaultValue="1") int pageNo, @RequestParam(name="rows", defaultValue = "100") int rows, @RequestParam(required = false, name="shprfnm") String search) {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString("https://www.kopis.or.kr/openApi/restful/pblprfr")
                 .queryParam("service", serviceKey)

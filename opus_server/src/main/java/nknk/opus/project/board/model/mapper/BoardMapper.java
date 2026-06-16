@@ -42,4 +42,6 @@ public interface BoardMapper {
 	int reorderImages(@Param("boardNo") int boardNo);
 
 	List<Board> selectMyBoards(@Param("memberNo") int memberNo);
+
+	List<Board> searchBoards(@Param("query") String query, @Param("limit") int limit);
 }
