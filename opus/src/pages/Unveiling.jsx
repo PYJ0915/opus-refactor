@@ -4,6 +4,14 @@ import AuctionInfo from "../components/Unveiling/AuctionInfo";
 import "../css/Unveiling.css";
 import axiosApi from "../api/axiosAPI";
 
+const BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+
+const resolveImg = (url) => {
+  if (!url) return "/no-thumbnail.png";
+  if (url.startsWith("http")) return url;
+  return BASE + url;
+};
+
 const TABS = [
   { key: "ALL", label: "전체" },
   { key: "LIVE", label: "진행중" },
@@ -42,7 +50,7 @@ function normalizeListItem(u) {
     status,
     title: u?.unveilingTitle ?? u?.UNVEILING_TITLE ?? "",
     artist: u?.productionArtist ?? u?.PRODUCTION_ARTIST ?? "",
-    image: thumbUrl || "", // AuctionCard에서 onError 처리(아래 참고)
+    image: resolveImg(thumbUrl), // AuctionCard에서 onError 처리(아래 참고)
     pricing: { display: formatKRW(currentPrice) },
     stats: { count: u?.biddingCount ?? u?.BIDDING_COUNT ?? 0 },
     endAt: finishISO,

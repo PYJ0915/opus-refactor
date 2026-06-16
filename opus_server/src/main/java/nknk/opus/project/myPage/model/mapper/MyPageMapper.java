@@ -1,6 +1,7 @@
 package nknk.opus.project.myPage.model.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -18,5 +19,7 @@ public interface MyPageMapper {
 	List<UnveilingHistoryResponse> getUnveilingHistory(int memberNo);
 
 	List<String> getLikeList(int memberNo);
+	
+	List<Map<String, Object>> getRatedStages(int memberNo);
 
 }

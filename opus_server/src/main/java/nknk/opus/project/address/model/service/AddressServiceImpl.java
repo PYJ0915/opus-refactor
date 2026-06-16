@@ -8,16 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.address.model.dto.Address;
 import nknk.opus.project.address.model.mapper.AddressMapper;
 import nknk.opus.project.common.exception.BusinessException;
 
 @Transactional(rollbackFor = Exception.class)
 @Service
+@RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
 
-	@Autowired
-	private AddressMapper mapper;
+	private final AddressMapper mapper;
 
 	@Override
 	public List<Address> selectAddresses(int memberNo) {

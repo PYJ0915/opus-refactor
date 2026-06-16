@@ -1,19 +1,22 @@
 package nknk.opus.project.stage.model.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.reviews.model.dto.Reviews;
-import nknk.opus.project.stage.mapper.StageMapper;
+import nknk.opus.project.stage.model.dto.StageCache;
 import nknk.opus.project.stage.model.dto.StagePrefer;
+import nknk.opus.project.stage.model.mapper.StageMapper;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class StageServiceImpl implements StageService {
 	
-	@Autowired
-	private StageMapper mapper;
+	private final StageMapper mapper;
 
 	@Override
 	public int toggleLike(StagePrefer stage) {
@@ -61,5 +64,25 @@ public class StageServiceImpl implements StageService {
 	@Override
 	public Reviews selectBestReview(String stageNo) {
 		return mapper.selectBestReview(stageNo);
+	}
+	
+	@Override
+	public void upsertStageCache(StageCache stageCache) {
+	    mapper.upsertStageCache(stageCache);
+	}
+
+	@Override
+	public StageCache getStageCache(String stageNo) {
+	    return mapper.selectStageCache(stageNo);
+	}
+	
+	@Override
+	public List<StageCache> searchStageCache(String query, String stageType) {
+	    return mapper.searchStageCache(query, stageType);
+	}
+	
+	@Override
+	public List<StageCache> getStageCacheList(String stageType, int limit) {
+	    return mapper.selectStageCacheList(stageType, limit);
 	}
 }

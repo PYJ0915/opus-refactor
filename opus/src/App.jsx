@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Selections from "./pages/selections/Selections";
 import SelectionsDetail from "./pages/selections/SelectionsDetail";
@@ -36,8 +36,38 @@ import Privacy from "./pages/footer/Privacy";
 import Admin from "./pages/admin/Admin";
 import MyPosts from "./pages/mypage/MyPosts";
 import AdminProtectedRoute from "./components/auth/AdminProtectedRoute";
+import MyPageLayout from "./layouts/MyPageLayout";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import Search from "./pages/Search";
+import CompanyDashboard from "./pages/mypage/CompanyDashboard";
+import RecommendPanel from "./components/RecommendPanel";
+import { useAuthStore } from "./components/auth/useAuthStore";
 
 export default function App() {
+
+  const navigate = useNavigate();
+
+  const [chatbotOpen, setChatbotOpen] = useState(false);
+  const [recommendOpen, setRecommendOpen] = useState(false);
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+
+  useEffect(() => {
+    const handleAuthExpired = (e) => {
+      // confirm 토스트 포함 모든 토스트 닫기
+      toast.dismiss();
+      // 잠깐 딜레이 후 새 토스트 표시 (dismiss 애니메이션 후)
+      setTimeout(() => {
+        toast.error(e.detail.message, { toastId: "auth-expired" });
+        navigate("/", { replace: true });
+      }, 100);
+    };
+
+    window.addEventListener("auth:expired", handleAuthExpired);
+    return () => window.removeEventListener("auth:expired", handleAuthExpired);
+  }, [navigate]);
+
+
   return (
     <>
       <AuthInitializer />
@@ -66,33 +96,56 @@ export default function App() {
 
           <Route path="/unveiling" element={<Unveiling />} />
           <Route path="/unveiling/:id" element={<UnveilingDetail />} />
-          
+
           <Route path='/selections' element={<Selections />} />
           <Route path='/selections/:goodsNo' element={<SelectionsDetail />} />
           <Route path='/selections/cart' element={<Cart />} />
           <Route path='/selections/checkout' element={<Checkout />} />
-          
+
           <Route path='/payment/success' element={<PaymentSuccess />} />
           <Route path='/payment/fail' element={<PaymentFail />} />
-          
-          <Route path="/mypage" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
-          <Route path="/mypage/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-          <Route path="/mypage/orders/:orderNo" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
-          <Route path="/mypage/wishlist" element={<ProtectedRoute><SavedList /></ProtectedRoute>} />
-          <Route path="/mypage/reviews" element={<ProtectedRoute><ReviewList /></ProtectedRoute>} />
-          <Route path="/mypage/auction-history" element={<ProtectedRoute><UnveilingHistory /></ProtectedRoute>} />
-          <Route path="/mypage/myPosts" element={<ProtectedRoute><MyPosts /></ProtectedRoute>} />
+
+          <Route element={<ProtectedRoute><MyPageLayout /></ProtectedRoute>}>
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/mypage/orders" element={<Orders />} />
+            <Route path="/mypage/orders/:orderNo" element={<OrderDetail />} />
+            <Route path="/mypage/wishlist" element={<SavedList />} />
+            <Route path="/mypage/reviews" element={<ReviewList />} />
+            <Route path="/mypage/auction-history" element={<UnveilingHistory />} />
+            <Route path="/mypage/myPosts" element={<MyPosts />} />
+          </Route>
 
           <Route path="/faq" element={<FAQ />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/about" element={<About />} />
           <Route path="/admin" element={<AdminProtectedRoute><Admin /></AdminProtectedRoute>} />
-
+          <Route path="/search" element={<Search />} />
+          <Route path="/mypage/dashboard"
+            element={<ProtectedRoute><CompanyDashboard /></ProtectedRoute>} />
         </Route>
       </Routes>
 
-      <Chatbot />
+      {isLoggedIn &&
+        <RecommendPanel
+          isOpen={recommendOpen}
+          onToggle={() => {
+            setRecommendOpen((v) => !v);
+            if (chatbotOpen) setChatbotOpen(false);
+          }}
+          onClose={() => setRecommendOpen(false)}
+          hidden={chatbotOpen}
+        />
+      }
+      <Chatbot
+        isOpen={chatbotOpen}
+        onToggle={() => {
+          setChatbotOpen((v) => !v);
+          if (recommendOpen) setRecommendOpen(false);
+        }}
+        onClose={() => setChatbotOpen(false)}
+        hidden={recommendOpen}
+      />
       <ScrollToTop />
     </>
   );

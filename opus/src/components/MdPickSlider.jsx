@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import MdPickCardSkeleton from "./common/MdPickCardSkeleton";
 
 const VISIBLE_COUNT = 5;
 const CARD_WIDTH = 260;
@@ -27,7 +28,14 @@ function MdPickSlider({ title, data, type }) {
   const renderExhibitionCard = (item) => (
     <div className="mdpick-card" onClick={() => handleCardClick(item)}>
       <div className="mdpick-card__thumb">
-        <img src={item.image} alt={item.title} />
+        <img
+          src={item.image || "/images/no-thumbnail.png"}
+          alt={item.title}
+          onError={(e) => {
+            e.currentTarget.src = "/images/no-thumbnail.png";
+            e.currentTarget.onerror = null;
+          }}
+        />
       </div>
       <div className="mdpick-card__body">
         <p className="mdpick-card__title">{item.title}</p>
@@ -40,7 +48,14 @@ function MdPickSlider({ title, data, type }) {
   const renderMusicalCard = (item) => (
     <div className="mdpick-card" onClick={() => handleCardClick(item)}>
       <div className="mdpick-card__thumb">
-        <img src={item.poster} alt={item.prfnm} />
+        <img
+          src={item.poster || "/images/no-thumbnail.png"}
+          alt={item.prfnm}
+          onError={(e) => {
+            e.currentTarget.src = "/images/no-thumbnail.png";
+            e.currentTarget.onerror = null;
+          }}
+        />
       </div>
       <div className="mdpick-card__body">
         <p className="mdpick-card__title">{item.prfnm}</p>
@@ -50,6 +65,7 @@ function MdPickSlider({ title, data, type }) {
     </div>
   );
 
+  // 로딩 중 → 스켈레톤 5개
   if (data.length === 0) {
     return (
       <section className="section">
@@ -57,8 +73,18 @@ function MdPickSlider({ title, data, type }) {
           <div className="section__head">
             <h2 className="section__title">{title}</h2>
           </div>
-          <div style={{ padding: "40px 0", color: "#9ca3af", fontWeight: 700 }}>
-            불러오는 중...
+          <div className="mdpick-layout">
+            <div className="mdpick-hitbox">
+              <div className="mdpick-content">
+                <div className="slider-viewport">
+                  <div className="slider-track">
+                    {Array.from({ length: VISIBLE_COUNT }).map((_, i) => (
+                      <MdPickCardSkeleton key={i} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -98,20 +124,10 @@ function MdPickSlider({ title, data, type }) {
 
             {canSlide && (
               <>
-                <button
-                  className="slider-btn slider-btn--prev"
-                  onClick={handlePrev}
-                  type="button"
-                  aria-label="Previous"
-                >
+                <button className="slider-btn slider-btn--prev" onClick={handlePrev} type="button" aria-label="Previous">
                   <i className="fa-solid fa-chevron-left" />
                 </button>
-                <button
-                  className="slider-btn slider-btn--next"
-                  onClick={handleNext}
-                  type="button"
-                  aria-label="Next"
-                >
+                <button className="slider-btn slider-btn--next" onClick={handleNext} type="button" aria-label="Next">
                   <i className="fa-solid fa-chevron-right" />
                 </button>
               </>

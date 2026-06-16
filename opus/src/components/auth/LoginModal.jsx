@@ -7,6 +7,7 @@ import { getSavedEmail, setSavedEmail, clearSavedEmail } from "./rememberId";
 import GoogleLoginButton from "./GoogleLoginButton";
 import SocialRegisterForm from "./SocialRegisterForm";
 import { useAuthValidation } from "./useAuthValidation";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 
 export default function LoginModal({ open, onClose, onSwitchSignup }) {
   const doLogin = useAuthStore((s) => s.login);
@@ -19,6 +20,8 @@ export default function LoginModal({ open, onClose, onSwitchSignup }) {
 
   const [isSocialRegister, setIsSocialRegister] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [showForgot, setShowForgot] = useState(false);
 
   const {
     isTelChecked,
@@ -127,9 +130,9 @@ export default function LoginModal({ open, onClose, onSwitchSignup }) {
           memberEmail: email.trim(),
           memberPw: password.trim(),
         });
-        
-          if (saveId) setSavedEmail(email.trim());
-          else clearSavedEmail();
+
+        if (saveId) setSavedEmail(email.trim());
+        else clearSavedEmail();
 
         handleLoginSuccess(res.data.token, res.data.member);
       }
@@ -213,10 +216,16 @@ export default function LoginModal({ open, onClose, onSwitchSignup }) {
                 <button type="button" className="lm-link" onClick={onSwitchSignup}>
                   회원가입 (기업 회원은 별도 문의)
                 </button>
+                <button type="button" className="lm-link"
+                  onClick={() => setShowForgot(true)}>
+                  비밀번호를 잊으셨나요?
+                </button>
               </div>
             </>
           )}
         </form>
+
+        <ForgotPasswordModal open={showForgot} onClose={() => setShowForgot(false)} />
       </div>
     </div>
   );

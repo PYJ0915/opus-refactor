@@ -3,6 +3,7 @@ package nknk.opus.project.unveiling.model.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import nknk.opus.project.unveiling.model.dto.Unveiling;
 
@@ -40,5 +41,22 @@ public interface UnveilingMapper {
 
 	int updateFinishDate(Unveiling unveiling);
 	
+	int insertAlert(@Param("unveilingNo") int unveilingNo, @Param("memberNo") int memberNo);
+	
+    int deleteAlert(@Param("unveilingNo") int unveilingNo, @Param("memberNo") int memberNo);
+    
+    int checkAlert(@Param("unveilingNo") int unveilingNo, @Param("memberNo") int memberNo);   // 0 or 1
+    
+    List<Integer> selectAlertMemberNos(int unveilingNo); // 알림 신청한 회원 목록
+
+	List<Unveiling> selectNewlyLiveUnveilings();
+	
+	List<Unveiling> selectUnveilingsToActivate(); // START_DATE 도달 UPCOMING 경매
+	
+	int updateStatusLive(int unveilingNo);         // UPCOMING → LIVE
+	
+	int markLiveAlertSent(int unveilingNo);        // LIVE 알림 발송 완료
+
+	List<Unveiling> searchUnveilings(@Param("query") String query, @Param("limit") int limit);
 	
 }

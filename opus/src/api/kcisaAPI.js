@@ -13,8 +13,7 @@ export async function getAllExhibitions({ serviceKey, pageParam }) {
   // const res = await fetch(`/onStage/exhibitions?${params.toString()}`);
   // const BASE_URL = "https://api.kcisa.kr/openapi";
   // const res = await fetch(`${BASE_URL}/API_CCA_145/request?${params.toString()}`);
-  const BASE_URL = "https://opus-api.duckdns.org";
-  const res = await fetch(`${BASE_URL}/onStage/exhibitions?${params.toString()}`);
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/onStage/exhibitions?${params.toString()}`);
 
   if(!res.ok) {
     throw new Error("전시 정보 요청 실패");

@@ -1,17 +1,17 @@
 package nknk.opus.project.reviews.model.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.reviews.model.mapper.ReviewLikeMapper;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class ReviewLikeServiceImpl implements ReviewLikeService {
 
-    @Autowired
-    private ReviewLikeMapper mapper;
+    private final ReviewLikeMapper mapper;
 
     public boolean toggleLike(int reviewNo, int memberNo) {
         int exists = mapper.checkLike(reviewNo, memberNo);

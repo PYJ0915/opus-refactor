@@ -10,10 +10,9 @@
 .loading-text{
   font-size: 22px;
   font-weight: 600;
-  color: #0f172a; /* 네이비 */
+  color: var(--text); 
 }
 
-/* ✅ 점 3개 로딩 */
 .dot-loader{
   display: flex;
   gap: 10px;
@@ -22,7 +21,7 @@
 .dot-loader span{
   width: 10px;
   height: 10px;
-  background-color: #0f172a;
+  background-color: var(--text);
   border-radius: 50%;
 
   animation: dotBounce 1.2s infinite ease-in-out;

@@ -3,9 +3,10 @@ package nknk.opus.project.member.model.service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.member.model.dto.Member;
 import nknk.opus.project.member.model.dto.Role;
@@ -25,18 +27,22 @@ import nknk.opus.project.member.model.mapper.MemberMapper;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-	@Autowired
-	private MemberMapper mapper;
+	private final MemberMapper mapper;
 
-	@Autowired
-	private BCryptPasswordEncoder encoder;
+	private final BCryptPasswordEncoder encoder;
 
-	@Autowired
-	private JavaMailSender mailSender;
-
-	private final Map<String, String> authStorage = new HashMap<>();
+	private final JavaMailSender mailSender;
+	
+	private final StringRedisTemplate redisTemplate;
+	
+	private static final String AUTH_CODE_PREFIX = "email:auth:";
+	private static final long AUTH_CODE_TTL = 5L; // 분
+	
+	private static final String PW_RESET_PREFIX = "pw:reset:";
+	private static final long PW_RESET_TTL = 5L; // 분
 
 	/* 로그인 */
 	@Override
@@ -73,7 +79,12 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		String code = String.format("%06d", new Random().nextInt(1000000));
-		authStorage.put(email, code);
+		redisTemplate.opsForValue().set(
+			    AUTH_CODE_PREFIX + email,
+			    code,
+			    AUTH_CODE_TTL,
+			    TimeUnit.MINUTES
+			);
 
 		try {
 			String htmlContent = """
@@ -130,8 +141,14 @@ public class MemberServiceImpl implements MemberService {
 	/* 이메일 인증번호 확인 */
 	@Override
 	public boolean verifyCode(String email, String code) {
-		String savedCode = authStorage.get(email);
-		return savedCode != null && savedCode.equals(code);
+	    String savedCode = redisTemplate.opsForValue()
+	                                    .get(AUTH_CODE_PREFIX + email);
+	    if (savedCode == null || !savedCode.equals(code)) {
+	        return false;
+	    }
+	    // 인증 성공 즉시 삭제 (재사용 방지)
+	    redisTemplate.delete(AUTH_CODE_PREFIX + email);
+	    return true;
 	}
 
 	/* 회원가입 */
@@ -267,5 +284,99 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public String getCurrentPw(int memberNo) {
 		return mapper.selectCurrentPw(memberNo);
+	}
+	
+	/* 비밀번호 재설정용 인증코드 발송 */
+	@Override
+	public void sendPasswordResetEmail(String email) {
+	    // 가입된 이메일인지 확인 (가입자만 발송)
+	    if (!checkEmail(email)) {
+	        throw new RuntimeException("가입되지 않은 이메일입니다.");
+	    }
+
+	    String code = String.format("%06d", new Random().nextInt(1000000));
+
+	    // authStorage 대신 Redis에 저장 — 회원가입 키(email:auth:)와 분리
+	    redisTemplate.opsForValue().set(
+	        PW_RESET_PREFIX + email,
+	        code,
+	        PW_RESET_TTL,
+	        TimeUnit.MINUTES
+	    );
+
+	    try {
+	        String htmlContent = """
+	                <!DOCTYPE html>
+	                <html>
+	                <body style="margin:0; padding:0; background-color:#f3f4f6; font-family:'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;">
+	                    <div style="max-width:560px; margin:32px auto; background-color:#ffffff; border:1px solid #e5e7eb;">
+	                        <div style="background-color:#111827; padding:28px 36px; display:flex; justify-content:space-between; align-items:center;">
+	                            <span style="font-size:20px; font-weight:900; color:#ffffff;">OPUS</span>
+	                            <span style="font-size:11px; color:rgba(255,255,255,0.45); text-transform:uppercase;">Password Reset</span>
+	                        </div>
+	                        <div style="padding:36px 36px 28px;">
+	                            <p style="font-size:13px; color:#6b7280; margin:0 0 4px;">안녕하세요, OPUS입니다.</p>
+	                            <h1 style="font-size:20px; font-weight:900; color:#111827; margin:0 0 20px; line-height:1.35;">비밀번호 재설정 인증번호를<br/>안내해 드립니다.</h1>
+	                            <p style="font-size:14px; color:#374151; line-height:1.8; margin:0 0 28px;">아래 인증번호를 입력해 비밀번호를 재설정하세요.</p>
+
+	                            <div style="background-color:#f9fafb; border:1px solid #e5e7eb; border-radius:4px; padding:26px; text-align:center; margin-bottom:24px;">
+	                                <span style="font-size:11px; font-weight:700; color:#9ca3af; text-transform:uppercase; display:block; margin-bottom:10px;">인증번호</span>
+	                                <div style="font-size:40px; font-weight:900; color:#111827; letter-spacing:8px;">%s</div>
+	                                <p style="font-size:12px; color:#6b7280; margin-top:10px;">유효시간 5분</p>
+	                            </div>
+
+	                            <div style="background-color:#fffbeb; border:1px solid #fde68a; border-radius:4px; padding:12px 14px; margin-bottom:24px; font-size:12px; color:#92400e; line-height:1.7;">
+	                                ⚠ 본 인증번호는 발송 시점으로부터 <strong>5분간만 유효</strong>합니다. 타인에게 절대 알려주지 마세요.
+	                            </div>
+	                            <hr style="border:0; border-top:1px solid #f3f4f6; margin:24px 0;"/>
+	                            <p style="font-size:12px; color:#6b7280; line-height:1.8;">본인이 요청하지 않은 경우 이 메일을 무시하셔도 됩니다.</p>
+	                        </div>
+	                        <div style="background-color:#f9fafb; border-top:1px solid #e5e7eb; padding:20px 36px;">
+	                            <p style="font-size:13px; font-weight:900; color:#111827; margin:0 0 8px;">OPUS</p>
+	                            <p style="font-size:11px; color:#9ca3af; margin:0; line-height:1.7;">© 2026 OPUS. All rights reserved.<br/>본 메일은 발신 전용입니다.</p>
+	                        </div>
+	                    </div>
+	                </body>
+	                </html>
+	                """
+	                .formatted(code);
+
+	        MimeMessage mimeMessage = mailSender.createMimeMessage();
+	        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+	        helper.setTo(email);
+	        helper.setSubject("[OPUS] 비밀번호 재설정 인증번호");
+	        helper.setText(htmlContent, true);
+	        mailSender.send(mimeMessage);
+
+	    } catch (Exception e) {
+	        log.error("비밀번호 재설정 이메일 발송 실패: {}", e.getMessage());
+	        throw new RuntimeException("이메일 발송 중 오류 발생");
+	    }
+	}
+	
+	/* 인증 확인 후 비밀번호 즉시 변경 */
+	@Override
+	public int resetPassword(String email, String code, String newPw) {
+	    // Redis에서 인증코드 조회
+	    String savedCode = redisTemplate.opsForValue().get(PW_RESET_PREFIX + email);
+	    if (savedCode == null || !savedCode.equals(code)) {
+	        throw new RuntimeException("인증번호가 일치하지 않습니다.");
+	    }
+
+	    String pwRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*\\-_])[A-Za-z\\d!@#$%^&*\\-_]{8,16}$";
+	    if (!newPw.matches(pwRegex)) {
+	        throw new RuntimeException("비밀번호 형식이 올바르지 않습니다.");
+	    }
+
+	    // 인증 성공 즉시 삭제 (재사용 방지)
+	    redisTemplate.delete(PW_RESET_PREFIX + email);
+
+	    Member member = mapper.findByEmail(email);
+	    if (member == null) throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
+
+	    Map<String, Object> param = new HashMap<>();
+	    param.put("memberNo", member.getMemberNo());
+	    param.put("newPw", encoder.encode(newPw));
+	    return mapper.changePw(param);
 	}
 }

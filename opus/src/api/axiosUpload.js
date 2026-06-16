@@ -42,15 +42,16 @@ axiosUpload.interceptors.response.use(
       if (!url.includes("/auth/login") && !url.includes("/auth/google")) {
         useAuthStore.getState().logout();
 
-        const serverMsg =
-          typeof error.response.data === "string"
+        const hasToken = !!useAuthStore.getState().token;
+        const serverMsg = hasToken
+          ? (typeof error.response.data === "string"
             ? error.response.data
-            : error.response.data?.message ||
-              "세션이 만료되었습니다. 다시 로그인해주세요.";
+            : error.response.data?.message || "세션이 만료되었습니다. 다시 로그인해주세요.")
+          : "로그인이 필요한 서비스입니다.";
 
         alert(serverMsg);
         window.location.href = "/";
-        return new Promise(() => {});
+        return new Promise(() => { });
       }
     }
     return Promise.reject(error);

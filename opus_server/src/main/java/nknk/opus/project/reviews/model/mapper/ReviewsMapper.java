@@ -1,6 +1,7 @@
 package nknk.opus.project.reviews.model.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -22,4 +23,8 @@ public interface ReviewsMapper {
 	int deleteReview(int reviewNo);
 
 	int addReport(Report report);
+	
+	double getAverageRating(String stageNo);
+	
+	List<Map<String, Object>> getRatingDistribution(String stageNo);
 }

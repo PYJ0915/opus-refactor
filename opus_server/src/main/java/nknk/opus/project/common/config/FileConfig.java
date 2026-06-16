@@ -42,8 +42,7 @@ public class FileConfig implements WebMvcConfigurer {
 	// 실제 파일
 	@Value("${opus.goods.resource-location}")
 	private String goodsResourceLocation;
-	
-	
+
 	// 게시판 이미지 관련 경로
 	// 요청
 	@Value("${opus.board.resource-handler}")
@@ -52,16 +51,24 @@ public class FileConfig implements WebMvcConfigurer {
 	// 실제 파일
 	@Value("${opus.board.resource-location}")
 	private String boardResourceLocation;
-	
+
 	// 굿즈 업로드 경로
 	@Value("${opus.goods.upload-path}")
 	private String goodsUploadPath;
-	
-	
+
+	// 요청
+	@Value("${opus.unveiling.resource-handler}")
+	private String unveilingResourceHandler;
+
+	// 실제 파일
+	@Value("${opus.unveiling.resource-location}")
+	private String unveilingsResourceLocation;
+
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler(goodsResourceHandler).addResourceLocations(goodsResourceLocation);
-	    registry.addResourceHandler(boardResourceHandler).addResourceLocations(boardResourceLocation);
+		registry.addResourceHandler(boardResourceHandler).addResourceLocations(boardResourceLocation);
+		registry.addResourceHandler(unveilingResourceHandler).addResourceLocations(unveilingsResourceLocation);
 	}
 
 	// MultipartResolver 설정
@@ -99,7 +106,7 @@ public class FileConfig implements WebMvcConfigurer {
 	}
 
 	public String getGoodsUploadPath() {
-	    return goodsUploadPath;
+		return goodsUploadPath;
 	}
-	
+
 }

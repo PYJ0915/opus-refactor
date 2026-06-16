@@ -1,21 +1,22 @@
 package nknk.opus.project.myPage.model.service;
 
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.myPage.model.dto.UnveilingHistoryResponse;
 import nknk.opus.project.myPage.model.mapper.MyPageMapper;
 import nknk.opus.project.reviews.model.dto.Reviews;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class MyPageServiceImpl implements MyPageService {
 	
-	@Autowired
-	private MyPageMapper mapper;
+	private final MyPageMapper mapper;
 
 	@Override
 	public List<String> getSavedList(int memberNo) {
@@ -36,6 +37,11 @@ public class MyPageServiceImpl implements MyPageService {
 	@Override
 	public List<String> getLikeList(int memberNo) {
 		return mapper.getLikeList(memberNo);
+	}
+	
+	@Override
+	public List<Map<String, Object>> getRatedStages(int memberNo) {
+		return mapper.getRatedStages(memberNo);
 	}
 
 }

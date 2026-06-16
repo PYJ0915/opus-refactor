@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosApi from "../../api/axiosAPI";
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import "../../css/Orders.css";
+import { resolveImage } from "../../utils/unveilingImage";
 
 const UnveilingHistory = () => {
   const navigate = useNavigate();
@@ -13,18 +14,15 @@ const UnveilingHistory = () => {
 
   useEffect(() => {
     const fetchUnveilingHistory = async () => {
-      if (!loginMemberNo) return;
       try {
-        const res = await axiosApi.get("/myPage/unveilingHistory", {
-          params: { memberNo: loginMemberNo }
-        });
+        const res = await axiosApi.get("/myPage/unveilingHistory");
         setHistoryItems(res.data);
       } catch (err) {
         console.error("응찰 내역 조회 실패:", err);
       }
     };
     fetchUnveilingHistory();
-  }, [loginMemberNo]);
+  }, []);
 
   // 낙찰 여부 + 결제 상태를 하나로 묶어서 우측에 표시
   const getStatusBadges = (item) => {
@@ -66,7 +64,7 @@ const UnveilingHistory = () => {
     dateStr ? String(dateStr).substring(0, 10) : "-";
 
   return (
-    <main className="main orders-page">
+    <div className="orders-page">
       <section className="orders-header">
         <h1 className="orders-title">경매 응찰 내역</h1>
         <p className="orders-subtitle">
@@ -102,7 +100,11 @@ const UnveilingHistory = () => {
                 <div className="order-product">
                   <div className="product-image">
                     {item.thumbUrl ? (
-                      <img src={item.thumbUrl} alt={item.unveilingTitle} />
+                      <img 
+                      src={resolveImage(item.thumbUrl)} 
+                      alt={item.unveilingTitle} 
+                      onError={e => e.currentTarget.src = "/no-thumbnail.png"}
+                      />
                     ) : (
                       <div className="product-image--empty">
                         <i className="fa-solid fa-image" />
@@ -127,7 +129,7 @@ const UnveilingHistory = () => {
           ))
         )}
       </section>
-    </main>
+    </div>
   );
 };
 

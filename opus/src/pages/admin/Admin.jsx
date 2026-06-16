@@ -4,6 +4,7 @@ import "../../css/Orders.css";
 import DeliveryManage from "./DeliveryManage";
 import GoodsManage from "./GoodsManage";
 import UnveilingManage from "./UnveilingManage";
+import { toast } from "react-toastify";
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("report");
@@ -32,7 +33,7 @@ const Admin = () => {
     try {
       const resp = await axiosApi.post("/admin/confirmReview", null, { params: { reportNo } });
       if (resp.status === 200) {
-        alert("신고된 후기가 삭제되었습니다. (신고 승인)");
+        toast.success("신고된 후기가 삭제되었습니다. (신고 승인)");
         fetchAdminData();
       }
     } catch (error) { console.log(error); }
@@ -42,7 +43,7 @@ const Admin = () => {
     try {
       const resp = await axiosApi.post("/admin/rejectReview", null, { params: { reportNo } });
       if (resp.status === 200) {
-        alert("신고된 후기를 목록에서 삭제하였습니다. (신고 거절)");
+        toast.success("신고된 후기를 목록에서 삭제하였습니다. (신고 거절)");
         fetchAdminData();
       }
     } catch (error) { console.log(error); }
@@ -52,7 +53,7 @@ const Admin = () => {
     try {
       const resp = await axiosApi.post("/admin/restoreReview", null, { params: { reviewNo } });
       if (resp.status === 200) {
-        alert("삭제된 후기를 복구하였습니다.");
+        toast.success("삭제된 후기를 복구하였습니다.");
         fetchAdminData();
       }
     } catch (error) { console.log(error); }

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { cartApi } from "../api/cartAPI";
+import { toast } from "react-toastify";
 
 export const useCartStore = create(
   persist(
@@ -120,7 +121,7 @@ export const useCartStore = create(
           const nextQty = prev.qty + item.qty;
 
           if (stock != null && nextQty > stock) {
-            alert(`선택 가능한 재고 수량을 초과했습니다. (최대 ${stock}개)`);
+            toast.warning(`선택 가능한 재고 수량을 초과했습니다. (최대 ${stock}개)`);
             return { success: false };
           }
 
@@ -142,12 +143,12 @@ export const useCartStore = create(
         const target = items[idx];
 
         if (qty < 1) {
-          alert("최소 수량은 1개입니다.");
+          toast.warning("최소 수량은 1개입니다.");
           return;
         }
 
         if (target.stock != null && qty > target.stock) {
-          alert("선택 가능한 재고 수량을 초과했습니다.");
+          toast.warning("선택 가능한 재고 수량을 초과했습니다.");
           return;
         }
 
@@ -164,7 +165,7 @@ export const useCartStore = create(
             await get().fetchFromServer();
           } catch (error) {
             console.error("수량 변경 실패:", error);
-            alert("수량 변경에 실패했습니다.");
+            toast.error("수량 변경에 실패했습니다.");
           }
         } else {
           // 로컬에서만 변경

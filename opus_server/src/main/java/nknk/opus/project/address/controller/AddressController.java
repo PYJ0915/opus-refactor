@@ -15,15 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.address.model.dto.Address;
 import nknk.opus.project.address.model.service.AddressService;
 
 @RequestMapping("addresses")
 @RestController
+@RequiredArgsConstructor
 public class AddressController {
 
-	@Autowired
-	private AddressService service;
+	private final AddressService service;
 
 	// 배송지 목록 조회
 	@GetMapping

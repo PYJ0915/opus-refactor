@@ -85,5 +85,10 @@ public interface AdminMapper {
 	void updateGoodsOption(GoodsOption option);
 
 	void updateGoodsOptionStock(GoodsOption existing);
+	
+	int forceUpdateUnveilingStatus(
+		    @Param("unveilingNo") int unveilingNo,
+		    @Param("status") String status
+		);
 
 }

@@ -1,0 +1,65 @@
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* 별 하나 */
+.star-rating__star {
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.1s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent; /* 모바일 탭 효과 제거 */
+}
+
+.star-rating__star:hover {
+  transform: scale(1.15);
+}
+
+/* 읽기 전용일 때 커서 기본값 */
+.star-rating--readonly .star-rating__star {
+  cursor: default;
+}
+
+.star-rating--readonly .star-rating__star:hover {
+  transform: none;
+}
+
+.star-rating--readonly {
+  margin-bottom: 16px;
+}
+
+/* 별 아이콘 (★) */
+.star-rating__icon {
+  font-style: normal;
+  display: block;
+  color: #d1d5db; /* 빈 별: gray-300 */
+  transition: color 0.15s ease;
+}
+
+.star-rating__icon--filled {
+  color: #f59e0b; /* 채워진 별: amber-400 */
+}
+
+/* hover 시 앞 별들도 채워지는 효과 (JS로 hoverRating 상태 필요) */
+.star-rating__star.is-hover .star-rating__icon {
+  color: #fbbf24; /* amber-400보다 살짝 밝음 */
+}
+
+/* 점수 텍스트 (readonly 모드에서 옆에 표시) */
+.star-rating__score {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  align-self: center;
+  margin-left: 2px;
+}
+
+/* ── 크기 변형 ── */
+.star-rating--sm .star-rating__icon { font-size: 13px; }
+.star-rating--md .star-rating__icon { font-size: 18px; }
+.star-rating--lg .star-rating__icon { font-size: 24px; }
+.star-rating--xl .star-rating__icon { font-size: 32px; }

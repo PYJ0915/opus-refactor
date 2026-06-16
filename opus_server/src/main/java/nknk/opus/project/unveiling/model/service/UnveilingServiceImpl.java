@@ -2,15 +2,15 @@ package nknk.opus.project.unveiling.model.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.bidding.model.dto.BidStateResponse;
 import nknk.opus.project.bidding.model.dto.Bidding;
@@ -25,22 +25,18 @@ import nknk.opus.project.unveiling.model.mapper.UnveilingMapper;
 @Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class UnveilingServiceImpl implements UnveilingService {
 
-	@Autowired
-	private UnveilingMapper unveilingMapper;
+	private final UnveilingMapper unveilingMapper;
 
-	@Autowired
-	private BiddingMapper biddingMapper;
+	private final BiddingMapper biddingMapper;
 
-	@Autowired
-	private MemberMapper memberMapper;
+	private final MemberMapper memberMapper;
 
-	@Autowired
-	private JavaMailSender mailSender;
+	private final JavaMailSender mailSender;
 
-	@Autowired
-	private NotificationService notificationService;
+	private final NotificationService notificationService;
 
 	@Override
 	public List<Unveiling> getList() {
@@ -154,17 +150,13 @@ public class UnveilingServiceImpl implements UnveilingService {
 		try {
 			String email = memberMapper.findEmailByMemberNo(top.getMemberNo());
 			if (email != null) {
-				sendWinnerEmail(email, unveilingNo, u.getUnveilingTitle(), u.getProductionArtist(), top.getBidPrice());
+				sendWinnerEmailAsync(email, unveilingNo, u.getUnveilingTitle(), u.getProductionArtist(), top.getBidPrice());
 			}
-
+			
 			// 사이트 알림 생성
-			notificationService.createNotification(
-				top.getMemberNo(),
-				"AUCTION",
-				"🎉 낙찰을 축하드립니다!",
-				u.getUnveilingTitle() + " - " + String.format("₩%,d", top.getBidPrice()),
-				"/unveiling/" + unveilingNo
-			);
+			notificationService.createNotification(top.getMemberNo(), "AUCTION", "🎉 낙찰을 축하드립니다!",
+					u.getUnveilingTitle() + " - " + String.format("₩%,d", top.getBidPrice()),
+					"/unveiling/" + unveilingNo);
 			log.info("낙찰 알림 생성 완료 - unveilingNo: {}, memberNo: {}", unveilingNo, top.getMemberNo());
 
 		} catch (Exception e) {
@@ -236,12 +228,12 @@ public class UnveilingServiceImpl implements UnveilingService {
 	}
 
 	/**
-	 * 마감 임박 알림 이메일 발송 — 해당 경매에 응찰한 회원 전원에게 발송
-	 * 스케줄러에서 호출 (markAlertSent는 스케줄러에서 처리)
+	 * 마감 임박 알림 이메일 발송 — 해당 경매에 응찰한 회원 전원에게 발송 스케줄러에서 호출 (markAlertSent는 스케줄러에서 처리)
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public void sendDeadlineAlertEmails(int unveilingNo, String unveilingTitle, String productionArtist, String finishDate) {
+	public void sendDeadlineAlertEmails(int unveilingNo, String unveilingTitle, String productionArtist,
+			String finishDate) {
 
 		// 해당 경매 응찰자 전원의 memberNo 조회 (중복 제거)
 		List<Integer> bidderMemberNos = biddingMapper.selectDistinctBidderMemberNos(unveilingNo);
@@ -260,27 +252,25 @@ public class UnveilingServiceImpl implements UnveilingService {
 				}
 
 				// 사이트 알림 생성
-				notificationService.createNotification(
-					memberNo,
-					"AUCTION",
-					"⏰ 경매 마감 1시간 전입니다!",
-					unveilingTitle + " - " + productionArtist,
-					"/unveiling/" + unveilingNo
-				);
-				
+				notificationService.createNotification(memberNo, "AUCTION", "⏰ 경매 마감 1시간 전입니다!",
+						unveilingTitle + " - " + productionArtist, "/unveiling/" + unveilingNo);
+
 				successCount++;
 				log.info("[마감 임박 알림] 발송 완료 - unveilingNo: {}, memberNo: {}", unveilingNo, memberNo);
 
 			} catch (Exception e) {
-				log.warn("[마감 임박 알림 개별 발송 실패] unveilingNo: {}, memberNo: {}, 사유: {}", unveilingNo, memberNo, e.getMessage());
+				log.warn("[마감 임박 알림 개별 발송 실패] unveilingNo: {}, memberNo: {}, 사유: {}", unveilingNo, memberNo,
+						e.getMessage());
 			}
 		}
 
-		log.info("[마감 임박 알림] 발송 완료 - unveilingNo: {}, 총 {}명 중 {}명 성공", unveilingNo, bidderMemberNos.size(), successCount);
+		log.info("[마감 임박 알림] 발송 완료 - unveilingNo: {}, 총 {}명 중 {}명 성공", unveilingNo, bidderMemberNos.size(),
+				successCount);
 	}
 
 	/* 마감 임박 알림 이메일 */
-	private void sendDeadlineAlertEmail(String email, int unveilingNo, String unveilingTitle, String productionArtist, String finishDate) {
+	private void sendDeadlineAlertEmail(String email, int unveilingNo, String unveilingTitle, String productionArtist,
+			String finishDate) {
 		try {
 			String htmlContent = """
 					<!DOCTYPE html>
@@ -392,8 +382,21 @@ public class UnveilingServiceImpl implements UnveilingService {
 		}
 	}
 
+	@Async
+	public void sendWinnerEmailAsync(String email, int unveilingNo, String unveilingTitle, String productionArtist,
+			int bidPrice) {
+
+		try {
+			sendWinnerEmail(email, unveilingNo, unveilingTitle, productionArtist, bidPrice);
+
+		} catch (Exception e) {
+			log.warn("[낙찰 메일 발송 실패] unveilingNo: {}, 사유: {}", unveilingNo, e.getMessage());
+		}
+	}
+
 	/* 낙찰 확정 안내 이메일 발송 */
-	private void sendWinnerEmail(String email, int unveilingNo, String unveilingTitle, String productionArtist, int bidPrice) {
+	private void sendWinnerEmail(String email, int unveilingNo, String unveilingTitle, String productionArtist,
+			int bidPrice) {
 		try {
 			String htmlContent = """
 					<!DOCTYPE html>

@@ -1,58 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="nknk.opus.project.reviews.model.mapper.ReviewsMapper">
+<mapper
+	namespace="nknk.opus.project.reviews.model.mapper.ReviewsMapper">
 	<insert id="addReview">
-		INSERT INTO "REVIEWS"
-		VALUES(
-			SEQ_REVIEWS_NO.NEXTVAL,
-			#{memberNo},
-			#{stageNo},
-			#{reviewContent},
-			SYSDATE,
-			NULL,
-			'N'
-		)
+		INSERT INTO REVIEWS (REVIEW_NO, MEMBER_NO, STAGE_NO,
+		REVIEW_CONTENT,
+		REVIEW_RATING)
+		VALUES (SEQ_REVIEWS_NO.NEXTVAL,
+		#{memberNo}, #{stageNo}, #{reviewContent},
+		#{reviewRating})
 	</insert>
-	
-	<select id="getReviews">
-		SELECT REVIEW_NO, MEMBER_NO, REVIEW_CONTENT, REVIEW_WRITE_DATE, MEMBER_EMAIL
-		FROM REVIEWS
-		JOIN MEMBER USING (MEMBER_NO)
-		WHERE STAGE_NO = #{stageNo}
-		AND REVIEW_DEL_FL = 'N'
-		ORDER BY REVIEW_WRITE_DATE DESC
+
+	<select id="getReviews" resultType="Reviews">
+		SELECT R.REVIEW_NO,
+		R.MEMBER_NO, M.MEMBER_EMAIL, R.STAGE_NO,
+		R.REVIEW_CONTENT,
+		R.REVIEW_RATING,
+		TO_CHAR(R.REVIEW_WRITE_DATE, 'YYYY-MM-DD HH24:MI:SS')
+		AS REVIEW_WRITE_DATE
+		FROM REVIEWS R
+		JOIN MEMBER M ON R.MEMBER_NO =
+		M.MEMBER_NO
+		WHERE R.STAGE_NO = #{stageNo}
+		AND R.REVIEW_DEL_FL = 'N'
+		ORDER BY R.REVIEW_WRITE_DATE DESC
 	</select>
-	
+
+	<select id="getAverageRating" resultType="double">
+		SELECT
+		NVL(ROUND(AVG(REVIEW_RATING), 1), 0)
+		FROM REVIEWS
+		WHERE STAGE_NO =
+		#{stageNo}
+		AND REVIEW_DEL_FL = 'N'
+		AND REVIEW_RATING > 0
+	</select>
+
 	<select id="getReviewsCount">
 		SELECT COUNT(*)
 		FROM REVIEWS
-		WHERE STAGE_NO = #{stageNo}
+		WHERE STAGE_NO =
+		#{stageNo}
 		AND REVIEW_DEL_FL = 'N'
 	</select>
-	
+
 	<select id="getWriterNo">
 		SELECT MEMBER_NO
 		FROM REVIEWS
-		WHERE REVIEW_NO = #{reviewNo}
+		WHERE REVIEW_NO =
+		#{reviewNo}
 	</select>
-	
+
 	<update id="updateReview">
 		UPDATE REVIEWS SET
 		REVIEW_CONTENT = #{reviewContent},
-      	REVIEW_UPDATE_DATE = SYSDATE
-      	WHERE REVIEW_NO = #{reviewNo}
+		REVIEW_UPDATE_DATE = SYSDATE
+		WHERE REVIEW_NO = #{reviewNo}
 	</update>
-	
+
 	<update id="deleteReview">
 		UPDATE REVIEWS SET
 		REVIEW_DEL_FL = 'Y',
-      	REVIEW_UPDATE_DATE = SYSDATE
+		REVIEW_UPDATE_DATE = SYSDATE
 		WHERE REVIEW_NO = #{reviewNo}
 	</update>
-	
+
 	<insert id="addReport">
-		INSERT INTO REPORT(REPORT_NO, REPORT_REASON, REPORT_DETAIL, REPORT_DATE, REPORT_STATUS, REPORTER_NO, REPORTED_NO, REVIEW_NO)
-		VALUES(SEQ_REPORT_NO.NEXTVAL, #{reportReason}, #{reportDetail}, SYSDATE, 'PENDING', #{reporterNo}, #{reportedNo}, #{reviewNo})
+		INSERT INTO REPORT(REPORT_NO, REPORT_REASON,
+		REPORT_DETAIL, REPORT_DATE, REPORT_STATUS, REPORTER_NO, REPORTED_NO,
+		REVIEW_NO)
+		VALUES(SEQ_REPORT_NO.NEXTVAL, #{reportReason},
+		#{reportDetail}, SYSDATE, 'PENDING', #{reporterNo}, #{reportedNo},
+		#{reviewNo})
 	</insert>
+
+	<select id="getRatingDistribution" resultType="map">
+		SELECT REVIEW_RATING AS "rating", COUNT(*) AS "cnt"
+		FROM REVIEWS
+		WHERE STAGE_NO = #{stageNo}
+		AND REVIEW_DEL_FL = 'N'
+		AND REVIEW_RATING > 0
+		GROUP BY REVIEW_RATING
+		ORDER BY REVIEW_RATING DESC
+	</select>
+
 </mapper>

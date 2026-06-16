@@ -24,7 +24,7 @@ const AuthSuccess = () => {
       })
       .then((res) => {
         login({ token, member: res.data });
-        navigate("/board/list/1");
+        navigate("/");
       })
       .catch(() => {
         toast.error("로그인에 실패했습니다.", { toastId: "auth-success-fail" });

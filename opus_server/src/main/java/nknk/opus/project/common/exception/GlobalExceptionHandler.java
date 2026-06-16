@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 
 	/**
-	 * 리소스를 찾을 수 없는 경우
+	 * 404 — 리소스를 찾을 수 없는 경우
 	 */
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
-	 * 비즈니스 로직 예외
+	 * 400 — 비즈니스 로직 예외
 	 */
 	@ExceptionHandler(BusinessException.class)
 	public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
@@ -50,9 +50,33 @@ public class GlobalExceptionHandler {
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
+	
+	/** 400 — 잘못된 파라미터  */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
+        log.error("IllegalArgumentException: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .error("Bad Request")
+                        .message(ex.getMessage())
+                        .build());
+    }
+    
+    /** 409 — 상태 충돌 */
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException ex) {
+        log.error("IllegalStateException: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.builder()
+                        .status(HttpStatus.CONFLICT.value())
+                        .error("Conflict")
+                        .message(ex.getMessage())
+                        .build());
+    }
 
 	/**
-	 * 유효성 검증 실패
+	 * 400 — @Valid 유효성 검증 실패
 	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {

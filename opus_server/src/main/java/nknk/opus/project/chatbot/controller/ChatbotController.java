@@ -2,7 +2,6 @@ package nknk.opus.project.chatbot.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.chatbot.model.dto.ChatHistory;
 import nknk.opus.project.chatbot.model.dto.ChatRequest;
@@ -20,10 +20,10 @@ import nknk.opus.project.chatbot.model.service.ChatbotService;
 @Slf4j
 @RestController
 @RequestMapping("chatbot")
+@RequiredArgsConstructor
 public class ChatbotController {
 
-	@Autowired
-	private ChatbotService service;
+	private final ChatbotService service;
 
     /**
      * AI 챗봇 대화

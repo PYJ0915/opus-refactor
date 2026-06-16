@@ -1,60 +1,3 @@
-:root {
-  --text: #111827;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --soft: #f3f4f6;
-  --bg: #fff;
-  --dark: #111827;
-
-  --wrap: 1440px;
-  --pad: 48px;
-
-  --radius-sm: 2px;
-  --radius-pill: 999px;
-  /* rounded-sm 느낌 */
-  --shadow: 0 10px 30px rgba(0, 0, 0, .08);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-body {
-  margin: 0;
-  font-family: "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-input,
-select {
-  font: inherit;
-}
-
-img {
-  display: block;
-  max-width: 100%;
-}
-
-::-webkit-scrollbar {
-  display: none;
-}
-
-.page {
-  min-height: 100vh;
-}
-
 /* ============== MAIN LAYOUT ============== */
 .main {
   padding-top: 80px;
@@ -342,10 +285,6 @@ img {
 
 /* responsive */
 @media (max-width: 1200px) {
-  :root {
-    --pad: 28px;
-  }
-
   .grid__items {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

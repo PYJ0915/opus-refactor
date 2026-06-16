@@ -278,4 +278,14 @@
 		ORDER BY B.BOARD_NO DESC
 	</select>
 
+	<select id="searchBoards" resultType="Board">
+		SELECT BOARD_NO, BOARD_TITLE,
+		TO_CHAR(BOARD_WRITE_DATE, 'YYYY-MM-DD') AS boardWriteDate
+		FROM BOARD
+		WHERE BOARD_DEL_FL = 'N'
+		AND BOARD_TITLE LIKE '%' || #{query} || '%'
+		ORDER BY BOARD_NO DESC
+		FETCH FIRST #{limit} ROWS ONLY
+	</select>
+
 </mapper>

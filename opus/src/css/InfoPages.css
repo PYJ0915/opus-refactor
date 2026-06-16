@@ -3,14 +3,6 @@
 
 /* ── 변수 ── */
 .info-page {
-  --text:   #111827;
-  --muted:  #6b7280;
-  --line:   #e5e7eb;
-  --line2:  #d1d5db;
-  --soft:   #f9fafb;
-  --soft2:  #f3f4f6;
-  --dark:   #111827;
-  --dark2:  #1f2937;
   --wrap:   860px;
   --pad:    48px;
   --radius: 2px;

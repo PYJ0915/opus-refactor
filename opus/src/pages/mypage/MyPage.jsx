@@ -6,6 +6,7 @@ import { useAuthValidation } from "../../components/auth/useAuthValidation";
 import { toast } from "react-toastify";
 import { showConfirm } from "../../components/toast/ToastUtils";
 import axiosApi from "../../api/axiosAPI";
+import MyPageSidebar from "../../components/common/MyPageSidebar";
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -30,40 +31,6 @@ export default function MyPage() {
     newPw: "",
     newPwConfirm: "",
   });
-
-  // 사이드바 그룹 구성 (isSocialUser일 때 비밀번호 변경 메뉴 제외)
-  const SIDEBAR_GROUPS = [
-    {
-      title: "내 정보",
-      items: [
-        { id: "profile-edit", icon: "fa-regular fa-user", label: "연락처 변경" },
-        ...(!isSocialUser
-          ? [
-              {
-                id: "password-change",
-                icon: "fa-solid fa-lock",
-                label: "비밀번호 변경",
-              },
-            ]
-          : []),
-        ...(role !== "ADMIN"
-          ? [{ id: "withdrawal", icon: "fa-solid fa-user-slash", label: "회원 탈퇴" }]
-          : []),
-      ],
-    },
-    {
-      title: "활동 내역",
-      items: [
-        ...(role === "COMPANY"
-          ? [{ id: "myPosts", icon: "fa-regular fa-pen-to-square", label: "등록 컨텐츠" }]
-          : []),
-        { id: "wishlist", icon: "fa-regular fa-heart", label: "찜한 리스트" },
-        { id: "reviews", icon: "fa-regular fa-comment", label: "작성 후기" },
-        { id: "orders", icon: "fa-solid fa-receipt", label: "주문 내역" },
-        { id: "auction-history", icon: "fa-solid fa-gavel", label: "경매 내역" },
-      ],
-    },
-  ];
 
   const formatPhoneNumber = (value) => {
     if (!value) return "";
@@ -202,20 +169,11 @@ export default function MyPage() {
     }
   };
 
-  const handleSideNavClick = (e, id) => {
-    if (id === "withdrawal") {
-      e.preventDefault();
-      handleWithdrawalClick();
-      return;
-    }
-
-    setActiveId(id);
-
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
+  useEffect(() => {
+    const handleWithdrawal = () => handleWithdrawalClick();
+    window.addEventListener("mypage:withdrawal", handleWithdrawal);
+    return () => window.removeEventListener("mypage:withdrawal", handleWithdrawal);
+  }, []);
 
   /* 찜 리스트 */
   const [wishItems, setWishItems] = useState([]);
@@ -231,36 +189,10 @@ export default function MyPage() {
   );
 
   const filteredWish = useMemo(() => [], []);
-  const toggleWish = (id) => {};
+  const toggleWish = (id) => { };
 
   return (
     <div className="mypage">
-      <aside className="sidebar">
-        <div className="sidebar__inner">
-          <nav className="sidebar__nav">
-            {SIDEBAR_GROUPS.map((group) => (
-              <div className="nav-group" key={group.title}>
-                <p className="nav-group__title">{group.title}</p>
-                <ul className="nav-list">
-                  {group.items.map((item) => (
-                    <li key={item.id}>
-                      <NavLink
-                        to={group.title === "활동 내역" ? `/mypage/${item.id}` : "#"}
-                        className={`nav-link ${activeId === item.id ? "is-active" : ""}`}
-                        onClick={(e) => handleSideNavClick(e, item.id)}
-                      >
-                        <i className={item.icon} />
-                        <span>{item.label}</span>
-                      </NavLink>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </nav>
-        </div>
-      </aside>
-
       <main className="main">
         <div className="main__inner">
           <section id="profile-edit" className="card">
@@ -384,9 +316,8 @@ export default function MyPage() {
 
                     {pwData.newPwConfirm.length > 0 && (
                       <p
-                        className={`pw-msg ${
-                          pwData.newPw === pwData.newPwConfirm ? "is-match" : "is-error"
-                        }`}
+                        className={`pw-msg ${pwData.newPw === pwData.newPwConfirm ? "is-match" : "is-error"
+                          }`}
                       >
                         {pwData.newPw === pwData.newPwConfirm
                           ? "새 비밀번호가 일치합니다."

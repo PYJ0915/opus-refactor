@@ -35,4 +35,8 @@ public interface MemberService {
   Member getMemberByMemberNo(int memberNo);
 
   String getCurrentPw(int memberNo);
+  
+  void sendPasswordResetEmail(String email);
+  
+  int resetPassword(String email, String code, String newPw);
 }

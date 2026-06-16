@@ -4,6 +4,7 @@ import { orderApi } from "../../api/orderAPI";
 import Loading from "../../components/common/Loading";
 import "../../css/Payment.css"
 import { useCartStore } from "../../store/useCartStore";
+import { toast } from "react-toastify";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const PaymentSuccess = () => {
       const amount = searchParams.get("amount");
 
       if (!paymentKey || !orderId || !amount) {
-        alert("잘못된 접근입니다.");
+        toast.error("잘못된 접근입니다.");
         navigate("/selections/cart");
         return;
       }
@@ -60,7 +61,7 @@ const PaymentSuccess = () => {
           || error.message
           || "결제 승인에 실패했습니다.";
 
-        alert(errorMessage);
+        toast.error(errorMessage);
         navigate(`/payment/fail?code=CONFIRM_ERROR&message=${encodeURIComponent(errorMessage)}`);
       }
     };

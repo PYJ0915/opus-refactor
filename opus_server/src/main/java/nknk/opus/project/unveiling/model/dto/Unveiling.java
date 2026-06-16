@@ -31,6 +31,8 @@ public class Unveiling {
 	
 	private int biddingCount;
 	
+	private String startDate;
+	
 	private String finishDate;
 	
 	private String productionDetail;
@@ -48,5 +50,7 @@ public class Unveiling {
 	private String thumbUrl;
 	
 	private int alertSentFl; // 마감 임박 알림 발송 여부 (0: 미발송, 1: 발송완료)
+	
+	private int liveAlertSentFl;
 	
 }
