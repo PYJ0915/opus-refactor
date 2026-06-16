@@ -45,11 +45,16 @@ function checkImage(url) {
 }
 
 // 이미지 검증 통과한 항목만 필터링 후 N개 반환
-async function filterValidImages(items, getUrl, count) {
+async function filterValidImages(items, getUrl, getKey, count) {
   const shuffled = [...items].sort(() => Math.random() - 0.5);
   const valid = [];
+  const seenKeys = new Set();
+
   for (const item of shuffled) {
     if (valid.length >= count) break;
+
+    const key = getKey(item);
+    if (!key || seenKeys.has(key)) continue;
 
     const rawUrl = getUrl(item);
     if (!rawUrl) continue;
@@ -58,6 +63,7 @@ async function filterValidImages(items, getUrl, count) {
     const ok = await checkImage(httpsUrl);
 
     if (ok) {
+      seenKeys.add(key);
       valid.push({
         ...item,
         image: item.image ? toHttps(item.image) : item.image,
@@ -65,7 +71,6 @@ async function filterValidImages(items, getUrl, count) {
       });
     }
   }
-
   return valid;
 }
 
@@ -81,7 +86,12 @@ export default function Home() {
       try {
         const items = await getAllExhibitions({ serviceKey: EXHIBITION_KEY, pageParam: 1 });
         const active = items.filter((item) => getExhibitionStatus(item.period) !== "03");
-        const valid = await filterValidImages(active, (item) => item.image, PICK_COUNT);
+        const valid = await filterValidImages(
+          active,
+          (item) => item.image,
+          (item) => item.exhibitionId,
+          PICK_COUNT
+        );
         setExhibitionPicks(valid);
       } catch (e) {
         console.error("전시 MD픽 로드 실패:", e);
@@ -100,7 +110,12 @@ export default function Home() {
           rows: 50,
         });
         const active = result.items.filter((item) => item.prfstate !== "공연완료");
-        const valid = await filterValidImages(active, (item) => item.poster, PICK_COUNT);
+        const valid = await filterValidImages(
+          active,
+          (item) => item.poster, 
+          (item) => item.mt20id, 
+          PICK_COUNT
+        );
         setMusicalPicks(valid);
       } catch (e) {
         console.error("뮤지컬 MD픽 로드 실패:", e);

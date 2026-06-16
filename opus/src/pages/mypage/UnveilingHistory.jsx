@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosApi from "../../api/axiosAPI";
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import "../../css/Orders.css";
+import { resolveImage } from "../../utils/unveilingImage";
 
 const UnveilingHistory = () => {
   const navigate = useNavigate();
@@ -99,7 +100,11 @@ const UnveilingHistory = () => {
                 <div className="order-product">
                   <div className="product-image">
                     {item.thumbUrl ? (
-                      <img src={item.thumbUrl} alt={item.unveilingTitle} />
+                      <img 
+                      src={resolveImage(item.thumbUrl)} 
+                      alt={item.unveilingTitle} 
+                      onError={e => e.currentTarget.src = "/no-thumbnail.png"}
+                      />
                     ) : (
                       <div className="product-image--empty">
                         <i className="fa-solid fa-image" />
