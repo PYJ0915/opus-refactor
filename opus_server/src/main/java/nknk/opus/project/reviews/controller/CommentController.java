@@ -2,11 +2,9 @@ package nknk.opus.project.reviews.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,15 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.reviews.model.dto.Comment;
 import nknk.opus.project.reviews.model.service.CommentService;
 
 @RestController
 @RequestMapping("comment")
+@RequiredArgsConstructor
 public class CommentController {
 
-	@Autowired
-	private CommentService service;
+	private final CommentService service;
 
 	@GetMapping("getComment")
 	public ResponseEntity<List<Comment>> getComment(@RequestParam("reviewNo") int reviewNo) {

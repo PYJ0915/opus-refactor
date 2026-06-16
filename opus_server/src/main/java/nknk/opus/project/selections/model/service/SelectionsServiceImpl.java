@@ -2,10 +2,10 @@ package nknk.opus.project.selections.model.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.selections.model.dto.Goods;
 import nknk.opus.project.selections.model.dto.GoodsImg;
 import nknk.opus.project.selections.model.dto.GoodsOption;
@@ -13,10 +13,10 @@ import nknk.opus.project.selections.model.mapper.SelectionsMapper;
 
 @Transactional(rollbackFor = Exception.class)
 @Service
+@RequiredArgsConstructor
 public class SelectionsServiceImpl implements SelectionsService{
 	
-	@Autowired
-	private SelectionsMapper mapper;
+	private final SelectionsMapper mapper;
 
 	@Override
 	public List<Goods> selectGoodsList() {

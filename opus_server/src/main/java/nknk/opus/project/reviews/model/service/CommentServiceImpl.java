@@ -2,20 +2,19 @@ package nknk.opus.project.reviews.model.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.reviews.model.dto.Comment;
 import nknk.opus.project.reviews.model.mapper.CommentMapper;
-import nknk.opus.project.reviews.model.mapper.ReviewsMapper;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 	
-	@Autowired
-	private CommentMapper mapper;
+	private final CommentMapper mapper;
 
 	@Override
 	public List<Comment> getComment(int reviewNo) {

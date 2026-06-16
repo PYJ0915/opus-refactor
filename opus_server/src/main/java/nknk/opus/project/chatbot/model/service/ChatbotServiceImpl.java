@@ -3,7 +3,6 @@ package nknk.opus.project.chatbot.model.service;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +12,7 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.completions.CompletionUsage;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.chatbot.model.dto.ChatHistory;
 import nknk.opus.project.chatbot.model.dto.ChatRequest;
@@ -22,13 +22,12 @@ import nknk.opus.project.chatbot.model.mapper.ChatbotMapper;
 @Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class ChatbotServiceImpl implements ChatbotService{
 
-	@Autowired
-	private OpenAIClient openAIClient;
+	private final OpenAIClient openAIClient;
 
-	@Autowired
-	private ChatbotMapper mapper;
+	private final ChatbotMapper mapper;
 
 	@Value("${openai.model}")
 	private String model;

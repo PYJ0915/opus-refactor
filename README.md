@@ -97,21 +97,21 @@
 
 ### 프론트엔드
 
-- [x] `alert` / `confirm` → toast / 모달로 통일 (FE-01)
-- [x] `console.log` / `console.error` 제거 (FE-02)
-- [x] `memberNo` @RequestParam 보안 이슈 → JWT 추출 방식으로 변경 (FE-03)
-- [x] `ScrollToTop` 중복 렌더링 제거 (FE-04)
-- [x] `AuthSuccess.jsx` 리다이렉트 경로 수정 (FE-05)
+- [x] `alert` / `confirm` → toast / 모달로 통일
+- [x] `console.log` / `console.error` 제거
+- [x] `memberNo` @RequestParam 보안 이슈 → JWT 추출 방식으로 변경
+- [x] `ScrollToTop` 중복 렌더링 제거
+- [x] `AuthSuccess.jsx` 리다이렉트 경로 수정
 - [x] 비로그인 On-Stage 접근 시 API 401 오류 → `loginMemberNo` 조건 추가
 - [x] 미사용 파일 정리 및 컴포넌트 폴더 재구성
 
 ### 백엔드
 
-- [x] 이메일 인증코드 `HashMap` → 인메모리 안전 구조로 교체 (BE-01)
-- [x] `GlobalExceptionHandler` + `ApiExceptionHandler` 통합 (BE-02)
-- [x] `memberNo` JWT에서 추출 (BE-03)
-- [x] `AdminController` DI 방식 `@RequiredArgsConstructor`로 통일 (BE-04)
-- [x] `NotificationServiceImpl` 권한 확인 단일 쿼리 최적화 (BE-05)
+- [x] 이메일 인증코드 `HashMap` → 인메모리 안전 구조로 교체
+- [x] `GlobalExceptionHandler` + `ApiExceptionHandler` 통합
+- [x] `memberNo` JWT에서 추출
+- [x] DI 방식 `@RequiredArgsConstructor`로 통일
+- [x] `NotificationServiceImpl` 권한 확인 단일 쿼리 최적화
 - [x] 백엔드 반환 타입 구체화 및 HTTP 메서드 정정 (ResponseEntity 명시)
 - [x] 쿠키 관련 dead code 제거
 - [x] 이메일 전송 비동기(@Async) 분리
@@ -119,9 +119,6 @@
 
 ### DB
 
-- [x] `TOTAL_ORDER` 컬럼명 오타 수정 → `RECIPIENT`
-- [x] `STAGE_PREFER` / `STAGE_SAVE` 타입 수정 (`STAGE_NO NUMBER → VARCHAR2(30)`)
-- [x] `GOODS_OPTION VERSION` 낙관적 락 컬럼 추가
 - [x] `UNVEILING.START_DATE` 추가 (경매 자동 시작 기능)
 - [x] `UNVEILING.LIVE_ALERT_SENT_FL` 추가 (LIVE 알림 중복 방지)
 - [x] `UNVEILING_ALERT` 테이블 생성 (경매 알림 신청)
@@ -130,16 +127,14 @@
 
 ### CSS
 
-- [x] `:root` 변수 중복 선언 → `variables.css` 통합 (CSS-01)
-- [x] 전역 리셋(`*`, `body`) 중복 제거 (CSS-02)
-- [x] `AddressModal.css` ↔ `Checkout.css` 클래스 중복 제거 (CSS-03)
-- [x] `App.css` Vite 보일러플레이트 잔존 코드 제거 (CSS-04)
-- [x] `.ghost-btn` 중복 통합 (CSS-05)
-- [x] `.soldout-badge` / `.soldout-message` 중복 통합 (CSS-06)
-- [x] 모달 패턴 공통 베이스 추출 (CSS-07)
-- [x] `loadingSpinner.css` 색상 변수 통일 (CSS-08)
-- [x] `myPage.css` 불필요한 지역 변수 선언 제거 (CSS-09)
-- [x] `@media` 내 `:root` 변경 정리 (CSS-10)
+- [x] `:root` 변수 중복 선언 → `variables.css` 통합
+- [x] 전역 리셋(`*`, `body`) 중복 제거
+- [x] `AddressModal.css` ↔ `Checkout.css` 클래스 중복 제거
+- [x] `App.css` Vite 보일러플레이트 잔존 코드 제거
+- [x] `.ghost-btn` 중복 통합
+- [x] `.soldout-badge` / `.soldout-message` 중복 통합
+- [x] 모달 패턴 공통 베이스 추출
+- [x] `loadingSpinner.css` 색상 변수 통일
 
 ---
 

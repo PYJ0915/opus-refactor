@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.common.exception.BusinessException;
 import nknk.opus.project.common.exception.ResourceNotFoundException;
@@ -25,19 +25,16 @@ import nknk.opus.project.order.model.mapper.OrderMapper;
 @Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-	@Autowired
-	private OrderMapper mapper;
+	private final OrderMapper mapper;
 
-	@Autowired
-	private TossPaymentService tossPaymentService;
+	private final TossPaymentService tossPaymentService;
 
-	@Autowired
-	private EmailService emailService; // 이메일 발송 서비스
+	private final EmailService emailService; // 이메일 발송 서비스
 
-	@Autowired
-	private NotificationService notificationService;
+	private final NotificationService notificationService;
 
 	// 낙관적 락 충돌 시 최대 재시도 횟수
 	private static final int MAX_RETRY = 3;

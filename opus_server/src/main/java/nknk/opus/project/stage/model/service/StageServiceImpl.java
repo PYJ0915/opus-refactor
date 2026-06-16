@@ -2,10 +2,10 @@ package nknk.opus.project.stage.model.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.reviews.model.dto.Reviews;
 import nknk.opus.project.stage.model.dto.StageCache;
 import nknk.opus.project.stage.model.dto.StagePrefer;
@@ -13,10 +13,10 @@ import nknk.opus.project.stage.model.mapper.StageMapper;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class StageServiceImpl implements StageService {
 	
-	@Autowired
-	private StageMapper mapper;
+	private final StageMapper mapper;
 
 	@Override
 	public int toggleLike(StagePrefer stage) {

@@ -2,14 +2,13 @@ package nknk.opus.project.selections.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.selections.model.dto.Goods;
 import nknk.opus.project.selections.model.dto.GoodsImg;
 import nknk.opus.project.selections.model.dto.GoodsOption;
@@ -17,10 +16,10 @@ import nknk.opus.project.selections.model.service.SelectionsService;
 
 @RestController
 @RequestMapping("selections")
+@RequiredArgsConstructor
 public class SelectionsController {
 
-	@Autowired
-	private SelectionsService service;
+	private final SelectionsService service;
 	
 	@GetMapping
 	public ResponseEntity<List<Goods>> selectGoodsList() {

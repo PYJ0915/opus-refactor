@@ -2,7 +2,6 @@ package nknk.opus.project.cart.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,17 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.cart.model.dto.Cart;
 import nknk.opus.project.cart.model.service.CartService;
 
-@Slf4j
 @RestController
 @RequestMapping("cart")
+@RequiredArgsConstructor
 public class CartController {
 
-	@Autowired
-	private CartService service;
+	private final CartService service;
 
 	/**
 	 * 장바구니 목록 조회

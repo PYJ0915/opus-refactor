@@ -2,7 +2,6 @@ package nknk.opus.project.stage.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import nknk.opus.project.reviews.model.dto.Reviews;
 import nknk.opus.project.stage.model.dto.StageCache;
 import nknk.opus.project.stage.model.dto.StagePrefer;
@@ -20,10 +20,10 @@ import nknk.opus.project.stage.model.service.StageService;
 
 @RestController
 @RequestMapping("/stage")
+@RequiredArgsConstructor
 public class StageController {
 
-	@Autowired
-	private StageService service;
+	private final StageService service;
 
 	@PostMapping("/like")
 	public ResponseEntity<Integer> toggleLike(@RequestBody StagePrefer stage) {

@@ -2,9 +2,7 @@ package nknk.opus.project.unveiling.model.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nknk.opus.project.bidding.model.dto.BidStateResponse;
 import nknk.opus.project.bidding.model.dto.Bidding;
@@ -26,22 +25,18 @@ import nknk.opus.project.unveiling.model.mapper.UnveilingMapper;
 @Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class UnveilingServiceImpl implements UnveilingService {
 
-	@Autowired
-	private UnveilingMapper unveilingMapper;
+	private final UnveilingMapper unveilingMapper;
 
-	@Autowired
-	private BiddingMapper biddingMapper;
+	private final BiddingMapper biddingMapper;
 
-	@Autowired
-	private MemberMapper memberMapper;
+	private final MemberMapper memberMapper;
 
-	@Autowired
-	private JavaMailSender mailSender;
+	private final JavaMailSender mailSender;
 
-	@Autowired
-	private NotificationService notificationService;
+	private final NotificationService notificationService;
 
 	@Override
 	public List<Unveiling> getList() {
