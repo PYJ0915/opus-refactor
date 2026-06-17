@@ -103,7 +103,7 @@ public class SecurityConfig {
                         // 그 외 전부 로그인 필요
                         .anyRequest().authenticated())
 
-                // ✅ OAuth2 로그인 - 성공/실패 핸들러 모두 등록
+                // OAuth2 로그인 - 성공/실패 핸들러 모두 등록
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oauth2SuccessHandler)

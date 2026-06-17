@@ -30,7 +30,10 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <HelmetProvider>
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider
+      clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+      onScriptLoadError={() => console.error("Google OAuth 스크립트 로드 실패")}
+    >
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <App />
