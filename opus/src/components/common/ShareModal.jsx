@@ -6,10 +6,10 @@ import {
   ThreadsIcon,
   XIcon,
 } from "react-share";
-import { shareKakao, copyUrl } from "../../utils/shareUtils";
 import { toast } from "react-toastify";
 import { useRef } from "react";
 import "../../css/ShareModal.css";
+import { shareKakao, copyUrl, openPopup } from "../../utils/shareUtils";
 
 export default function ShareModal({
   isOpen,
@@ -37,34 +37,28 @@ export default function ShareModal({
   };
 
   const handleFacebook = () => {
-    window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-      "_blank",
-      "noopener,noreferrer,width=600,height=400"
+    openPopup(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
     );
   };
 
   const handleLine = () => {
-    window.open(
-      `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`,
-      "_blank",
-      "noopener,noreferrer,width=600,height=400"
+    openPopup(
+      `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`
     );
   };
 
   const handleThreads = () => {
-    window.open(
+    openPopup(
       `https://www.threads.net/intent/post?text=${encodeURIComponent(`${title} ${url}`)}`,
-      "_blank",
-      "noopener,noreferrer,width=600,height=600"
+      600,
+      600
     );
   };
 
   const handleTwitter = () => {
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
-      "_blank",
-      "noopener,noreferrer,width=600,height=400"
+    openPopup(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`
     );
   };
 
