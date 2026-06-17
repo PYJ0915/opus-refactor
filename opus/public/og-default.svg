@@ -1,0 +1,44 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>OPUS OG Thumbnail</title>
+<desc>OPUS 문화 플랫폼 공유용 썸네일 — 블랙앤화이트 미니멀</desc>
+
+<rect width="1200" height="630" fill="#0c0c0c"/>
+
+<!-- 미세 그리드 텍스처 -->
+<line x1="0" y1="210" x2="1200" y2="210" stroke="#1a1a1a" stroke-width="0.5"/>
+<line x1="0" y1="420" x2="1200" y2="420" stroke="#1a1a1a" stroke-width="0.5"/>
+<line x1="400" y1="0" x2="400" y2="630" stroke="#1a1a1a" stroke-width="0.5"/>
+<line x1="800" y1="0" x2="800" y2="630" stroke="#1a1a1a" stroke-width="0.5"/>
+
+<!-- 왼쪽 상단 코너 장식 -->
+<rect x="70" y="70" width="36" height="1" fill="#333"/>
+<rect x="70" y="70" width="1" height="36" fill="#333"/>
+
+<!-- 오른쪽 상단 코너 장식 -->
+<rect x="1094" y="70" width="36" height="1" fill="#333"/>
+<rect x="1129" y="70" width="1" height="36" fill="#333"/>
+
+<!-- 왼쪽 하단 코너 장식 -->
+<rect x="70" y="559" width="36" height="1" fill="#333"/>
+<rect x="70" y="523" width="1" height="36" fill="#333"/>
+
+<!-- 오른쪽 하단 코너 장식 -->
+<rect x="1094" y="559" width="36" height="1" fill="#333"/>
+<rect x="1129" y="523" width="1" height="36" fill="#333"/>
+
+<!-- 메인 타이틀 -->
+<text x="600" y="340" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="172" font-weight="700" letter-spacing="36" fill="#ffffff">OPUS</text>
+
+<!-- 얇은 구분선 -->
+<line x1="458" y1="380" x2="742" y2="380" stroke="#444" stroke-width="0.5"/>
+
+<!-- 서브카피 -->
+<text x="600" y="418" text-anchor="middle" font-family="'Noto Sans KR', Helvetica, sans-serif" font-size="21" font-weight="300" letter-spacing="9" fill="#888">전시 · 뮤지컬 · 경매 · 문화굿즈</text>
+
+<!-- 왼쪽 상단 레이블 -->
+<text x="70" y="148" font-family="Helvetica, sans-serif" font-size="18" letter-spacing="5" fill="#333">CULTURE PLATFORM</text>
+
+<!-- 우측 하단 연도 -->
+<text x="1130" y="582" text-anchor="end" font-family="Helvetica, sans-serif" font-size="18" letter-spacing="4" fill="#333">2026</text>
+
+</svg>
