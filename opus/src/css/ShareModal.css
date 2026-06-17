@@ -66,6 +66,20 @@
   flex-wrap: wrap; 
 }
 
+.share-modal-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-modal-icon-btn img {
+  display: block;
+}
+
 .share-modal-copy-row {
   display: flex;
   align-items: center;

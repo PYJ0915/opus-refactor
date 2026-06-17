@@ -9,6 +9,11 @@ import "./css/index.css";
 import "./css/slider.css";
 import { HelmetProvider } from "react-helmet-async";
 
+// 앱 시작 시 카카오 SDK 초기화
+if (window.Kakao && !window.Kakao.isInitialized()) {
+  window.Kakao.init(import.meta.env.VITE_KAKAO_APP_KEY);
+}
+
 // React Query 클라이언트(캐시 관리자) 생성
 const queryClient = new QueryClient({
   defaultOptions: {

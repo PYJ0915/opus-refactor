@@ -7,7 +7,15 @@ export function initKakao() {
 
 // 카카오톡 공유
 export function shareKakao({ title, description, imageUrl, url }) {
-  initKakao();
+  // SDK 로드 및 초기화 확인
+  if (!window.Kakao) {
+    alert("카카오 SDK가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.");
+    return;
+  }
+  if (!window.Kakao.isInitialized()) {
+    window.Kakao.init(import.meta.env.VITE_KAKAO_APP_KEY);
+  }
+
   window.Kakao.Share.sendDefault({
     objectType: "feed",
     content: {

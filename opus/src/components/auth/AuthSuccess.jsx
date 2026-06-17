@@ -24,6 +24,10 @@ const AuthSuccess = () => {
       })
       .then((res) => {
         login({ token, member: res.data });
+
+        const userName = res.data?.memberEmail?.split("@")[0] || "사용자";
+        toast.success(`${userName}님, 환영합니다!`, { toastId: "oauth-welcome" });
+
         navigate("/");
       })
       .catch(() => {

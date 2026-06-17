@@ -85,13 +85,7 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		// 4. 주문명 생성
-		// 4. 주문명 생성
 		String orderName = generateOrderName(request.getItems());
-		int itemCount = request.getItems().size(); // 총 상품 개수
-
-		notificationService.createNotification(memberNo, "ORDER", "주문이 완료되었습니다.", itemCount == 1 ? orderName // 1개면 상품명만
-				: orderName + " 외 " + (itemCount - 1) + "건", // 2개 이상이면 "외 N건"
-				"/mypage/orders");
 
 		// 5. 응답 데이터
 		Map<String, Object> response = new HashMap<>();
@@ -133,7 +127,7 @@ public class OrderServiceImpl implements OrderService {
 
 		// 4. 토스페이먼츠 승인 요청
 		TossPaymentResponse paymentResponse = tossPaymentService.confirmPayment(request);
-		
+
 		try {
 			// 5. 주문 상태 업데이트
 			String tossStatus = paymentResponse.getStatus();
@@ -143,8 +137,15 @@ public class OrderServiceImpl implements OrderService {
 				// 재고 차감
 				List<OrderItem> orderItems = mapper.selectOrderItems(request.getOrderId());
 				deductStockForItems(orderItems, request.getOrderId());
-
 				order.setOrderStatus("PAID");
+				String orderName = generateOrderName(orderItems);
+				int itemCount = orderItems.size(); // 총 상품 개수
+
+				notificationService.createNotification(memberNo, "ORDER", "주문이 완료되었습니다.", itemCount == 1 ? orderName // 1개면
+																														// 상품명만
+						: orderName + " 외 " + (itemCount - 1) + "건", // 2개 이상이면 "외 N건"
+						"/mypage/orders");
+
 			} else if ("WAITING_FOR_DEPOSIT".equals(tossStatus)) {
 				order.setOrderStatus("WAITING_FOR_DEPOSIT");
 				log.info("가상계좌 발급 완료 - orderId: {}, 입금 대기 중 (재고 차감은 입금 완료 시)", request.getOrderId());
@@ -356,6 +357,34 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
+	@Override
+	public void abandonOrder(String orderId, int memberNo) {
+		log.info("주문 철회 요청 - orderId: {}, memberNo: {}", orderId, memberNo);
+
+		Order order = mapper.selectOrderByOrderId(orderId);
+
+		if (order == null) {
+			throw new ResourceNotFoundException("주문 정보를 찾을 수 없습니다.");
+		}
+		if (order.getMemberNo() != memberNo) {
+			throw new BusinessException("권한이 없습니다.");
+		}
+		if (!"READY".equals(order.getOrderStatus())) {
+			throw new BusinessException("철회할 수 없는 주문 상태입니다.");
+		}
+
+		// 1. 자식 테이블(ORDER_ITEM) 먼저 삭제 (FK 제약 조건)
+		mapper.deleteOrderItemsByOrderId(orderId);
+
+		// 2. 부모 테이블(TOTAL_ORDER) 삭제
+		int result = mapper.deleteOrderByOrderId(orderId);
+		if (result == 0) {
+			throw new BusinessException("주문 철회에 실패했습니다.");
+		}
+
+		log.info("주문 철회 완료 - orderId: {}", orderId);
+	}
+
 	/**
 	 * 입금 완료 이메일 발송
 	 */
@@ -462,7 +491,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
-	 * [추가] 주문 생성 전 재고 사전 검증
+	 * 주문 생성 전 재고 사전 검증
 	 *
 	 * createOrder 시점에 재고가 0이면 주문 자체를 막음 단, 이 시점의 재고는 '참고용'이며 실제 확정은
 	 * confirmPayment에서 낙관적 락으로 처리 (여러 사용자가 동시에 이 검증을 통과해도 confirmPayment에서 한 명만 성공)
