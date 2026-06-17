@@ -390,11 +390,10 @@ const Checkout = () => {
     }
 
     try {
-      console.log("==== 카드 / 간편 결제창 호출 시작 ====");
       await tossPaymentsRef.current.requestPayment("카드", {
-        amount: amount,
-        orderId: orderId,
-        orderName: orderName,
+        amount,
+        orderId,
+        orderName,
         customerName: form.ordererName,
         customerEmail: form.email,
         successUrl: `${window.location.origin}/payment/success`,
@@ -403,8 +402,13 @@ const Checkout = () => {
     } catch (error) {
       console.error("결제창 호출 실패:", error);
 
-       if (error.code === "USER_CANCEL") {
-        toast.success("결제가 취소되었습니다.");
+      if (error.code === "USER_CANCEL") {
+        try {
+          await orderApi.abandonOrder(orderId);
+        } catch (abandonError) {
+          console.error("주문 철회 실패:", abandonError);
+        }
+        toast.info("결제가 취소되었습니다.");
         return;
       }
 
@@ -420,17 +424,14 @@ const Checkout = () => {
     }
 
     try {
-      console.log("==== 가상계좌 발급 시작 ====");
       await tossPaymentsRef.current.requestPayment("가상계좌", {
-        amount: amount,
-        orderId: orderId,
-        orderName: orderName,
+        amount,
+        orderId,
+        orderName,
         customerName: form.ordererName,
         customerEmail: form.email,
-        validHours: 24,  // 입금 유효 시간 (24시간)
-        cashReceipt: {
-          type: "소득공제"  // 현금영수증 타입
-        },
+        validHours: 24,
+        cashReceipt: { type: "소득공제" },
         successUrl: `${location.origin}/payment/success`,
         failUrl: `${location.origin}/payment/fail`
       });
@@ -438,7 +439,12 @@ const Checkout = () => {
       console.error("가상계좌 발급 실패:", error);
 
       if (error.code === "USER_CANCEL") {
-        toast.success("결제가 취소되었습니다.");
+        try {
+          await orderApi.abandonOrder(orderId);
+        } catch (abandonError) {
+          console.error("주문 철회 실패:", abandonError);
+        }
+        toast.info("결제가 취소되었습니다.");
         return;
       }
 
