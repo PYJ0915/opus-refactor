@@ -61,4 +61,14 @@ export const orderApi = {
     return response.data;
   },
 
+  abandonOrder: async (orderId) => {
+    try {
+      const resp = await axiosApi.delete(`/orders/${orderId}/abandon`);
+      return resp.data;
+    } catch (error) {
+      console.error("주문 철회 실패:", error);
+      throw error;
+    }
+  },
+
 }

@@ -30,4 +30,6 @@ public interface OrderService {
 
 	void completeDelivery(int orderNo);
 
+	void abandonOrder(String orderId, int memberNo);
+
 }

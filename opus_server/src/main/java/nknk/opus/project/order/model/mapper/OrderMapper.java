@@ -116,4 +116,8 @@ public interface OrderMapper {
 	 * 배송 완료 처리
 	 */
 	int completeDelivery(@Param("orderNo") int orderNo);
+	
+	int deleteOrderItemsByOrderId(String orderId);
+
+	int deleteOrderByOrderId(String orderId);
 }
