@@ -263,7 +263,7 @@
 }
 
 /* 반응형 */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .cancel-modal {
     width: 100%;
     border-radius: 16px 16px 0 0;

@@ -217,13 +217,13 @@
 }
 
 /* ============== RESPONSIVE ============== */
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .payment-result {
     padding: 32px 24px;
   }
 
   .payment-result__title {
-    font-size: 24px;
+    font-size: 20px;
     margin-bottom: 24px;
   }
 
@@ -247,6 +247,11 @@
     gap: 8px;
   }
 
+  .payment-info-label,
+  .payment-info-value {
+    font-size: 13px;
+  }
+
   .payment-info-value {
     text-align: left;
   }
@@ -258,20 +263,6 @@
   .payment-btn {
     width: 100%;
     min-width: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .payment-result__title {
-    font-size: 20px;
-  }
-
-  .payment-info-label,
-  .payment-info-value {
-    font-size: 13px;
-  }
-
-  .payment-btn {
     padding: 12px 20px;
     font-size: 14px;
   }

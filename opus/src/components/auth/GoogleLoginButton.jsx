@@ -45,11 +45,25 @@ const GoogleLoginButton = ({ onLoginSuccess }) => {
     },
   });
 
+  const handleClick = () => {
+    // 팝업 허용 여부 사전 테스트
+    const test = window.open("", "_blank", "width=1,height=1");
+    if (!test || test.closed || typeof test.closed === "undefined") {
+      toast.warn(
+        "팝업이 차단되어 있습니다. 브라우저 또는 광고 차단 확장프로그램에서 팝업을 허용한 후 다시 시도해주세요.",
+        { toastId: "google-popup-blocked", autoClose: 4000 }
+      );
+      return;
+    }
+    test.close(); // 테스트용 팝업 즉시 닫기
+    handleGoogleLogin();
+  };
+
   return (
     <button
       type="button"
       className="lm-submit lm-google"
-      onClick={() => handleGoogleLogin()}
+      onClick={handleClick}
     >
       <img
         src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg"

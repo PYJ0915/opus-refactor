@@ -294,18 +294,15 @@
   padding-top: 10px;
 }
 
-/* Responsive도 5장 기준으로 재조정 */
-@media (max-width: 1400px){
+/* Responsive: 4단계 기준 (모바일/태블릿/노트북/데스크톱) */
+@media (max-width: 1439px){
   .proposals-page .event-grid{ grid-template-columns: repeat(4, 1fr); }
 }
-@media (max-width: 1100px){
+@media (max-width: 1023px){
   .proposals-page .event-grid{ grid-template-columns: repeat(3, 1fr); }
 }
-@media (max-width: 860px){
-  .proposals-page .event-grid{ grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 520px){
-  .proposals-page .event-grid{ grid-template-columns: 1fr; }
+@media (max-width: 767px){
+  .proposals-page .event-grid{ grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
 
 /* 카드: 테두리 제거 + 더 컴팩트 */
@@ -471,11 +468,11 @@
 }
 
 /* =========================================================
-   Responsive (proposals.css) - 추가
-   기준: 1100 / 860 / 520
+   Responsive (proposals.css)
+   기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~)
 ========================================================= */
 
-@media (max-width: 1100px){
+@media (max-width: 1439px){
   /* 컨테이너 패딩 축소 */
   .proposals-page .board-container{
     padding: 70px 28px 90px;
@@ -496,7 +493,7 @@
   }
 }
 
-@media (max-width: 860px){
+@media (max-width: 1023px){
   /* 필터/검색: 2열 -> 1열 스택 */
   .proposals-page .pp-filters{
     grid-template-columns: 1fr;
@@ -533,7 +530,7 @@
   }
 }
 
-@media (max-width: 520px){
+@media (max-width: 767px){
   /* 컨테이너 더 컴팩트 */
   .proposals-page .board-container{
     padding: 64px 18px 80px;

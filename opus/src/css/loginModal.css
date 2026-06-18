@@ -216,9 +216,10 @@
 /* =========================================================
    Responsive (Login Modal - Centered)
    가운데 정렬 유지 버전
+   기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~)
 ========================================================= */
 
-@media (max-width: 1100px){
+@media (max-width: 1439px){
   /* 여백만 살짝 줄임 */
   .lm-overlay{
     padding: 20px;
@@ -229,7 +230,7 @@
   }
 }
 
-@media (max-width: 860px){
+@media (max-width: 1023px){
   /* 태블릿 */
   .lm-overlay{
     padding: 18px;
@@ -242,7 +243,7 @@
   }
 }
 
-@media (max-width: 520px){
+@media (max-width: 767px){
   /* ✅ 모바일 중앙 모달 */
   .lm-overlay{
     padding: 14px;

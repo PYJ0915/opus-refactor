@@ -188,7 +188,7 @@
 }
 
 /* ── 반응형 ── */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .um-header {
     flex-direction: column;
     align-items: flex-start;

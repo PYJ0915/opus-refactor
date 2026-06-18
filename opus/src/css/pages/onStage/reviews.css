@@ -835,7 +835,7 @@ main {
   flex-shrink: 0;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
 
   /* 기존 내용 유지 */
   .reviews-page {
