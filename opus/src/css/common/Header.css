@@ -445,6 +445,30 @@
   align-items: center;
 }
 
+/* 모바일 풀스크린 검색바 내부의 검색실행 버튼 — 데스크톱에서는 숨김 */
+.header-search__submit {
+  display: none;
+  border: 0;
+  background: transparent;
+  color: #111827;
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 4px 8px;
+}
+
+/* 모바일 풀스크린 검색바의 닫기(X) 버튼 — 데스크톱에서는 숨김 */
+.header-search__close {
+  display: none;
+  border: 0;
+  background: transparent;
+  color: #6b7280;
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 4px 8px;
+}
+
 .header-search__input {
   width: 100%;
   padding: 7px 16px;
@@ -622,4 +646,282 @@
 
 .search-preview__footer:hover {
   background: #f3f4f6;
+}
+
+/* =========================================================
+   햄버거 메뉴 토글 버튼 (모바일/태블릿에서만 표시)
+========================================================= */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  z-index: 1300;
+}
+
+.menu-toggle__bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+/* X 모양으로 변환되는 애니메이션 */
+.menu-toggle.is-active .menu-toggle__bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.menu-toggle.is-active .menu-toggle__bar:nth-child(2) {
+  opacity: 0;
+}
+.menu-toggle.is-active .menu-toggle__bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* 어두운 헤더/투명 헤더에서도 항상 보이도록 색 강제 통일은 기존 .header--dark, .is-on-hero 규칙이
+   .icon-btn 등에 적용되는 color: #fff 상속을 menu-toggle도 함께 받도록 함 */
+.header--dark .menu-toggle,
+.header.is-on-hero .menu-toggle {
+  color: #fff;
+}
+
+.header.is-scrolled .menu-toggle {
+  color: #111;
+}
+
+/* 모바일 GNB가 열렸을 때 본문을 덮는 반투명 배경 */
+.gnb-backdrop {
+  display: none;
+}
+
+/* =========================================================
+   Responsive (Header.css)
+   기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~)
+========================================================= */
+
+@media (max-width: 1023px) {
+  .header__left {
+    gap: 16px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .header__inner {
+    flex-wrap: nowrap;
+  }
+
+  /* 햄버거 버튼 노출 */
+  .menu-toggle {
+    display: flex;
+    order: 3;
+    margin-left: auto;
+  }
+
+  /* 데스크톱 가로 GNB를 숨기고, 모바일에서는 햄버거 클릭 시 펼쳐지는 드로어로 전환 */
+  .gnb {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: min(78vw, 320px);
+    background: #fff;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 88px 28px 28px;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+    transform: translateX(100%);
+    transition: transform 0.28s ease;
+    overflow-y: auto;
+    z-index: 1250;
+  }
+
+  .gnb.is-open {
+    transform: translateX(0);
+  }
+
+  .gnb__link {
+    color: #111 !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+    padding: 16px 4px;
+    font-size: 16px;
+    font-weight: 700;
+    border-bottom: 1px solid #f3f4f6;
+    white-space: normal;
+  }
+
+  .gnb__link:hover {
+    color: #111 !important;
+    opacity: 1 !important;
+    background: #f9fafb;
+  }
+
+  /* Admin 링크는 일반 메뉴와 구분되게 강조 */
+  .gnb__link.admin-link {
+    margin-top: 12px;
+    color: #2563eb !important;
+    font-weight: 800;
+  }
+
+  /* 드로어 열렸을 때 본문 클릭 방지용 어두운 배경 */
+  .gnb-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.45);
+    z-index: 1240;
+    animation: gnbBackdropFade 0.2s ease;
+  }
+
+  @keyframes gnbBackdropFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .header__right {
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .noti-panel {
+    width: min(340px, calc(100vw - 32px));
+  }
+
+  .search-preview {
+    width: min(320px, calc(100vw - 32px));
+  }
+}
+
+@media (max-width: 767px) {
+  .wrap {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .header__inner {
+    padding: 12px 0;
+    gap: 8px;
+  }
+
+  .header__left {
+    gap: 10px;
+  }
+
+  .brand {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .gnb {
+    width: min(82vw, 300px);
+    padding: 80px 24px 24px;
+  }
+
+  .header__right {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .icon-btn {
+    font-size: 16px;
+    padding: 6px;
+  }
+
+  .noti-wrap {
+    flex-shrink: 0;
+  }
+
+  /* 검색이 풀스크린으로 열렸을 때, 같은 줄의 다른 아이콘(알림/유저/장바구니/로그아웃)을
+     숨겨서 풀스크린 검색바와 겹쳐 보이지 않게 함 */
+  .header__right.is-search-active > *:not(.header-search) {
+    display: none;
+  }
+
+  /* 검색창이 펼쳐질 때, 좁은 화면에서는 헤더 한 줄 전체를 검색 입력으로 전환 */
+  .header-search {
+    position: static;
+  }
+
+  .header-search__bar.is-open {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 64px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 1260;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .header-search__bar.is-open .header-search__form {
+    width: 100%;
+  }
+
+  .header-search__bar.is-open .header-search__submit {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-search__bar.is-open .header-search__close {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-search__bar.is-open .header-search__input {
+    width: 100%;
+    height: 40px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    color: #111827;
+  }
+
+  /* 검색이 열려있는 동안 원래 토글 버튼은 숨겨서 닫기버튼과 겹치지 않게 함 */
+  .header-search__toggle.is-search-open {
+    display: none;
+  }
+
+  .header-search__input {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  /* 드롭다운들이 화면 밖으로 넘치지 않도록 폭/위치 보정 */
+  .noti-panel {
+    position: fixed;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+
+  .search-preview {
+    position: fixed;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+
+  .search-preview__name {
+    max-width: 60vw;
+  }
+
+  /* 투명 헤더(히어로 위)일 때 모바일 가독성 보강:
+     좁은 화면에서는 어두운 그라데이션을 깔아 글씨가 배경 이미지에 묻히지 않게 함 */
+  .header.is-on-hero {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0));
+  }
 }

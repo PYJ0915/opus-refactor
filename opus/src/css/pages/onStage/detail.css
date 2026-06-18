@@ -367,12 +367,13 @@
    기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~) */
 @media (max-width: 1023px) {
   .detail-grid {
+    grid-template-columns: 1fr;
     gap: 32px;
   }
 
   .detail-page .left-col,
   .detail-page .right-col {
-    grid-column: span 12;
+    grid-column: auto;
   }
 
   .poster-sticky {
@@ -382,14 +383,14 @@
   .poster-box,
   .detail-page .poster-actions {
     width: 100%;
-    max-width: var(--poster-w);
+    max-width: 410px;
   }
 }
 
 @media (max-width: 767px) {
   .detail-page .container {
-    padding: 32px 16px;
-    padding-top: calc(var(--header-h) + 20px);
+    padding: 32px 16px !important;
+    padding-top: calc(var(--header-h) + 20px) !important;
   }
 
   .detail-page .title {
@@ -398,6 +399,21 @@
 
   .detail-page .meta-label {
     width: 84px;
+  }
+
+  .detail-page .actions-row {
+    gap: 8px;
+  }
+
+  .detail-page .actions-row .btn-outline {
+    padding: 10px 6px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .detail-page .btn-primary {
+    font-size: 15px;
+    padding: 14px 12px;
   }
 }
 

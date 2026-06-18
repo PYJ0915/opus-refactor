@@ -286,7 +286,7 @@
 /* responsive */
 /* 기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~) */
 @media (max-width: 1439px) {
-  .grid__items {
+  .grid_items {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -309,7 +309,7 @@
     min-width: 0;
   }
 
-  .grid__items {
+  .grid_items {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -328,8 +328,22 @@
 }
 
 @media (max-width: 767px) {
-  .grid__items {
-    grid-template-columns: 1fr;
+  .search {
+    width: 100%;
+  }
+
+  .toggle__btn {
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+
+  .grid_items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .card_img img {
+    height: 220px;
   }
 
   .footer__grid {

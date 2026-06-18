@@ -665,6 +665,10 @@ button {
     font-size: 42px;
   }
 
+  .hero__text {
+    padding: 0 56px;
+  }
+
   .hero__nav--left {
     left: 16px;
   }
@@ -684,11 +688,37 @@ button {
     min-height: 480px;
   }
 
+  .hero__text {
+    max-width: 100%;
+    padding: 0 44px;
+  }
+
+  .hero__nav {
+    width: 36px;
+    height: 36px;
+  }
+
+  .hero__nav--left {
+    left: 12px;
+  }
+
+  .hero__nav--right {
+    right: 12px;
+  }
+
   .card-grid {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 
   .hero__title {
-    font-size: 36px;
+    font-size: 30px;
+  }
+
+  .hero__date {
+    font-size: 16px;
+  }
+
+  .hero__place {
+    font-size: 14px;
   }
 }
