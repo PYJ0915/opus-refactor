@@ -60,11 +60,12 @@
   color:#9ca3af;
 }
 
-/* ============ Responsive ============ */
-@media (max-width: 1200px){
+/* ============ Responsive ============
+   기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~) */
+@media (max-width: 1439px){
   .card-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-@media (max-width: 900px){
+@media (max-width: 1023px){
   .header__inner{ flex-direction:column; align-items:stretch; }
   .header__left{ width:100%; justify-content:space-between; gap:16px; }
   .gnb{ gap:18px; flex-wrap:wrap; }
@@ -78,7 +79,7 @@
   .footer__grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-@media (max-width: 560px){
+@media (max-width: 767px){
   .card-grid{ grid-template-columns: repeat(1, minmax(0, 1fr)); }
   .hero{ height:520px; }
   .hero__title{ font-size:36px; }

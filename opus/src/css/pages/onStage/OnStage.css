@@ -216,8 +216,9 @@
   padding: 8px 0 0;
 }
 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 860px) {
+/* ================= RESPONSIVE =================
+   기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~) */
+@media (max-width: 1023px) {
   .search-row {
     flex-direction: column;
   }
@@ -231,7 +232,7 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 767px) {
   .show-grid--row .show-card {
     flex-basis: 180px;
   }

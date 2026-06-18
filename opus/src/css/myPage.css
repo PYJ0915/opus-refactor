@@ -153,15 +153,16 @@
 
 /* =====================================================
    Responsive
+   기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~)
 ===================================================== */
 
-@media (max-width: 1100px) {
+@media (max-width: 1439px) {
   .mypage .card__head { padding: 10px 24px; }
   .mypage .card__body { padding: 24px; }
   .mypage .input { max-width: 420px; }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1023px) {
   .mypage .card { margin-bottom: 18px; }
   .mypage .card__head { padding: 12px 18px; }
   .mypage .card__body { padding: 18px; }
@@ -169,7 +170,7 @@
   .mypage .tel-buttons { flex-wrap: wrap; }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 767px) {
   .mypage .card__title { font-size: 18px; }
 
   .mypage .btn--check,

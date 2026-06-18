@@ -166,8 +166,9 @@
   font-size: 18px;
 }
 
-/* Responsive (proposal-detail.css) */
-@media (max-width: 860px){
+/* Responsive (proposal-detail.css)
+   기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~) */
+@media (max-width: 1023px){
   .proposal-detail-page .detail-container{
     padding: 0 20px;
   }
@@ -181,7 +182,7 @@
   }
 }
 
-@media (max-width: 520px){
+@media (max-width: 767px){
   .proposal-detail-page .detail-container{
     padding: 0 16px;
   }

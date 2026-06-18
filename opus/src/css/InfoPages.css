@@ -639,14 +639,15 @@
 
 /* ══════════════════════════════
    반응형
+   기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~)
 ══════════════════════════════ */
-@media (max-width: 1024px) {
+@media (max-width: 1439px) {
   .about-hero .info-page__title { font-size: 40px; }
   .about-stats { grid-template-columns: repeat(2, 1fr); }
   .about-values__grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .info-page__hero {
     padding: 80px 24px 48px;
   }
@@ -672,7 +673,7 @@
   .info-doc__table td { padding: 10px 12px; }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 767px) {
   .about-stats { grid-template-columns: repeat(2, 1fr); }
   .about-stat__number { font-size: 28px; }
   .info-tabs { gap: 8px; }
