@@ -13,8 +13,10 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [preview, setPreview] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const searchRef = useRef(null);
   const inputRef = useRef(null);
+  const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
 
   // === 알림 기능용 상태 및 훅 추가 ===
@@ -81,6 +83,33 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // 라우트 변경 시 모바일 메뉴 자동 닫기
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // ESC 키로 모바일 메뉴 닫기 (접근성)
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [mobileMenuOpen]);
+
+  // 모바일 메뉴 열렸을 때 배경 스크롤 막기
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   // 검색창 열릴 때 input focus
   useEffect(() => {
@@ -162,7 +191,18 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
             OPUS
           </Link>
 
-          <nav className="gnb">
+          {/* 모바일 GNB 오버레이 배경 (메뉴 열렸을 때 본문 클릭 막고 어둡게) */}
+          {mobileMenuOpen && (
+            <div
+              className="gnb-backdrop"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+          )}
+
+          <nav
+            ref={mobileMenuRef}
+            className={`gnb ${mobileMenuOpen ? "is-open" : ""}`}
+          >
             <NavLink
               to="/onStage"
               className={({ isActive }) =>
@@ -211,9 +251,22 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
               </NavLink>
             )}
           </nav>
+
+          {/* 모바일/태블릿 전용 햄버거 토글 버튼 */}
+          <button
+            type="button"
+            className={`menu-toggle ${mobileMenuOpen ? "is-active" : ""}`}
+            aria-label={mobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+          >
+            <span className="menu-toggle__bar" />
+            <span className="menu-toggle__bar" />
+            <span className="menu-toggle__bar" />
+          </button>
         </div>
 
-        <div className="header__right">
+        <div className={`header__right ${searchOpen ? "is-search-active" : ""}`}>
 
           <div className="header-search" ref={searchRef}>
             <div className={`header-search__bar ${searchOpen ? "is-open" : ""}`}>
@@ -227,11 +280,42 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
                   className="header-search__input"
                 />
               </form>
+
+              {/* 검색 실행 버튼 — 풀스크린 검색바 내부용 (모바일) */}
+              <button
+                type="button"
+                className="header-search__submit"
+                aria-label="검색 실행"
+                onClick={() => {
+                  if (searchQuery.trim()) {
+                    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                    setSearchOpen(false);
+                    setPreview(null);
+                    setSearchQuery("");
+                  }
+                }}
+              >
+                <i className="fa-solid fa-search" />
+              </button>
+
+              <button
+                type="button"
+                className="header-search__close"
+                aria-label="검색창 닫기"
+                onClick={() => {
+                  setSearchOpen(false);
+                  setPreview(null);
+                  setSearchQuery("");
+                }}
+              >
+                <i className="fa-solid fa-xmark" />
+              </button>
             </div>
 
+            {/* 검색 토글 버튼 — 검색이 열려있는 동안(모바일)에는 숨겨서 닫기버튼과 겹치지 않게 함 */}
             <button
               type="button"
-              className="icon-btn"
+              className={`icon-btn header-search__toggle ${searchOpen ? "is-search-open" : ""}`}
               aria-label="검색"
               onClick={() => {
                 if (searchOpen && searchQuery.trim()) {

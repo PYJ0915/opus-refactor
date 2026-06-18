@@ -315,6 +315,10 @@
   .searchbox{ width: 100%; }
   .grid{ grid-template-columns: 1fr; }
   .info__grid{ grid-template-columns: 1fr; }
+
+  .card__media{ height: 260px; }
+  .card__title{ font-size: 17px; }
+  .card__price{ font-size: 20px; }
 }
 
 /* filters row: left(tabs+count) + right(search) */
@@ -393,12 +397,28 @@
   width: 100%;
 }
 
-/* Unveiling 경매 카드: 환경 상관없이 항상 3열 */
+/* Unveiling 경매 카드: 데스크톱/노트북 기준 3열 (모바일/태블릿은 아래 반응형에서 재정의) */
 .page #auction-grid .grid{
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 32px;
 }
+
+/* 위 ID 강제 규칙이 모바일/태블릿에서도 똑같이 깨지도록 동일 specificity로 재정의 */
+@media (max-width: 1023px){
+  .page #auction-grid .grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 767px){
+  .page #auction-grid .grid{
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
 /* auction card를 링크처럼 보이지 않게하는 처리 */
 .auction-card-link{
   display: block;

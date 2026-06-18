@@ -93,9 +93,32 @@
     display: none;
   }
 
+  .mdpick-layout {
+    --card-w: 160px;
+    --card-gap: 12px;
+    --visible: 2.2;
+  }
+
   .slider-viewport {
-    overflow: hidden;
-    width: calc((260px * 5) + (24px * 4));
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .slider-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mdpick-cardwrap {
+    flex: 0 0 160px;
+    width: 160px;
+    min-width: 160px;
+  }
+
+  .mdpick-card__thumb {
+    width: 160px;
+    height: 200px;
   }
 }
 
@@ -167,8 +190,20 @@
   text-overflow: ellipsis;
 }
 
+@media (max-width: 1439px) {
+  .mdpick-layout { --visible: 4; }
+
+  .slider-viewport {
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 1023px) {
   .mdpick-layout { --visible: 3; }
+
+  .slider-viewport {
+    max-width: 100%;
+  }
 }
 
 .skeleton-mdpick-thumb {

@@ -119,23 +119,30 @@
     padding-bottom: 12px;
   }
 
-  .mypage-layout .sidebar__nav { padding: 0 16px; }
-  .mypage-layout .nav-group { margin-bottom: 12px; }
+  .mypage-layout .sidebar__nav {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mypage-layout .nav-group { margin-bottom: 0; }
   .mypage-layout .nav-group__title { display: none; }
 
+  /* 가로 스크롤 대신 줄바꿈: 모든 메뉴가 잘리지 않고 한 화면에 보이도록 함 */
   .mypage-layout .nav-list {
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 8px;
-    overflow-x: auto;
+    overflow-x: visible;
     padding-bottom: 6px;
-    -webkit-overflow-scrolling: touch;
   }
 
   .mypage-layout .nav-link {
     white-space: nowrap;
-    padding: 10px 12px;
+    padding: 9px 14px;
     border-radius: 999px;
     background: #f9fafb;
+    font-size: 13px;
   }
 
   .mypage-layout .nav-link i { display: none; }
@@ -145,4 +152,13 @@
 
 @media (max-width: 767px) {
   .mypage-layout { --pad: 16px; }
+
+  .mypage-layout .nav-link {
+    padding: 8px 12px;
+    font-size: 12.5px;
+  }
+
+  .mypage-layout .nav-list {
+    gap: 6px;
+  }
 }
