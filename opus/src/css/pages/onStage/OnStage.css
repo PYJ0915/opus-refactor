@@ -233,12 +233,68 @@
 }
 
 @media (max-width: 767px) {
+  .search-input {
+    height: 44px;
+    padding: 0 42px 0 14px;
+    font-size: 14px;
+  }
+
+  .search-input::placeholder {
+    font-size: 13px;
+  }
+
+  .search-btn {
+    width: 100%;
+  }
+
+  .scroll-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .scroll-arrow--left {
+    left: 4px;
+  }
+
+  .scroll-arrow--right {
+    right: 4px;
+  }
+
   .show-grid--row .show-card {
     flex-basis: 180px;
   }
 
   .show-grid:not(.show-grid--row) {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .show-card__title {
+    font-size: 13px;
+  }
+
+  .show-card__meta {
+    font-size: 11px;
+  }
+
+  .onstage-section-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .onstage-controls {
+    align-items: stretch;
+  }
+
+  .view-toggle {
+    margin-bottom: 0;
+    align-self: flex-end;
+  }
+
+  .onstage-sort-bar {
+    justify-content: flex-start;
   }
 }
 
@@ -327,6 +383,7 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .sort-btn {
@@ -398,13 +455,24 @@
 /* ── 섹션 헤더 (뷰 전환 버튼 포함) ── */
 .onstage-section-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 16px;
   margin-bottom: 20px;
 }
 
 .onstage-section-head h2 {
   margin: 0;
+  flex-shrink: 0;
+}
+
+/* 뷰 토글 + 정렬바를 묶는 컨테이너 (이전에 정의가 빠져있던 부분) */
+.onstage-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  min-width: 0;
 }
 
 /* ── 뷰 전환 버튼 ── */
