@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 // 카카오 SDK 초기화 — 앱 시작 시 한 번만 호출
 export function initKakao() {
   if (window.Kakao && !window.Kakao.isInitialized()) {
@@ -38,6 +40,13 @@ export async function copyUrl(url) {
 export function openPopup(url, width = 600, height = 400) {
   const left = Math.round(window.screenX + (window.outerWidth - width) / 2);
   const top = Math.round(window.screenY + (window.outerHeight - height) / 2);
-  // noopener/noreferrer 제거 → 크롬 팝업 차단 완화
-  window.open(url, "_blank", `width=${width},height=${height},left=${left},top=${top}`);
+  const popup = window.open(
+    url,
+    "_blank",
+    `width=${width},height=${height},left=${left},top=${top}`
+  );
+  
+  if (!popup || popup.closed || typeof popup.closed === "undefined") {
+    toast.warn("팝업이 차단되었습니다. 브라우저 또는 확장프로그램에서 팝업을 허용해주세요.");
+  }
 }

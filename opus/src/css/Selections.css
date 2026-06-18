@@ -284,13 +284,14 @@
 }
 
 /* responsive */
-@media (max-width: 1200px) {
+/* 기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~) */
+@media (max-width: 1439px) {
   .grid__items {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
   .header__inner {
     padding: 14px var(--pad);
   }
@@ -315,9 +316,18 @@
   .footer__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .filter__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search {
+    justify-content: flex-end;
+  }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 767px) {
   .grid__items {
     grid-template-columns: 1fr;
   }
@@ -332,16 +342,4 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-}
-
-/* 모바일 대응 */
-@media (max-width: 900px) {
-  .filter__row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search {
-    justify-content: flex-end;
-  }
 }

@@ -185,7 +185,7 @@
 
 /* ===== 반응형 ===== */
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .company-dashboard {
     padding: 80px 20px 40px;
   }

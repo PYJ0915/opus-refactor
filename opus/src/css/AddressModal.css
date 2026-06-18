@@ -415,22 +415,17 @@
   color: #6b7280;
 }
 
-@media (max-width: 520px) {
+/* 모바일에서는 세로 스택 */
+@media (max-width: 767px) {
   .checkout_modal__tools {
     flex-direction: column;
     align-items: stretch;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .checkout_modal__footer {
     flex-direction: column;
-  }
-}
-
-/* 모바일에서는 세로 스택 */
-@media (max-width: 520px) {
-  .checkout_modal__tools {
-    grid-template-columns: 1fr;
-    gap: 10px;
   }
 
   .checkout_modal__tools .checkout_btn {
