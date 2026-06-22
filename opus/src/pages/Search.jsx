@@ -119,7 +119,7 @@ export default function Search() {
                   className="search-list-item"
                 >
                   <img
-                    src={e.stageThumbnail?.replace("http://", "https://")}
+                    src={resolveImage(e.stageThumbnail)}
                     alt={e.stageTitle}
                     className="search-list-item__thumb"
                     onError={(el) => {
@@ -146,7 +146,7 @@ export default function Search() {
                   className="search-list-item"
                 >
                   <img
-                    src={m.stageThumbnail?.replace("http://", "https://")}
+                    src={resolveImage(m.stageThumbnail)}
                     alt={m.stageTitle}
                     className="search-list-item__thumb"
                     onError={(el) => {

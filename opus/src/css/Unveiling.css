@@ -1,6 +1,6 @@
 /* ===== Main Layout ===== */
 .main{
-  padding-top: 80px;
+  padding-top: calc(var(--header-h) + 24px);
   max-width: var(--max);
   margin: 0 auto;
 }
@@ -319,6 +319,10 @@
   .card__media{ height: 260px; }
   .card__title{ font-size: 17px; }
   .card__price{ font-size: 20px; }
+
+  .filters {
+    margin-top: 50px;
+  }
 }
 
 /* filters row: left(tabs+count) + right(search) */
@@ -350,6 +354,10 @@
   .searchbox{
     width: 100%;
     max-width: 520px;
+  }
+  
+   .filters {
+    margin-top: 50px;
   }
 }
 

@@ -29,6 +29,7 @@
 .proposal-detail-page .detail-container{
   max-width: 1130px;       /* 기존 1250~1480이면 너무 넓음 */
   margin: 0 auto;
+  padding-top: calc(var(--header-h) + 24px);
 }
 
 .proposal-detail-page .detail-content > div{
@@ -175,6 +176,7 @@
   .proposal-detail-page .detail-title{
     font-size: 26px;
     line-height: 1.4;
+    margin-top: 150px;
   }
   .proposal-detail-page .detail-info{
     flex-wrap: wrap;

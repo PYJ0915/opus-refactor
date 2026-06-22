@@ -8,6 +8,7 @@ import axiosApi from '../../api/axiosAPI';
 import { useAuthStore } from "../../components/auth/useAuthStore";
 import ShowCardSkeleton from "../../components/common/ShowCardSkeleton";
 import StarRating from "../../components/reviews/StarRating.jsx";
+import { getCachedExhibitions } from "../../api/kcisaAPI";
 
 const SERVICE_KEY = import.meta.env.VITE_KCISA_KEY;
 const INVALID_THUMB_PATTERNS = ["noimage", "no_image", "default", "null"];
@@ -58,7 +59,7 @@ function ThumbImg({ src, alt }) {
   );
 }
 
-export default function ExhibitionList({ search, status }) {
+export default function ExhibitionList({ search, status, onCacheMode }) {
   const loginMemberNo = useAuthStore(state => state.member?.memberNo);
   const bottomRef = useRef(null);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
@@ -68,6 +69,7 @@ export default function ExhibitionList({ search, status }) {
   const [savedOverflow, setSavedOverflow] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const [sortType, setSortType] = useState("default");
+  const [cacheItems, setCacheItems] = useState(null);
   const likedScrollRef = useRef(null);
   const savedScrollRef = useRef(null);
 
@@ -85,8 +87,30 @@ export default function ExhibitionList({ search, status }) {
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === 20 ? allPages.length + 1 : undefined;
-    }
+    },
+    retry: false, // API 실패 시 즉시 isError로 전환 → 캐시 폴백 빠르게 동작
   })
+
+  useEffect(() => {
+    if (!isError) return;
+    getCachedExhibitions(60)
+      .then((cached) => {
+        const converted = cached.map((c) => ({
+          exhibitionId: c.stageNo,
+          title: c.stageTitle,
+          image: c.stageThumbnail,
+          period: c.stagePeriod,
+          place: c.stagePlace,
+        }));
+        const sorted = [
+          ...converted.filter((item) => item.image && item.image.trim() !== ""),
+          ...converted.filter((item) => !item.image || item.image.trim() === ""),
+        ];
+        setCacheItems(sorted);
+        onCacheMode?.(true);
+      })
+      .catch(() => setCacheItems([]));
+  }, [isError]);
 
   useEffect(() => {
     if (!bottomRef.current) return;
@@ -300,7 +324,53 @@ export default function ExhibitionList({ search, status }) {
   }
 
   if (isError) {
-    return <div style={{ padding: 80 }}>오류: {String(error)}</div>;
+    if (cacheItems === null) {
+      return (
+        <section className="show-row">
+          <div className="show-grid">
+            {Array.from({ length: 10 }).map((_, i) => <ShowCardSkeleton key={i} />)}
+          </div>
+        </section>
+      );
+    }
+    if (cacheItems.length === 0) {
+      return <div style={{ padding: 80 }}>전시 정보를 불러올 수 없습니다.</div>;
+    }
+    return (
+      <section className="show-row">
+        <div className="cache-notice">
+          <i className="fa-solid fa-circle-info" />
+          외부 서비스 연결이 원활하지 않아 저장된 데이터를 표시합니다.
+        </div>
+        <div className="show-grid">
+          {cacheItems
+            .filter((item) => {
+              const keyword = search.trim().toLowerCase();
+              return !keyword || item.title?.toLowerCase().includes(keyword) || item.place?.toLowerCase().includes(keyword);
+            })
+            .map((item) => (
+              <article key={item.exhibitionId} className="show-card">
+                <Link to={`/onStage/exhibition/${item.exhibitionId}`} state={{ item }}>
+                  <div className="show-card__thumb">
+                    <img
+                      src={
+                        item.image && item.image.trim() !== ""
+                          ? item.image.replace("http://", "https://")
+                          : "/no-thumbnail.png"
+                      }
+                      alt={item.title}
+                      onError={(e) => { e.currentTarget.src = "/no-thumbnail.png"; e.currentTarget.onerror = null; }}
+                    />
+                  </div>
+                  <h3 className="show-card__title">{item.title}</h3>
+                  <p className="show-card__meta">{item.period}</p>
+                  <p className="show-card__meta">{item.place}</p>
+                </Link>
+              </article>
+            ))}
+        </div>
+      </section>
+    );
   }
 
   if (!allItems.length) {
@@ -376,27 +446,29 @@ export default function ExhibitionList({ search, status }) {
       )}
 
       <section className="show-row">
-
         <div className="onstage-section-head">
-
-          <h2>전체 전시</h2>
+          <div className="onstage-section-name">
+            <h2>전체 전시</h2>
+            {status !== "all" && (
+              <p className="onstage-section-sub">
+                {status === "01" && "전시 예정작"}
+                {status === "02" && "현재 전시 중"}
+                {status === "03" && "전시 완료작"}
+              </p>
+            )}
+          </div>
 
           <div className="onstage-controls">
-
-
             <div className="view-toggle">
               <button
-                className={`view-toggle__btn ${viewMode === "grid" ? "is-active" : ""
-                  }`}
+                className={`view-toggle__btn ${viewMode === "grid" ? "is-active" : ""}`}
                 onClick={() => setViewMode("grid")}
                 title="그리드 뷰"
               >
                 <i className="fa-solid fa-grip" />
               </button>
-
               <button
-                className={`view-toggle__btn ${viewMode === "list" ? "is-active" : ""
-                  }`}
+                className={`view-toggle__btn ${viewMode === "list" ? "is-active" : ""}`}
                 onClick={() => setViewMode("list")}
                 title="리스트 뷰"
               >
@@ -413,8 +485,7 @@ export default function ExhibitionList({ search, status }) {
               ].map((opt) => (
                 <button
                   key={opt.value}
-                  className={`sort-btn ${sortType === opt.value ? "is-active" : ""
-                    }`}
+                  className={`sort-btn ${sortType === opt.value ? "is-active" : ""}`}
                   onClick={() => setSortType(opt.value)}
                 >
                   {opt.label}
@@ -422,28 +493,66 @@ export default function ExhibitionList({ search, status }) {
               ))}
             </div>
           </div>
-
         </div>
 
-        <div className={viewMode === "grid" ? "show-grid" : "show-list"}>
-
-          {sortedItems.map((item) =>
-            viewMode === "grid" ? (
-
-              <article
-                key={item.exhibitionId}
-                className="show-card"
-              >
-                <Link
-                  to={`/onStage/exhibition/${item.exhibitionId}`}
-                  state={{ item }}
-                >
-                  <div className="show-card__thumb">
-                    <ThumbImg
-                      src={item.image}
-                      alt={item.title}
-                    />
-
+        {sortedItems.length === 0 ? (
+          <div className="empty-state">
+            <i className="fa-solid fa-image empty-state__icon" />
+            <p className="empty-state__text">
+              {status === "01" && "전시 예정작이 없습니다."}
+              {status === "02" && "현재 전시 중인 작품이 없습니다."}
+              {status === "03" && "전시 완료작이 없습니다."}
+              {status === "all" && "표시할 전시 정보가 없습니다."}
+            </p>
+          </div>
+        ) : (
+          <div className={viewMode === "grid" ? "show-grid" : "show-list"}>
+            {sortedItems.map((item) =>
+              viewMode === "grid" ? (
+                <article key={item.exhibitionId} className="show-card">
+                  <Link to={`/onStage/exhibition/${item.exhibitionId}`} state={{ item }}>
+                    <div className="show-card__thumb">
+                      <ThumbImg src={item.image} alt={item.title} />
+                      <span className="show-badge show-badge--dark">
+                        {getStatus(item.period) === "01"
+                          ? "전시예정"
+                          : getStatus(item.period) === "02"
+                            ? "전시중"
+                            : "전시완료"}
+                      </span>
+                      <div className="show-card__overlay">
+                        <p className="show-card__overlay-title">{item.title}</p>
+                        <p className="show-card__overlay-meta">{item.period}</p>
+                        <p className="show-card__overlay-meta">{item.place}</p>
+                        <span className="show-card__overlay-btn">자세히 보기 →</span>
+                      </div>
+                    </div>
+                    <h3 className="show-card__title">{item.title}</h3>
+                    {avgRatings?.[String(item.exhibitionId)] > 0 && (
+                      <div className="show-card__rating">
+                        <StarRating rating={avgRatings[String(item.exhibitionId)]} readonly size={12} />
+                      </div>
+                    )}
+                    <p className="show-card__meta">{item.period}</p>
+                    <p className="show-card__meta">{item.place}</p>
+                  </Link>
+                </article>
+              ) : (
+                <article key={item.exhibitionId} className="show-list-item">
+                  <Link to={`/onStage/exhibition/${item.exhibitionId}`} state={{ item }}>
+                    <div className="show-list-item__thumb">
+                      <ThumbImg src={item.image} alt={item.title} />
+                    </div>
+                    <div className="show-list-item__info">
+                      <h3 className="show-list-item__title">{item.title}</h3>
+                      {avgRatings?.[String(item.exhibitionId)] > 0 && (
+                        <div className="show-card__rating">
+                          <StarRating rating={avgRatings[String(item.exhibitionId)]} readonly size={12} />
+                        </div>
+                      )}
+                      <p className="show-list-item__meta">{item.period}</p>
+                      <p className="show-list-item__meta">{item.place}</p>
+                    </div>
                     <span className="show-badge show-badge--dark">
                       {getStatus(item.period) === "01"
                         ? "전시예정"
@@ -451,113 +560,14 @@ export default function ExhibitionList({ search, status }) {
                           ? "전시중"
                           : "전시완료"}
                     </span>
-
-                    <div className="show-card__overlay">
-                      <p className="show-card__overlay-title">
-                        {item.title}
-                      </p>
-
-                      <p className="show-card__overlay-meta">
-                        {item.period}
-                      </p>
-
-                      <p className="show-card__overlay-meta">
-                        {item.place}
-                      </p>
-
-                      <span className="show-card__overlay-btn">
-                        자세히 보기 →
-                      </span>
-                    </div>
-                  </div>
-
-                  <h3 className="show-card__title">
-                    {item.title}
-                  </h3>
-
-                  {/* 별점 표시 — 0점이면 숨김 */}
-                  {avgRatings?.[String(item.exhibitionId)] > 0 && (
-                    <div className="show-card__rating">
-                      <StarRating
-                        rating={avgRatings[String(item.exhibitionId)]}
-                        readonly
-                        size={12}
-                      />
-                    </div>
-                  )}
-
-                  <p className="show-card__meta">
-                    {item.period}
-                  </p>
-
-                  <p className="show-card__meta">
-                    {item.place}
-                  </p>
-
-                </Link>
-              </article>
-
-            ) : (
-
-              <article
-                key={item.exhibitionId}
-                className="show-list-item"
-              >
-                <Link
-                  to={`/onStage/exhibition/${item.exhibitionId}`}
-                  state={{ item }}
-                >
-                  <div className="show-list-item__thumb">
-                    <ThumbImg
-                      src={item.image}
-                      alt={item.title}
-                    />
-                  </div>
-
-                  <div className="show-list-item__info">
-
-                    <h3 className="show-list-item__title">
-                      {item.title}
-                    </h3>
-
-                    {avgRatings?.[String(item.exhibitionId)] > 0 && (
-                      <div className="show-card__rating">
-                        <StarRating
-                          rating={(avgRatings[String(item.exhibitionId)])}
-                          readonly
-                          size={12}
-                        />
-                      </div>
-                    )}
-
-                    <p className="show-list-item__meta">
-                      {item.period}
-                    </p>
-
-                    <p className="show-list-item__meta">
-                      {item.place}
-                    </p>
-
-                  </div>
-
-                  <span className="show-badge show-badge--dark">
-                    {getStatus(item.period) === "01"
-                      ? "전시예정"
-                      : getStatus(item.period) === "02"
-                        ? "전시중"
-                        : "전시완료"}
-                  </span>
-
-                </Link>
-              </article>
-
-            )
-          )}
-
-        </div>
+                  </Link>
+                </article>
+              )
+            )}
+          </div>
+        )}
 
         <div ref={bottomRef} style={{ height: 1 }} />
-
         {isFetchingNextPage && (
           <div className="show-grid" style={{ marginTop: 20 }}>
             {Array.from({ length: 5 }).map((_, i) => (
@@ -565,7 +575,6 @@ export default function ExhibitionList({ search, status }) {
             ))}
           </div>
         )}
-
       </section>
     </>
   );

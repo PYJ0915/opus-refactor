@@ -122,8 +122,7 @@ public class OnStageScheduler {
 
                 if (response.getBody() == null) continue;
 
-                String xml = new String(response.getBody(), "EUC-KR");
-                List<StageCache> items = parseMusicalXml(xml);
+                List<StageCache> items = parseMusicalXml(response.getBody());
 
                 for (StageCache item : items) {
                     stageService.upsertStageCache(item);
@@ -169,13 +168,11 @@ public class OnStageScheduler {
     }
 
     // ── XML 파싱: 뮤지컬 ──
-    private List<StageCache> parseMusicalXml(String xml) {
+    private List<StageCache> parseMusicalXml(byte[] rawBytes) {
         List<StageCache> result = new ArrayList<>();
         try {
-            // EUC-KR 선언을 UTF-8로 교체 후 파싱
-            xml = xml.replaceAll("(?i)encoding=\"EUC-KR\"", "encoding=\"UTF-8\"");
             DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = db.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+            Document doc = db.parse(new ByteArrayInputStream(rawBytes));
             NodeList dbs = doc.getElementsByTagName("db");
 
             for (int i = 0; i < dbs.getLength(); i++) {

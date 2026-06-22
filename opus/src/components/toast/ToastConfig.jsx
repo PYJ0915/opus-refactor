@@ -19,7 +19,7 @@ export default function ToastConfig() {
       }}
       style={{ 
         zIndex: 99999, 
-        top: "70px",                
+        top: "calc(var(--header-h) + 12px)",                
         left: "50%",               
         transform: "translateX(-50%)", 
         width: "100%",             

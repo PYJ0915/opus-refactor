@@ -69,5 +69,5 @@
    Desktop : 1440px~ (기본값) */
 
 @media (max-width: 1439px) { :root { --pad: 32px; } }
-@media (max-width: 1023px) { :root { --pad: 24px; } }
-@media (max-width: 767px)  { :root { --pad: 16px; } }
+@media (max-width: 1023px) { :root { --pad: 24px; --header-h: 64px; } }
+@media (max-width: 767px)  { :root { --pad: 16px; --header-h: 60px; } }

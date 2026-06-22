@@ -171,6 +171,10 @@
   .search-page {
     padding: 90px 20px 48px;
   }
+  
+  .search-page__header {
+    margin-top: 50px;
+  }
 
   .search-page__keyword {
     font-size: 26px;

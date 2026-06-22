@@ -8,13 +8,15 @@ export default function OnStage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const genre = searchParams.get("genre") ?? "exhibition";
-  const status = searchParams.get("status") ?? "all"; // All, 진행예정(01), 진행중(02), 진행완료(03)
+  const status = searchParams.get("status") ?? "all";
   const [search, setSearch] = useState("");
+  const [isCacheMode, setIsCacheMode] = useState(false);
 
   const setGenre = (value) => {
+    setIsCacheMode(false); // 장르 바꾸면 캐시 모드 초기화
     setSearchParams(prev => {
       prev.set("genre", value);
-      prev.set("status", "all"); // 장르 바꾸면 상태 필터 초기화
+      prev.set("status", "all");
       return prev;
     });
   };
@@ -46,13 +48,11 @@ export default function OnStage() {
               <span className="filter-label">장르</span>
               <button type="button"
                 className={`chip genre-btn ${genre === "exhibition" ? "is-active" : ""}`}
-                data-genre="exhibition"
                 onClick={() => setGenre("exhibition")}>
                 전시
               </button>
               <button type="button"
                 className={`chip genre-btn ${genre === "musical" ? "is-active" : ""}`}
-                data-genre="musical"
                 onClick={() => setGenre("musical")}>
                 뮤지컬
               </button>
@@ -60,44 +60,50 @@ export default function OnStage() {
 
             <span className="divider" aria-hidden="true"></span>
 
-            <div className="filter-group">
-              <span className="filter-label">진행 현황</span>
-              <button type="button"
-                className={`chip status-btn ${status === "all" ? "is-active" : ""}`}
-                data-status="all"
-                onClick={() => setStatus("all")}>
-                전체
-              </button>
-              <button type="button"
-                className={`chip status-btn ${status === "02" ? "is-active" : ""}`}
-                data-status="ongoing"
-                onClick={() => setStatus("02")}>
-                진행작
-              </button>
-              <button type="button"
-                className={`chip status-btn ${status === "01" ? "is-active" : ""}`}
-                data-status="upcoming"
-                onClick={() => setStatus("01")}>
-                예정작
-              </button>
-              <button type="button"
-                className={`chip status-btn ${status === "03" ? "is-active" : ""}`}
-                data-status="ended"
-                onClick={() => setStatus("03")}>
-                종료작
-              </button>
-            </div>
+            {/* 캐시 모드일 때 진행현황 칩 숨김 */}
+            {!isCacheMode && (
+              <div className="filter-group">
+                <span className="filter-label">진행 현황</span>
+                <button type="button"
+                  className={`chip status-btn ${status === "all" ? "is-active" : ""}`}
+                  onClick={() => setStatus("all")}>
+                  전체
+                </button>
+                <button type="button"
+                  className={`chip status-btn ${status === "02" ? "is-active" : ""}`}
+                  onClick={() => setStatus("02")}>
+                  진행작
+                </button>
+                <button type="button"
+                  className={`chip status-btn ${status === "01" ? "is-active" : ""}`}
+                  onClick={() => setStatus("01")}>
+                  예정작
+                </button>
+                <button type="button"
+                  className={`chip status-btn ${status === "03" ? "is-active" : ""}`}
+                  onClick={() => setStatus("03")}>
+                  종료작
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
         {/* 목록 */}
         <div id="exhibition-content" className="content">
           {genre === "exhibition" && (
-            <ExhibitionList status={status} search={search} />
+            <ExhibitionList
+              status={status}
+              search={search}
+              onCacheMode={setIsCacheMode}
+            />
           )}
-
           {genre === "musical" && (
-            <MusicalList status={status} search={search} />
+            <MusicalList
+              status={status}
+              search={search}
+              onCacheMode={setIsCacheMode}
+            />
           )}
         </div>
       </div>

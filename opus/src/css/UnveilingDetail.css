@@ -8,7 +8,7 @@
   max-width: 1440px;
   margin: 0 auto;
   padding: 56px 32px 96px;
-  padding-top: 96px;
+  padding-top: calc(var(--header-h) + 24px);
 }
 
 .unveiling-detail .back-row {
@@ -280,12 +280,15 @@
   font-size: 13px;
   font-weight: 600;
   color: rgba(17, 24, 39, 0.70);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .unveiling-detail .countdown {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .unveiling-detail .countdown__unit {
@@ -739,6 +742,20 @@
   .unveiling-detail .detail {
     grid-template-columns: 1fr;
   }
+
+  /* 데스크톱 2열(이미지+사이드바) 레이아웃에서만 의미있는 계산식이라,
+     1열로 바뀌는 태블릿/모바일에서는 반드시 해제해야 함.
+     해제하지 않으면 calc(100% - 440px - 90px)가 음수가 되어
+     본문 텍스트 영역이 거의 0px 폭으로 줄어들고, 그 결과 모든 텍스트가
+     한 글자씩 세로로 줄바꿈되는 현상이 발생함 */
+  .unveiling-detail #description-section,
+  .unveiling-detail #artist-section {
+    max-width: 100%;
+  }
+
+  .unveiling-detail .back-link {
+    margin-top: 30px;
+  }
 }
 
 @media (max-width: 767px) {
@@ -749,6 +766,30 @@
 
   .unveiling-detail .guide-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* 타이머: 라벨+카운트다운이 한 줄에 다 안 들어가면 세로로 쌓이게 */
+  .unveiling-detail .timer__row {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  /* 카운트다운 단위 자체도 폭을 줄여서 좁은 화면에 맞춤 */
+  .unveiling-detail .countdown__unit {
+    padding: 8px 8px;
+    gap: 3px;
+  }
+
+  .unveiling-detail .countdown__unit span:first-child {
+    font-size: 15px;
+  }
+
+  .unveiling-detail .countdown__txt {
+    font-size: 11px;
+  }
+
+  .unveiling-detail .countdown {
+    gap: 3px;
   }
 }
 
