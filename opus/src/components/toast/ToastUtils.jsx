@@ -85,7 +85,8 @@ export const showConfirm = (title, message, onConfirm, confirmText = "확인") =
       closeOnClick: false,
       draggable: false,
       closeButton: false,
-      style: { width: "400px", pointerEvents: "auto" },
+      className: "confirm-toast",
+      style: { pointerEvents: "auto" },
       toastId: "confirm-toast",
     }
   );

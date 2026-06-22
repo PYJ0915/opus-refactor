@@ -163,3 +163,11 @@ export async function getMusicalDetail(serviceKey, mt20id) {
     relates: parseRelates(db),
   };
 }
+
+export async function getCachedMusicals(limit = 30) {
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/stage/cache/list?stageType=musical&limit=${limit}`
+  );
+  if (!res.ok) throw new Error("뮤지컬 캐시 조회 실패");
+  return await res.json();
+}

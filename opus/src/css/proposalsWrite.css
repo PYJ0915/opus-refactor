@@ -8,7 +8,7 @@
   --radius: 12px;
   --control-h: 38px;
 
-  padding: 80px 0;
+  padding: calc(var(--header-h) + 24px) 0 80px;
   background-color: #fff;
 }
 

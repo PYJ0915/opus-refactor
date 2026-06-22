@@ -441,7 +441,7 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
                             }}
                           >
                             <img
-                              src={e.stageThumbnail?.replace("http://", "https://")}
+                              src={resolveImage(e.stageThumbnail)}
                               alt={e.stageTitle}
                               className="search-preview__thumb"
                               onError={(el) => { el.currentTarget.src = "/no-thumbnail.png"; el.currentTarget.onerror = null; }}
@@ -470,7 +470,7 @@ function Header({ onClickUser, onLogout, isLoggedIn, variant, role }) {
                             }}
                           >
                             <img
-                              src={e.stageThumbnail?.replace("http://", "https://")}
+                              src={resolveImage(e.stageThumbnail)}
                               alt={e.stageTitle}
                               className="search-preview__thumb"
                               onError={(el) => { el.currentTarget.src = "/no-thumbnail.png"; el.currentTarget.onerror = null; }}
