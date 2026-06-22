@@ -9,8 +9,9 @@ import { useAuthStore } from "../../components/auth/useAuthStore";
 import { useContentStore } from "../../store/useContentStore.js";
 import ShowCardSkeleton from "../../components/common/ShowCardSkeleton.jsx";
 import StarRating from "../../components/reviews/StarRating.jsx";
+import { getCachedMusicals } from "../../api/kopisAPI.js";
 
-export default function MusicalList({ status, search }) {
+export default function MusicalList({ status, search, onCacheMode }) {
   const loginMemberNo = useAuthStore(state => state.member?.memberNo);
 
   const SERVICE_KEY = import.meta.env.VITE_KOPIS_KEY;
@@ -27,6 +28,7 @@ export default function MusicalList({ status, search }) {
   const [savedOverflow, setSavedOverflow] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const [sortType, setSortType] = useState("default");
+  const [cacheItems, setCacheItems] = useState(null);
 
   const {
     data,
@@ -52,9 +54,34 @@ export default function MusicalList({ status, search }) {
       });
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) =>
-      lastPage.hasNext ? allPages.length + 1 : undefined,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.hasNext ? allPages.length + 1 : undefined;
+    },
+    retry: false,
   });
+
+  useEffect(() => {
+    if (!isError) return;
+    getCachedMusicals(60)
+      .then((cached) => {
+        const converted = cached.map((c) => ({
+          mt20id: c.stageNo,
+          prfnm: c.stageTitle,
+          poster: c.stageThumbnail,
+          prfpdfrom: c.stagePeriod?.split("~")[0]?.trim() ?? "",
+          prfpdto: c.stagePeriod?.split("~")[1]?.trim() ?? "",
+          fcltynm: c.stagePlace,
+          prfstate: "",
+        }));
+        const sorted = [
+          ...converted.filter((item) => item.poster && item.poster.trim() !== ""),
+          ...converted.filter((item) => !item.poster || item.poster.trim() === ""),
+        ];
+        setCacheItems(sorted);
+        onCacheMode?.(true);
+      })
+      .catch(() => setCacheItems([]));
+  }, [isError]);
 
   useEffect(() => {
     if (!bottomRef.current) return;
@@ -251,7 +278,55 @@ export default function MusicalList({ status, search }) {
       </section>
     );
   }
-  if (isError) return <div style={{ padding: 80 }}>오류: {String(error)}</div>;
+  if (isError) {
+    if (cacheItems === null) {
+      return (
+        <section className="show-row">
+          <div className="show-grid">
+            {Array.from({ length: 10 }).map((_, i) => <ShowCardSkeleton key={i} />)}
+          </div>
+        </section>
+      );
+    }
+    if (cacheItems.length === 0) {
+      return <div style={{ padding: 80 }}>공연 정보를 불러올 수 없습니다.</div>;
+    }
+    return (
+      <section className="show-row">
+        <div className="cache-notice">
+          <i className="fa-solid fa-circle-info" />
+          외부 서비스 연결이 원활하지 않아 저장된 데이터를 표시합니다.
+        </div>
+        <div className="show-grid">
+          {cacheItems
+            .filter((item) => {
+              const keyword = search.trim().toLowerCase();
+              return !keyword || item.prfnm?.toLowerCase().includes(keyword) || item.fcltynm?.toLowerCase().includes(keyword);
+            })
+            .map((item) => (
+              <article key={item.mt20id} className="show-card">
+                <Link to={`/onStage/musical/${item.mt20id}`}>
+                  <div className="show-card__thumb">
+                    <img
+                      src={
+                        item.poster && item.poster.trim() !== ""
+                          ? item.poster.replace("http://", "https://")
+                          : "/no-thumbnail.png"
+                      }
+                      alt={item.prfnm}
+                      onError={(e) => { e.currentTarget.src = "/no-thumbnail.png"; e.currentTarget.onerror = null; }}
+                    />
+                  </div>
+                  <h3 className="show-card__title">{item.prfnm}</h3>
+                  <p className="show-card__meta">{item.prfpdfrom} ~ {item.prfpdto}</p>
+                  <p className="show-card__meta">{item.fcltynm}</p>
+                </Link>
+              </article>
+            ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>
@@ -323,29 +398,31 @@ export default function MusicalList({ status, search }) {
 
       <section className="show-row">
         <div className="onstage-section-head">
-
-          <h2>전체 공연</h2>
+          <div className="onstage-section-name">
+            <h2>전체 공연</h2>
+            {status !== "all" && (
+              <p className="onstage-section-sub">
+                {status === "01" && "공연 예정작"}
+                {status === "02" && "현재 공연 중"}
+                {status === "03" && "공연 완료작"}
+              </p>
+            )}
+          </div>
 
           <div className="onstage-controls">
-
             <div className="view-toggle">
-
               <button
-                className={`view-toggle__btn ${viewMode === "grid" ? "is-active" : ""
-                  }`}
+                className={`view-toggle__btn ${viewMode === "grid" ? "is-active" : ""}`}
                 onClick={() => setViewMode("grid")}
               >
                 <i className="fa-solid fa-grip" />
               </button>
-
               <button
-                className={`view-toggle__btn ${viewMode === "list" ? "is-active" : ""
-                  }`}
+                className={`view-toggle__btn ${viewMode === "list" ? "is-active" : ""}`}
                 onClick={() => setViewMode("list")}
               >
                 <i className="fa-solid fa-list" />
               </button>
-
             </div>
 
             <div className="onstage-sort-bar">
@@ -357,144 +434,79 @@ export default function MusicalList({ status, search }) {
               ].map((opt) => (
                 <button
                   key={opt.value}
-                  className={`sort-btn ${sortType === opt.value ? "is-active" : ""
-                    }`}
+                  className={`sort-btn ${sortType === opt.value ? "is-active" : ""}`}
                   onClick={() => setSortType(opt.value)}
                 >
                   {opt.label}
                 </button>
               ))}
             </div>
-
           </div>
-
         </div>
 
-        <div className={viewMode === "grid" ? "show-grid" : "show-list"}>
-
-          {sortedItems.map((item) =>
-
-            viewMode === "grid" ? (
-
-              <article
-                key={item.mt20id}
-                className="show-card"
-              >
-                <Link to={`/onStage/musical/${item.mt20id}`}>
-
-                  <div className="show-card__thumb">
-
-                    <PosterImg
-                      src={item.poster}
-                      alt={item.prfnm}
-                    />
-
-                    <span className="show-badge show-badge--dark">
-                      {item.prfstate || "상태없음"}
-                    </span>
-
-                    <div className="show-card__overlay">
-
-                      <p className="show-card__overlay-title">
-                        {item.prfnm}
-                      </p>
-
-                      <p className="show-card__overlay-meta">
-                        {item.prfpdfrom} ~ {item.prfpdto}
-                      </p>
-
-                      <p className="show-card__overlay-meta">
-                        {item.fcltynm}
-                      </p>
-
-                      <span className="show-card__overlay-btn">
-                        자세히 보기 →
+        {sortedItems.length === 0 ? (
+          <div className="empty-state">
+            <i className="fa-solid fa-masks-theater empty-state__icon" />
+            <p className="empty-state__text">
+              {status === "01" && "공연 예정작이 없습니다."}
+              {status === "02" && "현재 공연 중인 작품이 없습니다."}
+              {status === "03" && "공연 완료작이 없습니다."}
+              {status === "all" && "표시할 공연 정보가 없습니다."}
+            </p>
+          </div>
+        ) : (
+          <div className={viewMode === "grid" ? "show-grid" : "show-list"}>
+            {sortedItems.map((item) =>
+              viewMode === "grid" ? (
+                <article key={item.mt20id} className="show-card">
+                  <Link to={`/onStage/musical/${item.mt20id}`}>
+                    <div className="show-card__thumb">
+                      <PosterImg src={item.poster} alt={item.prfnm} />
+                      <span className="show-badge show-badge--dark">
+                        {item.prfstate || "상태없음"}
                       </span>
-
+                      <div className="show-card__overlay">
+                        <p className="show-card__overlay-title">{item.prfnm}</p>
+                        <p className="show-card__overlay-meta">{item.prfpdfrom} ~ {item.prfpdto}</p>
+                        <p className="show-card__overlay-meta">{item.fcltynm}</p>
+                        <span className="show-card__overlay-btn">자세히 보기 →</span>
+                      </div>
                     </div>
-
-                  </div>
-
-                  <h3 className="show-card__title">
-                    {item.prfnm}
-                  </h3>
-
-                  {avgRatings?.[String(item.mt20id)] > 0 && (
-                    <div className="show-card__rating">
-                      <StarRating
-                        rating={avgRatings[String(item.mt20id)]}
-                        readonly
-                        size={12}
-                      />
-                    </div>
-                  )}
-
-                  <p className="show-card__meta">
-                    {item.prfpdfrom} ~ {item.prfpdto}
-                  </p>
-
-                  <p className="show-card__meta">
-                    {item.fcltynm}
-                  </p>
-
-                </Link>
-              </article>
-
-            ) : (
-
-              <article
-                key={item.mt20id}
-                className="show-list-item"
-              >
-                <Link to={`/onStage/musical/${item.mt20id}`}>
-
-                  <div className="show-list-item__thumb">
-                    <PosterImg
-                      src={item.poster}
-                      alt={item.prfnm}
-                    />
-                  </div>
-
-                  <div className="show-list-item__info">
-
-                    <h3 className="show-list-item__title">
-                      {item.prfnm}
-                    </h3>
-
+                    <h3 className="show-card__title">{item.prfnm}</h3>
                     {avgRatings?.[String(item.mt20id)] > 0 && (
                       <div className="show-card__rating">
-                        <StarRating
-                          rating={avgRatings[String(item.mt20id)]}
-                          readonly
-                          size={12}
-                        />
+                        <StarRating rating={avgRatings[String(item.mt20id)]} readonly size={12} />
                       </div>
                     )}
-
-                    <p className="show-list-item__meta">
-                      {item.prfpdfrom} ~ {item.prfpdto}
-                    </p>
-
-                    <p className="show-list-item__meta">
-                      {item.fcltynm}
-                    </p>
-
-                  </div>
-
-                  <span className="show-badge show-badge--dark">
-                    {item.prfstate || "상태없음"}
-                  </span>
-
-                </Link>
-              </article>
-
-            )
-          )}
-
-        </div>
+                    <p className="show-card__meta">{item.prfpdfrom} ~ {item.prfpdto}</p>
+                    <p className="show-card__meta">{item.fcltynm}</p>
+                  </Link>
+                </article>
+              ) : (
+                <article key={item.mt20id} className="show-list-item">
+                  <Link to={`/onStage/musical/${item.mt20id}`}>
+                    <div className="show-list-item__thumb">
+                      <PosterImg src={item.poster} alt={item.prfnm} />
+                    </div>
+                    <div className="show-list-item__info">
+                      <h3 className="show-list-item__title">{item.prfnm}</h3>
+                      {avgRatings?.[String(item.mt20id)] > 0 && (
+                        <div className="show-card__rating">
+                          <StarRating rating={avgRatings[String(item.mt20id)]} readonly size={12} />
+                        </div>
+                      )}
+                      <p className="show-list-item__meta">{item.prfpdfrom} ~ {item.prfpdto}</p>
+                      <p className="show-list-item__meta">{item.fcltynm}</p>
+                    </div>
+                    <span className="show-badge show-badge--dark">{item.prfstate || "상태없음"}</span>
+                  </Link>
+                </article>
+              )
+            )}
+          </div>
+        )}
 
         <div ref={bottomRef} style={{ height: 1 }} />
-
         {isFetchingNextPage && (
           <div className="show-grid" style={{ marginTop: 20 }}>
             {Array.from({ length: 5 }).map((_, i) => (

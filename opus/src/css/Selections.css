@@ -1,6 +1,6 @@
 /* ============== MAIN LAYOUT ============== */
 .main {
-  padding-top: 80px;
+  padding-top: calc(var(--header-h) + 24px);
   /* header 높이만큼 */
   max-width: var(--wrap);
   margin: 0 auto;

@@ -195,7 +195,7 @@ button {
   min-height: 700px;           
   background: #000;
   overflow: hidden;
-  padding-top: 72px;
+  padding-top: var(--header-h);
 }
 
 .hero__bg {

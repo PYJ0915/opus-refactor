@@ -378,6 +378,7 @@
 
   .poster-sticky {
     position: static;
+    margin-top: 50px;
   }
 
   .poster-box,

@@ -43,3 +43,11 @@ export async function getAllExhibitions({ serviceKey, pageParam }) {
 
   return items;
 }
+
+export async function getCachedExhibitions(limit = 30) {
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/stage/cache/list?stageType=exhibition&limit=${limit}`
+  );
+  if (!res.ok) throw new Error("전시 캐시 조회 실패");
+  return await res.json();
+}

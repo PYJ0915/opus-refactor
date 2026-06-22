@@ -1,7 +1,6 @@
 .mypage-layout {
   --sidebar: 260px;
   --max-wrap: 1440px;
-  --header-h: 80px;
   --pad: 48px;
   min-height: 100vh;
   font-family: "Noto Sans KR", system-ui, -apple-system, sans-serif;
@@ -117,6 +116,7 @@
     border-bottom: 1px solid #f3f4f6;
     padding-top: 12px;
     padding-bottom: 12px;
+    margin-top: 50px;
   }
 
   .mypage-layout .sidebar__nav {

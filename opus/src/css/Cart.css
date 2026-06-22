@@ -399,6 +399,10 @@
     padding: 14px 48px;
   }
 
+  .cart-hero {
+    margin-top: 50px;
+  }
+
   .nav {
     display: none;
   }

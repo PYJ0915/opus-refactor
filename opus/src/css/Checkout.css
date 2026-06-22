@@ -2,7 +2,7 @@
 /* MAIN */
 .checkout {
   padding-bottom: 24px;
-  padding-top: 80px;
+  padding-top: calc(var(--header-h) + 24px);
   max-width: var(--wrap);
   margin: 0 auto;
 }

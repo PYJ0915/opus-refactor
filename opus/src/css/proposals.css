@@ -38,7 +38,7 @@
 .proposals-page .board-container{
   max-width: var(--wrap);
   margin: 0 auto;
-  padding: 80px var(--pad) 100px;
+  padding: calc(var(--header-h) + 24px) var(--pad) 100px;
 }
 
 /* =========================================================
@@ -539,6 +539,7 @@
   /* 탭 간격/글자 줄이기 */
   .proposals-page .tabs{
     gap: 14px;
+    margin-top: 50px;
   }
   .proposals-page .tab-btn{
     font-size: 16px;
