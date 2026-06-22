@@ -1,15 +1,25 @@
+import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { orderApi } from "../../api/orderAPI";
 import "../../css/Payment.css"
 
 const PaymentFail = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const abandonedRef = useRef(false);
   
-  // url에 에러 코드가 존재하면 해당 에러코드, 없으면 UNKNOWN_ERROR
   const errorCode = searchParams.get("code") || "UNKNOWN_ERROR";
-
-  // url에 에러메시지가 존재하면 해당 에러 메시지, 없으면 알 수 없는 오류가 발생했습니다.
   const errorMessage = searchParams.get("message") || "알 수 없는 오류가 발생했습니다.";
+  const orderId = searchParams.get("orderId");
+
+  useEffect(() => {
+    if (!orderId || abandonedRef.current) return;
+    abandonedRef.current = true;
+
+    orderApi.abandonOrder(orderId)
+      .then(() => console.log("모바일 결제 취소 - 주문 철회 완료:", orderId))
+      .catch((err) => console.error("주문 철회 실패:", err));
+  }, [orderId]);
 
   return (
     <main className="main payment-fail">
