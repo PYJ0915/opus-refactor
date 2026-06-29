@@ -86,7 +86,7 @@ export default function App() {
           <Route path="/onStage" element={<OnStage />} />
           <Route path="/onStage/exhibition/:exhibitionId" element={<ExhibitionDetail />} />
           <Route path="/onStage/musical/:mt20id" element={<MusicalDetail />} />
-          <Route path="/onStage/reviews/:stageNo" element={<Reviews />} />
+          <Route path="/onStage/reviews/:stageNo" element={<ProtectedRoute><Reviews /></ProtectedRoute>} />
 
           <Route path="/Proposals" element={<Proposals />} />
           <Route path="/Proposals/write" element={<ProtectedRoute><ProposalWrite /></ProtectedRoute>} />

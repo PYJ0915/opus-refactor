@@ -363,6 +363,11 @@
   line-height: 1.8;
 }
 
+.reviews-more-btn.reviews-more-btn--empty {
+  border-style: dashed;
+  color: var(--muted);
+}
+
 /* Responsive
    기준: 모바일(~767) / 태블릿(768~1023) / 노트북(1024~1439) / 데스크톱(1440~) */
 @media (max-width: 1023px) {

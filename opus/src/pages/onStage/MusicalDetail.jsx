@@ -214,9 +214,9 @@ export default function MusicalDetail() {
   return (
     <>
       <MetaTags
-        title={`${data.prfnm} — OPUS`}
-        description={`${data.fcltynm} |${data.prfpdfrom} ~${data.prfpdto}`}
-        image={data.poster}
+        title={`${displayData.prfnm} — OPUS`}
+        description={`${displayData.fcltynm} | ${displayData.prfpdfrom} ~ ${displayData.prfpdto}`}
+        image={displayData.poster}
       />
       <main className="detail-page">
         <div className="container" id="main-content">
@@ -399,14 +399,9 @@ export default function MusicalDetail() {
                           <p className="reviews-blur-overlay__text">
                             더 많은 후기를 보려면 로그인해 주세요.
                           </p>
-                          {/* HeaderModal의 로그인 버튼을 직접 열거나 navigate 활용 */}
                           <button
                             className="reviews-blur-overlay__btn"
-                            onClick={() => {
-                              // useHeaderModal 훅이나 전역 상태로 로그인 모달 열기
-                              // 임시: 홈으로 이동하지 않고 이벤트 발행
-                              window.dispatchEvent(new CustomEvent("open:loginModal"));
-                            }}
+                            onClick={() => window.dispatchEvent(new CustomEvent("open:loginModal"))}
                           >
                             로그인 하기
                           </button>
@@ -414,15 +409,23 @@ export default function MusicalDetail() {
                       </div>
                     )}
 
-                    {/* 로그인 시 — 후기 더보기 안내 */}
-                    {loginMemberNo && reviewCount > 1 && (
+                    {/* 로그인 시 — 후기 페이지 이동 버튼 */}
+                    {loginMemberNo ? (
                       <button
                         className="reviews-more-btn"
                         onClick={() => navigate(`/onStage/reviews/${displayData.mt20id}`)}
                       >
-                        후기 {reviewCount}개 모두 보기 →
+                        {reviewCount > 1 ? `후기 ${reviewCount}개 모두 보기 →` : "후기 작성하러 가기 →"}
                       </button>
-                    )}
+                    ) : reviewCount === 0 ? (
+                      /* 비로그인 + 후기 0개 — 로그인 유도 버튼 */
+                      <button
+                        className="reviews-more-btn"
+                        onClick={() => window.dispatchEvent(new CustomEvent("open:loginModal"))}
+                      >
+                        로그인 후 첫 후기를 남겨보세요 →
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               </div>

@@ -420,14 +420,21 @@ export default function ExhibitionDetail() {
                     )}
 
                     {/* 로그인 시 — 후기 더보기 안내 */}
-                    {loginMemberNo && reviewCount > 1 && (
+                    {loginMemberNo ? (
                       <button
                         className="reviews-more-btn"
                         onClick={() => navigate(`/onStage/reviews/${displayItem.exhibitionId}`)}
                       >
-                        후기 {reviewCount}개 모두 보기 →
+                        {reviewCount > 1 ? `후기 ${reviewCount}개 모두 보기 →` : "후기 작성하러 가기 →"}
                       </button>
-                    )}
+                    ) : reviewCount === 0 ? (
+                      <button
+                        className="reviews-more-btn"
+                        onClick={() => window.dispatchEvent(new CustomEvent("open:loginModal"))}
+                      >
+                        로그인 후 첫 후기를 남겨보세요 →
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               </div>
